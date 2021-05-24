@@ -1,0 +1,46 @@
+#!/bin/sh -ex
+export CFLAGS="-g -O2 -fno-strict-aliasing -fpie -fstack-protector-strong"
+export GEN_OPT_FLGS="-O2 -fno-strict-aliasing"
+export LDFLAGS="-pie -z now" 
+
+PLATFORM=$1
+OS=$2
+VERSION=$3
+ERLANG=$4
+
+mkdir out
+tar xf in/downloads/OTP-${ERLANG}.tar.gz --strip-components=1 --directory=out
+cp --recursive in/debian out
+cd out
+
+# Force autoconf
+if grep update_configure otp_build; then
+    ./otp_build update_configure --no-commit
+else
+    ./otp_build autoconf
+fi
+
+build_deb() {
+    debian/rules clean
+    debian/rules build
+    fakeroot debian/rules binary
+}
+
+build_centos() {
+    echo "build centos $ERLANG"    
+}
+
+case "$OS-$VERSION" in
+    debian*)
+	build_deb
+	break
+	;;
+    ubuntu*)
+	build_deb
+	break
+	;;
+    centos*)
+	build_centos
+	break
+	;;
+esac

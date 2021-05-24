@@ -1,0 +1,44 @@
+# syntax = docker/dockerfile:1.2
+ARG platform
+ARG os
+ARG os_version
+
+FROM --platform=$platform $os:$os_version
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install build dependencies
+RUN rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
+RUN --mount=type=cache,target=/var/cache/apt,sharing=private --mount=type=cache,target=/var/lib/apt,sharing=private \
+  apt-get --quiet update && \
+  apt-get --quiet --yes install \
+        apt-file \
+        autoconf \
+        build-essential \
+        chrpath \
+        curl \
+        default-jdk \
+        devscripts \
+        flex \
+        fop \
+        git \
+        libncurses5-dev \
+        xsltproc \
+        libxml2-utils \
+        chrpath \
+        libgnutls-openssl-dev \
+        libkrb5-dev \
+        libsctp-dev \
+        libssl-dev \
+        dh-make \
+        gnupg \
+        unixodbc \
+        unixodbc-dev \
+        libwxbase* \
+        libwxgtk* \
+        freeglut3-dev \
+        quilt
+
+# install rename package for ubuntu trusty
+RUN if [ "$(lsb_release -r | cut -f2 | cut -c1-2)" != "14" ]; then \
+    apt-get update && apt-get install -y rename; \
+    fi

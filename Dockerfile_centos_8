@@ -1,0 +1,44 @@
+# syntax = docker/dockerfile:1.2
+ARG platform
+
+FROM --platform=$platform centos:8
+
+# Install build dependencies
+RUN --mount=type=cache,target=/var/cache/dnf,sharing=private --mount=type=cache,target=/var/cache/yum,sharing=private \
+    dnf install -y  --setopt=tsflags=nodocs epel-release && \
+    dnf install -y  --setopt=tsflags=nodocs \
+        make \
+        git \
+        autoconf \
+        automake \
+        bison \
+        flex \
+        ed \
+        java-devel \
+        gcc \
+        gcc-c++ \
+        rpm-build \
+        yum-utils \
+        gpg \
+        libxslt-devel \
+        libxslt \
+        ncurses-devel \
+        openssl \
+        openssl-devel \
+        zlib-devel \
+        m4 \
+        unixODBC-devel \
+        tk-devel \
+        tcl-devel \
+        freeglut-devel \
+        spectool \
+        mesa-libGLU-devel \
+        chrpath && \
+	dnf install -y  --setopt=tsflags=nodocs wxGTK3-devel --enablerepo=epel-testing && \
+	dnf clean all
+
+# Setup fop because of its missing package
+ENV JAVA_HOME=/usr/lib/jvm/jre-openjdk
+RUN curl -O http://ftp.man.poznan.pl/apache/xmlgraphics/fop/binaries/fop-2.6-bin.tar.gz \
+        && tar -xf fop-2.6-bin.tar.gz
+ENV PATH="/fop-2.6/fop:${PATH}"

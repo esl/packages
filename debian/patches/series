@@ -1,0 +1,11 @@
+clean.patch
+#rpath.patch
+gnu.patch
+#sparc.patch
+man.patch
+#emacs.patch
+m68k.patch
+#docs.patch
+#java.patch
+#hppa.patch
+#powerpc.patch
