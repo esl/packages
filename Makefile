@@ -1,5 +1,5 @@
 # Override these if you like
-ERLANG_VERSIONS := 24.0.1 23.3.4.1 22.3.4.19
+ERLANG_VERSIONS := 24.0.1
 PLATFORMS := linux/amd64 linux/arm64/v8
 DEBIAN_VERSIONS := buster stretch
 UBUNTU_VERSIONS := focal bionic xenial trusty
@@ -24,9 +24,12 @@ $(DISTS): ERLANG = $(word 4,$(subst _, ,$@))
 .PHONY: $(DISTS)
 $(DISTS): $(OTPS) $(DOCKERS)
 	@echo "Building erlang ${ERLANG} on ${IMAGE} ${TAG} on ${PLATFORM}"
+	@mkdir -p "build-${SAFE_PLATFORM}-${IMAGE}-${TAG}"
 	docker run --rm \
 	--platform $(PLATFORM) \
-	-v `pwd`:/opt/in:ro -w /opt \
+	-v `pwd`:/opt/in:ro \
+	-v "`pwd`/build-${SAFE_PLATFORM}-${IMAGE}-${TAG}":/opt/out \
+	--workdir /opt \
 	"esl:build-${SAFE_PLATFORM}-${IMAGE}-${TAG}" \
 	/opt/in/build "$(PLATFORM)" "$(IMAGE)" "$(TAG)" "$(ERLANG)"
 

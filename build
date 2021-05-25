@@ -5,10 +5,10 @@ OS=$2
 VERSION=$3
 ERLANG=$4
 
-mkdir out
-tar xf in/downloads/OTP-${ERLANG}.tar.gz --strip-components=1 --directory=out
-cp --recursive in/debian out
-cd out
+mkdir -p /opt/build
+tar xf /opt/in/downloads/OTP-${ERLANG}.tar.gz --strip-components=1 --directory=/opt/build
+cp --recursive in/debian /opt/build
+cd /opt/build
 
 # Force autoconf
 if grep update_configure otp_build; then
@@ -18,9 +18,21 @@ else
 fi
 
 build_deb() {
+    # Try to add changes to changelog
+    # Set adequate package version in changelog
+    sed -i "s#@VSN@#${ERLANG}#g" debian/changelog
+
+    # Set date in changelog
+    DATE=$(date -R)
+    sed -i "s#@DATE@#${DATE}#g" debian/changelog
+
+    # Build the package
     debian/rules clean
     debian/rules build
     fakeroot debian/rules binary
+
+    # Copy the artifacts out of the container
+    cp /opt/*.deb /opt/out
 }
 
 build_centos() {
