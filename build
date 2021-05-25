@@ -4,20 +4,23 @@ PLATFORM=$1
 OS=$2
 VERSION=$3
 ERLANG=$4
+PACKAGE_REVISION=1 # TODO set this in makefile
 
-mkdir -p /opt/build
-tar xf /opt/in/downloads/OTP-${ERLANG}.tar.gz --strip-components=1 --directory=/opt/build
-cp --recursive in/debian /opt/build
-cd /opt/build
-
-# Force autoconf
-if grep update_configure otp_build; then
-    ./otp_build update_configure --no-commit
-else
-    ./otp_build autoconf
-fi
+force_autoconf() {
+    if grep update_configure otp_build; then
+	./otp_build update_configure --no-commit
+    else
+	./otp_build autoconf
+    fi
+}
 
 build_deb() {
+    # setup build directory
+    mkdir -p /opt/debuild
+    tar xf /opt/in/downloads/OTP-${ERLANG}.tar.gz --strip-components=1 --directory=/opt/debuild
+    cp --recursive in/debian /opt/debuild
+    cd /opt/debuild
+
     # Try to add changes to changelog
     # Set adequate package version in changelog
     sed -i "s#@VSN@#${ERLANG}#g" debian/changelog
@@ -27,6 +30,7 @@ build_deb() {
     sed -i "s#@DATE@#${DATE}#g" debian/changelog
 
     # Build the package
+    force_autoconf
     debian/rules clean
     debian/rules build
     fakeroot debian/rules binary
@@ -36,7 +40,32 @@ build_deb() {
 }
 
 build_centos() {
-    echo "build centos $ERLANG"    
+    # setup build directory
+    mkdir -p /opt/rpmbuild/SOURCES
+    cp /opt/in/downloads/OTP-${ERLANG}.tar.gz /opt/rpmbuild/SOURCES/otp_src_${ERLANG}.tar.gz
+    cp /opt/in/centos/.rpmmacros ~/
+    cp --recursive /opt/in/centos/rpmbuild /opt
+    cd /opt/
+    export BUILDDIR=`pwd`
+    HOSTNAME=`hostname`
+
+    # Set erlang version in erlang.spec
+    sed -i "s#@VER@#${ERLANG}#g" rpmbuild/SPECS/erlang.spec
+
+    # Try to add changes to changelog
+    DATE=$(date '+%a %b %d %Y')
+    sed -i "s#@VSN@#${ERLANG}-${PACKAGE_REVISION}#g" rpmbuild/SPECS/erlang.spec
+    sed -i "s#@DATE@#${DATE}#g" rpmbuild/SPECS/erlang.spec
+
+    yum-builddep rpmbuild/SPECS/erlang.spec -y
+
+    # Build the package
+    cd rpmbuild
+    spectool -g -R SPECS/erlang.spec
+    rpmbuild -ba --define="revision ${ERLANG}" SPECS/erlang.spec
+
+    # Copy the artifacts out of the container
+    cp RPMS/$(arch)/*.rpm /opt/out
 }
 
 case "$OS-$VERSION" in
