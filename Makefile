@@ -22,22 +22,15 @@ $(DISTS): TAG = $(word 3,$(subst _, ,$@))
 $(DISTS): ERLANG = $(word 4,$(subst _, ,$@))
 
 .PHONY: $(DISTS)
-$(DISTS): $(OTPS) $(DOCKERS)
+$(DISTS): $(DOCKERS)
 	@echo "Building erlang ${ERLANG} on ${IMAGE} ${TAG} on ${PLATFORM}"
-	@mkdir -p "build-$@"
 	docker run --rm \
 	--platform $(PLATFORM) \
-	-v `pwd`:/opt/in:ro \
-	-v "`pwd`/build-$@":/opt/out \
+	--mount type=bind,src=`pwd`,dst=/opt/in,readonly \
+	--mount type=volume,src=esl-build-artifacts,dst=/opt/out \
 	--workdir /opt \
 	"esl:build-${SAFE_PLATFORM}-${IMAGE}-${TAG}" \
 	/opt/in/build "$(PLATFORM)" "$(IMAGE)" "$(TAG)" "$(ERLANG)"
-
-OTP-%: OTP = $(word 2,$(subst -, ,$@))
-OTP-%:
-	@mkdir -p downloads
-	@wget --directory-prefix downloads --no-verbose --continue \
-		https://github.com/erlang/otp/archive/OTP-$(OTP).tar.gz
 
 docker_%: PLATFORM = $(subst -,/,$(word 2,$(subst _, ,$@)))
 docker_%: SAFE_PLATFORM = $(word 2,$(subst _, ,$@))

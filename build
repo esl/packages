@@ -15,9 +15,13 @@ force_autoconf() {
 }
 
 build_deb() {
+    apt-get --quiet update && apt-get --quiet --yes install wget
+
     # setup build directory
     mkdir -p /opt/debuild
-    tar xf /opt/in/downloads/OTP-${ERLANG}.tar.gz --strip-components=1 --directory=/opt/debuild
+    wget -O - --no-verbose \
+        https://github.com/erlang/otp/archive/OTP-${ERLANG}.tar.gz | \
+	tar xzf - --strip-components=1 --directory=/opt/debuild
     cp --recursive in/debian /opt/debuild
     cd /opt/debuild
 
@@ -40,6 +44,9 @@ build_deb() {
 }
 
 build_centos() {
+    # Download tarball
+    download_tarball
+
     # setup build directory
     mkdir -p /opt/rpmbuild/SOURCES
     cp /opt/in/downloads/OTP-${ERLANG}.tar.gz /opt/rpmbuild/SOURCES/otp_src_${ERLANG}.tar.gz
