@@ -36,7 +36,7 @@ $(DISTS): $(OTPS) $(DOCKERS)
 OTP-%: OTP = $(word 2,$(subst -, ,$@))
 OTP-%:
 	@mkdir -p downloads
-	@wget --directory-prefix downloads --no-verbose --timestamping \
+	@wget --directory-prefix downloads --no-verbose --continue \
 		https://github.com/erlang/otp/archive/OTP-$(OTP).tar.gz
 
 docker_%: PLATFORM = $(subst -,/,$(word 2,$(subst _, ,$@)))
