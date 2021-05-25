@@ -1,7 +1,4 @@
 #!/bin/sh -ex
-export CFLAGS="-g -O2 -fno-strict-aliasing -fpie -fstack-protector-strong"
-export GEN_OPT_FLGS="-O2 -fno-strict-aliasing"
-export LDFLAGS="-pie -z now" 
 
 PLATFORM=$1
 OS=$2
