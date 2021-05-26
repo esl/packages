@@ -30,7 +30,7 @@ $(DISTS): $(DOCKERS)
 	--mount type=volume,src=esl-build-artifacts,dst=/opt/out \
 	--workdir /opt \
 	"esl:build-${SAFE_PLATFORM}-${IMAGE}-${TAG}" \
-	/opt/in/build "$(PLATFORM)" "$(IMAGE)" "$(TAG)" "$(ERLANG)"
+	/opt/in/build "$(PLATFORM)" "$(IMAGE)" "$(TAG)" "$(ERLANG)" "/opt/out/$@"
 
 docker_%: PLATFORM = $(subst -,/,$(word 2,$(subst _, ,$@)))
 docker_%: SAFE_PLATFORM = $(word 2,$(subst _, ,$@))

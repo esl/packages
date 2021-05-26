@@ -4,7 +4,12 @@ PLATFORM=$1
 OS=$2
 VERSION=$3
 ERLANG=$4
+OUTPUT_DIR=$5
+
 PACKAGE_REVISION=1 # TODO set this in makefile
+
+# Ensure output dir exists
+mkdir -p ${OUTPUT_DIR}
 
 force_autoconf() {
     if grep update_configure otp_build; then
@@ -40,7 +45,7 @@ build_deb() {
     fakeroot debian/rules binary
 
     # Copy the artifacts out of the container
-    cp /opt/*.deb /opt/out
+    cp /opt/*.deb ${OUTPUT_DIR}
 }
 
 build_centos() {
@@ -72,7 +77,7 @@ build_centos() {
     rpmbuild -ba --define="revision ${ERLANG}" SPECS/erlang.spec
 
     # Copy the artifacts out of the container
-    cp RPMS/$(arch)/*.rpm /opt/out
+    cp RPMS/$(arch)/*.rpm ${OUTPUT_DIR}
 }
 
 case "$OS-$VERSION" in
