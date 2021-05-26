@@ -39,7 +39,9 @@ docker_%: TAG = $(word 4,$(subst _, ,$@))
 docker_%:
 	@echo "Building base image ${IMAGE} ${TAG} on ${PLATFORM}"
 	export DOCKER_BUILDKIT=1
-	@docker build --rm -t "esl:build-${SAFE_PLATFORM}-${IMAGE}-${TAG}" \
+	@docker build --rm \
+	--platform $(PLATFORM) \
+	-t "esl:build-${SAFE_PLATFORM}-${IMAGE}-${TAG}" \
 	--build-arg platform=${PLATFORM} \
 	--build-arg os=${IMAGE} \
 	--build-arg os_version=${TAG} \
