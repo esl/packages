@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if [ -f /usr/bin/dnf ]; then
+    dnf --setopt=tsflags=nodocs $@
+else
+    yum $@
+fi
