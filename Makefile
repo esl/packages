@@ -39,7 +39,7 @@ $(ERLANG_BUILDS): | create-buildx
 	--cache-to="type=local,dest=cache" \
 	--output "type=local,dest=build/$@" \
 	--file "Dockerfile_erlang_$(OS)" \
-	.
+	. > $@.log 2>&1
 
 $(ELIXIR_BUILDS): OS = $(word 2,$(subst _, ,$@))
 $(ELIXIR_BUILDS): OS_VERSION = $(word 3,$(subst _, ,$@))
@@ -59,7 +59,7 @@ $(ELIXIR_BUILDS): | create-buildx
 	--cache-from="type=local,src=cache" \
 	--cache-to="type=local,dest=cache" \
 	--output="type=local,dest=build/$@" \
-	.
+	. > $@.log 2>&1
 
 .PHONY: create-buildx
 create-buildx:
