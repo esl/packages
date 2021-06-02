@@ -1,2 +1,0 @@
-usr/lib/erlang/lib/tools-@TOOLS_VSN@/emacs/*.el     usr/share/emacs/site-lisp/erlang/
-usr/lib/erlang/lib/tools-@TOOLS_VSN@/emacs/README   usr/share/doc/erlang-mode/

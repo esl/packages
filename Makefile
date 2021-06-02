@@ -1,49 +1,70 @@
+SHELL = /bin/sh
+
 # Override these if you like
 ERLANG_VERSIONS := 24.0.1
-PLATFORMS := linux/amd64 linux/arm64/v8
+ELIXIR_VERSIONS := 1.12.0
+PLATFORMS := linux/amd64,linux/arm64/v8,linux/arm/v7
 DEBIAN_VERSIONS := buster stretch
 UBUNTU_VERSIONS := focal bionic xenial trusty
 CENTOS_VERSIONS := 8 7
 
-# Don't override these
-DEBIANS := $(foreach v,$(DEBIAN_VERSIONS),debian_$(v))
-UBUNTUS := $(foreach v,$(UBUNTU_VERSIONS),ubuntu_$(v))
-CENTOSES := $(foreach v,$(CENTOS_VERSIONS),centos_$(v))
-IMAGE_TAGS := $(DEBIANS) $(UBUNTUS) $(CENTOSES)
+override DEBIANS := $(foreach v,$(DEBIAN_VERSIONS),debian_$(v))
+override UBUNTUS := $(foreach v,$(UBUNTU_VERSIONS),ubuntu_$(v))
+override CENTOSES := $(foreach v,$(CENTOS_VERSIONS),centos_$(v))
+override IMAGE_TAGS := $(DEBIANS) $(UBUNTUS) $(CENTOSES)
 
-DISTS = $(foreach platform,$(subst /,-,$(PLATFORMS)),$(foreach image_tag,$(IMAGE_TAGS),$(foreach erlang,$(ERLANG_VERSIONS),$(platform)_$(image_tag)_$(erlang))))
-OTPS = $(foreach v,$(ERLANG_VERSIONS),OTP-$(v))
-DOCKERS = $(foreach platform,$(subst /,-,$(PLATFORMS)),$(foreach image_tag,$(IMAGE_TAGS),docker_$(platform)_$(image_tag)))
+override ERLANG_BUILDS = $(foreach image_tag,$(IMAGE_TAGS),$(foreach erlang,$(ERLANG_VERSIONS),erlang_$(image_tag)_$(erlang)))
+override ELIXIR_BUILDS = $(foreach image_tag,$(IMAGE_TAGS),$(foreach elixir,$(ELIXIR_VERSIONS),elixir_$(image_tag)_$(elixir)))
 
-$(DISTS): PLATFORM = $(subst -,/,$(word 1,$(subst _, ,$@)))
-$(DISTS): SAFE_PLATFORM = $(word 1,$(subst _, ,$@))
-$(DISTS): IMAGE = $(word 2,$(subst _, ,$@))
-$(DISTS): TAG = $(word 3,$(subst _, ,$@))
-$(DISTS): ERLANG = $(word 4,$(subst _, ,$@))
+$(ERLANG_BUILDS): OS = $(word 2,$(subst _, ,$@))
+$(ERLANG_BUILDS): OS_VERSION = $(word 3,$(subst _, ,$@))
+$(ERLANG_BUILDS): ERLANG_VERSION = $(word 4,$(subst _, ,$@))
 
-.PHONY: $(DISTS)
-$(DISTS): $(DOCKERS)
-	@echo "Building erlang ${ERLANG} on ${IMAGE} ${TAG} on ${PLATFORM}"
-	docker run --rm \
-	--platform $(PLATFORM) \
-	--mount type=bind,src=`pwd`,dst=/opt/in,readonly \
-	--mount type=volume,src=esl-build-artifacts,dst=/opt/out \
-	--workdir /opt \
-	"esl:build-${SAFE_PLATFORM}-${IMAGE}-${TAG}" \
-	/opt/in/build "$(PLATFORM)" "$(IMAGE)" "$(TAG)" "$(ERLANG)" "/opt/out/$@"
+override BUILDER = "esl-buildx"
 
-docker_%: PLATFORM = $(subst -,/,$(word 2,$(subst _, ,$@)))
-docker_%: SAFE_PLATFORM = $(word 2,$(subst _, ,$@))
-docker_%: IMAGE = $(word 3,$(subst _, ,$@))
-docker_%: TAG = $(word 4,$(subst _, ,$@))
-docker_%:
-	@echo "Building base image ${IMAGE} ${TAG} on ${PLATFORM}"
-	export DOCKER_BUILDKIT=1
-	@docker build --rm \
-	--platform $(PLATFORM) \
-	-t "esl:build-${SAFE_PLATFORM}-${IMAGE}-${TAG}" \
-	--build-arg platform=${PLATFORM} \
-	--build-arg os=${IMAGE} \
-	--build-arg os_version=${TAG} \
-	-f Dockerfile_${IMAGE}_${TAG} \
+.PHONY: all
+all: $(ERLANG_BUILDS) $(ELIXIR_BUILDS)
+
+.PHONY: $(ERLANG_BUILDS)
+$(ERLANG_BUILDS): | create-buildx
+	@echo "Building erlang $(ERLANG_VERSION) for $(OS) $(OS_VERSION)"
+	@docker buildx build \
+	--progress=plain \
+	--platform "$(PLATFORMS)" \
+	--builder "$(BUILDER)" \
+	--build-arg os="$(OS)" \
+	--build-arg os_version="$(OS_VERSION)" \
+	--build-arg erlang_version="$(ERLANG_VERSION)" \
+	--cache-from="type=local,src=cache" \
+	--cache-to="type=local,dest=cache" \
+	--output "type=local,dest=build/$@" \
+	--file "Dockerfile_erlang_$(OS)" \
 	.
+
+$(ELIXIR_BUILDS): OS = $(word 2,$(subst _, ,$@))
+$(ELIXIR_BUILDS): OS_VERSION = $(word 3,$(subst _, ,$@))
+$(ELIXIR_BUILDS): ELIXIR_VERSION = $(word 4,$(subst _, ,$@))
+
+.PHONY: $(ELIXIR_BUILDS)
+$(ELIXIR_BUILDS): | create-buildx
+	@echo "Building elixir $(ELIXIR_VERSION) for $(OS) $(OS_VERSION)"
+	@docker buildx build \
+	--progress=plain \
+	--platform="linux/amd64" \
+	--builder "$(BUILDER)" \
+	--build-arg os="$(OS)" \
+	--build-arg os_version="$(OS_VERSION)" \
+	--build-arg elixir_version="${ELIXIR_VERSION}" \
+	--file "Dockerfile_elixir_$(OS)" \
+	--cache-from="type=local,src=cache" \
+	--cache-to="type=local,dest=cache" \
+	--output="type=local,dest=build/$@" \
+	.
+
+.PHONY: create-buildx
+create-buildx:
+	@docker buildx create --name "$(BUILDER)" --platform "$(PLATFORMS)" > /dev/null 2>&1 || true
+
+.PHONY: clean
+clean:
+	@rm -rf build/ cache/
