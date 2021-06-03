@@ -46,9 +46,9 @@ RUN gem install fpm --no-document --version 1.12.0
 
 # Build it
 WORKDIR /tmp/build
-RUN wget --quiet https://github.com/erlang/otp/archive/OTP-${erlang_version}.tar.gz
-RUN tar xf OTP-${erlang_version}.tar.gz
-WORKDIR /tmp/build/otp-OTP-${erlang_version}
+RUN wget --quiet https://github.com/erlang/otp/releases/download/OTP-${erlang_version}/otp_src_${erlang_version}.tar.gz
+RUN tar xf otp_src_${erlang_version}.tar.gz
+WORKDIR /tmp/build/otp_src_${erlang_version}
 RUN if [ ! -f configure ]; then \
     ./otp_build autoconf; \
     fi
