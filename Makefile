@@ -1,7 +1,7 @@
 SHELL = /bin/sh
 
 # Override these if you like
-ERLANG_VERSIONS := 24.0.1
+ERLANG_VERSIONS := 24.0.2 23.3.4.2 22.3.4.20 21.3.8.24 20.3.8.26
 ELIXIR_VERSIONS := 1.12.0
 PLATFORMS := linux/amd64,linux/arm64/v8,linux/arm/v7
 DEBIAN_VERSIONS := buster stretch
