@@ -68,4 +68,5 @@ create-buildx:
 .PHONY: clean
 clean:
 	@rm -rf build/ cache/
+	@rm -f *.log
 	@docker buildx rm "$(BUILDER)" || true
