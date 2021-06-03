@@ -77,9 +77,14 @@ RUN make DESTDIR=/tmp/install install-docs DOC_TARGETS=chunks
 
 # Package it
 WORKDIR /tmp/output
-RUN fpm -s dir -t rpm -n esl-erlang -v ${erlang_version} --iteration 1 \
-    -C /tmp/install -p esl-erlang-VERSION-ITERATION-ARCH.rpm \
-    --maintainer "Erlang Solutions Ltd <support@erlang-solutions.com>" \
+RUN fpm -s dir -t rpm \
+    --chdir /tmp/install \
+    --name esl-erlang \
+    --version ${erlang_version} \
+    --package-name-suffix ${os_version} \
+    --epoch 1 \
+    --iteration 1 \
+    --package esl-erlang_VERSION_ITERATION~${os}~${os_version}_ARCH.deb \
     --category interpreters \
     --description "Concurrent, real-time, distributed functional language" \
     --url "https://erlang-solutions.com" \
@@ -87,7 +92,7 @@ RUN fpm -s dir -t rpm -n esl-erlang -v ${erlang_version} --iteration 1 \
     .
 
 # Test it
-RUN rpm -i /tmp/output/esl-erlang-*.rpm
+RUN rpm -i /tmp/output/*.rpm
 RUN erl -eval "ssl:start(), erlang:halt()."
 
 # Export it

@@ -82,8 +82,14 @@ RUN make DESTDIR=/tmp/install install-docs DOC_TARGETS=chunks
 
 # Package it
 WORKDIR /tmp/output
-RUN fpm -s dir -t deb -n esl-erlang -v ${erlang_version} --iteration 1 \
-    -C /tmp/install -p esl-erlang-VERSION-ITERATION-ARCH.deb \
+RUN fpm -s dir -t deb \
+    --chdir /tmp/install \
+    --name esl-erlang \
+    --version ${erlang_version} \
+    --package-name-suffix ${os_version} \
+    --epoch 1 \
+    --iteration 1 \
+    --package esl-erlang_VERSION-ITERATION~${os}~${os_version}_ARCH.deb \
     --maintainer "Erlang Solutions Ltd <support@erlang-solutions.com>" \
     --category interpreters \
     --description "Concurrent, real-time, distributed functional language" \
@@ -91,10 +97,11 @@ RUN fpm -s dir -t deb -n esl-erlang -v ${erlang_version} --iteration 1 \
     --depends 'procps, libc6, libncurses5, libssl1.0.0 | libssl1.0.2 | libssl1.1, libsctp1' \
     --conflicts 'erlang-base-hipe, erlang-base, erlang-dev, erlang-appmon, erlang-asn1, erlang-common-test, erlang-corba, erlang-crypto, erlang-debugger, erlang-dialyzer, erlang-docbuilder, erlang-edoc, erlang-erl-docgen, erlang-et, erlang-eunit, erlang-gs, erlang-ic, erlang-inets, erlang-inviso, erlang-megaco, erlang-mnesia, erlang-observer, erlang-odbc, erlang-os-mon, erlang-parsetools, erlang-percept, erlang-pman, erlang-public-key, erlang-reltool, erlang-runtime-tools, erlang-snmp, erlang-ssh, erlang-ssl, erlang-syntax-tools, erlang-test-server, erlang-toolbar, erlang-tools, erlang-tv, erlang-typer, erlang-webtool, erlang-wx, erlang-xmerl, erlang-src' \
     --replaces 'erlang-base-hipe, erlang-base, erlang-dev, erlang-appmon, erlang-asn1, erlang-common-test, erlang-corba, erlang-crypto, erlang-debugger, erlang-dialyzer, erlang-docbuilder, erlang-edoc, erlang-erl-docgen, erlang-et, erlang-eunit, erlang-gs, erlang-ic, erlang-inets, erlang-inviso, erlang-megaco, erlang-mnesia, erlang-observer, erlang-odbc, erlang-os-mon, erlang-parsetools, erlang-percept, erlang-pman, erlang-public-key, erlang-reltool, erlang-runtime-tools, erlang-snmp, erlang-ssh, erlang-ssl, erlang-syntax-tools, erlang-test-server, erlang-toolbar, erlang-tools, erlang-tv, erlang-typer, erlang-webtool, erlang-wx, erlang-xmerl, erlang-src' \
+    --deb-suggests 'default-jre-headless | java2-runtime-headless | java1-runtime-headless | java2-runtime | java1-runtime' \
     .
 
 # Test it
-RUN dpkg -i /tmp/output/esl-erlang-*.deb
+RUN dpkg -i /tmp/output/*.deb
 RUN if [ -f /usr/bin/hardening-check ]; then \
     hardening-check --nobindnow $(find /usr/lib/erlang -name erlexec); \
     fi

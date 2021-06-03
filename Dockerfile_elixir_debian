@@ -70,8 +70,14 @@ RUN make install PREFIX=/usr DESTDIR=/tmp/install
 
 # Package it
 WORKDIR /tmp/output
-RUN fpm -s dir -t deb -n elixir -v ${elixir_version} --iteration 1 \
-    -C /tmp/install -p elixir-VERSION-ITERATION-ARCH.deb \
+RUN fpm -s dir -t deb \
+    --chdir /tmp/install \
+    --name elixir \
+    --version ${elixir_version} \
+    --package-name-suffix ${os_version} \
+    --epoch 1 \
+    --iteration 1 \
+    --package elixir_VERSION-ITERATION~${os}~${os_version}_ARCH.deb \
     --maintainer "Erlang Solutions Ltd <support@erlang-solutions.com>" \
     --description "Elixir functional meta-programming language" \
     --url "https://erlang-solutions.com" \
