@@ -4,13 +4,15 @@ ARG os_version
 FROM $os:$os_version as builder
 ARG os
 ARG os_version
-ARG erlang_version
+ARG elixir_version
 ADD yumdnf /usr/local/bin/
 
 # Setup ESL repo
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=private \
     --mount=type=cache,id=${os}_${os_version},target=/var/cache/yum,sharing=private \
-    yumdnf install -y wget && \
+    yumdnf install -y \
+    git \
+    wget && \
     wget https://packages.erlang-solutions.com/erlang-solutions-2.0-1.noarch.rpm && \
     rpm -Uvh erlang-solutions-2.0-1.noarch.rpm
 
@@ -48,12 +50,16 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
     yumdnf install -y glibc-locale-source && \
     localedef -i en_US -f UTF-8 en_US.UTF-8; \
     fi
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
 
 # Build it
 WORKDIR /tmp/build
 RUN wget --quiet https://github.com/elixir-lang/elixir/archive/v${elixir_version}.tar.gz
 RUN tar xf v${elixir_version}.tar.gz
-WORKDIR /tmp/build/v${elixir_version}
+RUN ls -lhR
+WORKDIR /tmp/build/elixir-${elixir_version}
 RUN make
 RUN make test
 RUN make install PREFIX=/usr DESTDIR=/tmp/install
