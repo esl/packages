@@ -19,6 +19,8 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
     gcc-c++ \
     git \
     java-11-openjdk-devel \
+    libxslt-devel \
+    libxslt \
     lksctp-tools-devel \
     make \
     ncurses-devel \
