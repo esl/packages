@@ -20,8 +20,9 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
   ca-certificates \
   $(apt-cache show default-jdk-headless >/dev/null 2>&1; \
     if [ $? -eq 0 ]; then \
-        echo "default-jdk-headless"; \
-    else echo "default-jdk"; \
+      echo "default-jdk-headless"; \
+    else \
+      echo "default-jdk"; \
     fi) \
   devscripts \
   flex \
