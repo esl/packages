@@ -26,7 +26,7 @@ override BUILDER = "esl-buildx"
 all: $(ERLANG_BUILDS) $(ELIXIR_BUILDS)
 
 .PHONY: $(ERLANG_BUILDS)
-$(ERLANG_BUILDS): | create-buildx
+$(ERLANG_BUILDS): create-buildx
 	@echo "Building erlang $(ERLANG_VERSION) for $(OS) $(OS_VERSION)"
 	@docker buildx build \
 	--progress=plain \
@@ -46,7 +46,7 @@ $(ELIXIR_BUILDS): OS_VERSION = $(word 3,$(subst _, ,$@))
 $(ELIXIR_BUILDS): ELIXIR_VERSION = $(word 4,$(subst _, ,$@))
 
 .PHONY: $(ELIXIR_BUILDS)
-$(ELIXIR_BUILDS): | create-buildx
+$(ELIXIR_BUILDS): create-buildx
 	@echo "Building elixir $(ELIXIR_VERSION) for $(OS) $(OS_VERSION)"
 	@docker buildx build \
 	--progress=plain \
