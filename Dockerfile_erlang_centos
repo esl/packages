@@ -7,7 +7,12 @@ ARG os_version
 ARG erlang_version
 ADD yumdnf /usr/local/bin/
 
-# Install dependencies
+# Setup EPEL
+RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=private \
+    --mount=type=cache,id=${os}_${os_version},target=/var/cache/yum,sharing=private \
+    yumdnf install -y epel-release
+
+# Install Erlang/OTP dependencies
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=private \
     --mount=type=cache,id=${os}_${os_version},target=/var/cache/yum,sharing=private \
     yumdnf install -y \
@@ -28,6 +33,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
     openssl-devel \
     unixODBC-devel \
     wget \
+    wxGTK3-devel \
     zlib-devel
 
 # Install FPM dependences
@@ -61,14 +67,10 @@ RUN ./configure \
     --enable-dirty-schedulers \
     --enable-dynamic-ssl-lib \
     --enable-kernel-poll \
-    --enable-pie \
     --enable-sctp \
     --with-java \
-    --with-ssl \
-    --without-debugger \
-    --without-et \
-    --without-observer \
-    --without-wx
+    --with-ssl
+
 RUN make -j2
 RUN make docs DOC_TARGETS=chunks
 RUN mkdir -p /tmp/install
