@@ -63,10 +63,10 @@ $(ELIXIR_BUILDS): | create-buildx
 
 .PHONY: create-buildx
 create-buildx:
-	@docker buildx create --name "$(BUILDER)" --platform "$(PLATFORMS)" > /dev/null 2>&1 || true
+	@docker buildx create --name "$(BUILDER)" --platform "$(PLATFORMS)" >/dev/null 2>&1 || true
 
 .PHONY: clean
 clean:
 	@rm -rf build/ cache/
 	@rm -f *.log
-	@docker buildx rm "$(BUILDER)" || true
+	@docker buildx rm "$(BUILDER)" >/dev/null 2>&1 || true
