@@ -32,8 +32,10 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
   libncurses5-dev \
   libsctp-dev \
   libssl-dev \
-  libwxgtk3.0-gtk3-dev \
-  libwxgtk-webview3.0-gtk3-dev \
+  $(apt-cache show libwxgtk3.0-gtk3-dev >/dev/null 2>&1; \
+    if [ $? -eq 0 ]; then \
+      echo "libwxgtk3.0-gtk3-dev libwxgtk-webview3.0-gtk3-dev"; \
+    fi) \
   procps \
   unixodbc-dev \
   wget \
