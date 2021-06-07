@@ -1,0 +1,75 @@
+#cloud-config
+
+write_files:
+- path: /usr/share/keyrings/docker-keyring.gpg
+  encoding: b64
+  owner: root:root
+  permissions: '0644'
+  content: |
+    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
+    9tiIPbrd
+
+apt:
+  sources:
+    docker.list:
+      source: deb [arch=amd64, signed-by=/usr/share/keyrings/docker-keyring.gpg] https://download.docker.com/linux/debian $RELEASE stable
+
+packages:
+  - git
+  - build-essential
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
+
+runcmd:
+  - sudo docker run --privileged --rm tonistiigi/binfmt --install all
