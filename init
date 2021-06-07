@@ -1,0 +1,35 @@
+#!/bin/sh -e
+
+# Refresh repos
+apt-get update
+
+# Install latest Docker
+apt-get --quiet --yes --no-install-recommends install \
+	apt-transport-https \
+	binfmt-support \
+	build-essential \
+	ca-certificates \
+	curl \
+	gnupg \
+	lsb-release
+
+# Install Docker gpg key
+curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+# Configure Docker repo
+echo \
+  "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian \
+  $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Install Docker
+apt-get update
+apt-get --quiet --yes install docker-ce docker-ce-cli containerd.io
+
+# Install multiarch Docker support
+docker run --privileged --rm tonistiigi/binfmt --install all
+# Verify multiarch Docker support
+docker run --rm arm64v8/alpine uname -a | grep aarch64
+docker run --rm arm32v7/alpine uname -a | grep armv7l
+docker run --rm ppc64le/alpine uname -a | grep ppc64le
+docker run --rm s390x/alpine uname -a | grep s390x
+docker run --rm tonistiigi/debian:riscv uname -a | grep riscv64
