@@ -2,7 +2,9 @@ SHELL = /bin/sh
 
 # Override these if you like
 ERLANG_VERSIONS := 24.0.2 23.3.4.2 22.3.4.20 21.3.8.24
+ERLANG_ITERATION := 1
 ELIXIR_VERSIONS := 1.12.0
+ELIXIR_ITERATION := 1
 PLATFORMS := linux/amd64,linux/arm64/v8
 DEBIAN_VERSIONS := buster stretch
 UBUNTU_VERSIONS := focal bionic xenial trusty
@@ -35,6 +37,7 @@ $(ERLANG_BUILDS): create-buildx
 	--build-arg os="$(OS)" \
 	--build-arg os_version="$(OS_VERSION)" \
 	--build-arg erlang_version="$(ERLANG_VERSION)" \
+	--build-arg erlang_iteration="$(ERLANG_ITERATION)" \
 	--cache-from="type=local,src=cache" \
 	--cache-to="type=local,dest=cache" \
 	--output "type=local,dest=build/$@" \
@@ -55,6 +58,7 @@ $(ELIXIR_BUILDS): create-buildx
 	--build-arg os="$(OS)" \
 	--build-arg os_version="$(OS_VERSION)" \
 	--build-arg elixir_version="${ELIXIR_VERSION}" \
+	--build-arg elixir_iteration="$(ELIXIR_ITERATION)" \
 	--file "Dockerfile_elixir_$(OS)" \
 	--cache-from="type=local,src=cache" \
 	--cache-to="type=local,dest=cache" \

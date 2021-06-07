@@ -5,6 +5,7 @@ FROM $os:$os_version as builder
 ARG os
 ARG os_version
 ARG elixir_version
+ARG elixir_iteration
 ADD yumdnf /usr/local/bin/
 
 # Setup ESL repo
@@ -72,7 +73,7 @@ RUN fpm -s dir -t rpm \
     --version ${elixir_version} \
     --package-name-suffix ${os_version} \
     --epoch 1 \
-    --iteration 1 \
+    --iteration ${elixir_iteration} \
     --package elixir_VERSION_ITERATION~${os}~${os_version}_ARCH.rpm \
     --maintainer "Erlang Solutions Ltd <support@erlang-solutions.com>" \
     --description "Elixir functional meta-programming language" \
