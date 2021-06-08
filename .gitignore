@@ -2,3 +2,7 @@
 *.log
 cache/
 build/
+
+.terraform
+.terraform.lock.hcl
+terraform.*
