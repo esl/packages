@@ -3,6 +3,6 @@
 for file in $(find incoming -name '*.deb')
 do
     if [[ "$file" =~ esl-erlang_([0-9]+)([0-9.]+)-[0-9]+~(debian|ubuntu)~([a-z]+)_[a-z0-9]+\.deb$ ]]; then
-	aptly repo add "${BASH_REMATCH[4]}/erlang-${BASH_REMATCH[1]}" $file
+	aptly repo add "${BASH_REMATCH[4]}/erlang-${BASH_REMATCH[1]}" "$file"
     fi
 done

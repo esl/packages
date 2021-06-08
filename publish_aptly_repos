@@ -8,7 +8,7 @@ for distro in $DEBIAN
 do
     for erlang in $ERLANG
     do
-	aptly publish repo -acquire-by-hash -distribution=$distro-erlang-$erlang $distro/erlang-$erlang s3:test:debian/
+	aptly publish repo -acquire-by-hash -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:test:debian/
     done
 done
 
@@ -16,6 +16,6 @@ for distro in $UBUNTU
 do
     for erlang in $ERLANG
     do
-	aptly publish repo -acquire-by-hash -distribution=$distro-erlang-$erlang $distro/erlang-$erlang s3:test:ubuntu/
+	aptly publish repo -acquire-by-hash -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:test:ubuntu/
     done
 done

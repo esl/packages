@@ -8,6 +8,6 @@ for distro in $DEBIAN $UBUNTU
 do
     for erlang in $ERLANG
     do
-	aptly repo create $distro/erlang-$erlang
+	aptly repo create "$distro/erlang-$erlang"
     done
 done
