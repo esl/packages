@@ -15,12 +15,12 @@ override UBUNTUS := $(foreach v,$(UBUNTU_VERSIONS),ubuntu_$(v))
 override CENTOSES := $(foreach v,$(CENTOS_VERSIONS),centos_$(v))
 override IMAGE_TAGS := $(DEBIANS) $(UBUNTUS) $(CENTOSES)
 
-override ERLANG_BUILDS = $(foreach image_tag,$(IMAGE_TAGS),$(foreach erlang,$(ERLANG_VERSIONS),erlang_$(image_tag)_$(erlang)))
-override ELIXIR_BUILDS = $(foreach image_tag,$(IMAGE_TAGS),$(foreach elixir,$(ELIXIR_VERSIONS),elixir_$(image_tag)_$(elixir)))
+override ERLANG_BUILDS = $(foreach erlang,$(ERLANG_VERSIONS),$(foreach image_tag,$(IMAGE_TAGS),erlang_$(erlang)_$(image_tag)))
+override ELIXIR_BUILDS = $(foreach elixir,$(ELIXIR_VERSIONS),$(foreach image_tag,$(IMAGE_TAGS),elixir_$(elixir)_$(image_tag)))
 
-$(ERLANG_BUILDS): OS = $(word 2,$(subst _, ,$@))
-$(ERLANG_BUILDS): OS_VERSION = $(word 3,$(subst _, ,$@))
-$(ERLANG_BUILDS): ERLANG_VERSION = $(word 4,$(subst _, ,$@))
+$(ERLANG_BUILDS): ERLANG_VERSION = $(word 2,$(subst _, ,$@))
+$(ERLANG_BUILDS): OS = $(word 3,$(subst _, ,$@))
+$(ERLANG_BUILDS): OS_VERSION = $(word 4,$(subst _, ,$@))
 
 override BUILDER = "esl-buildx"
 
@@ -44,9 +44,9 @@ $(ERLANG_BUILDS): create-buildx
 	--file "Dockerfile_erlang_$(OS)" \
 	. 2>&1 | tee $@.log
 
-$(ELIXIR_BUILDS): OS = $(word 2,$(subst _, ,$@))
-$(ELIXIR_BUILDS): OS_VERSION = $(word 3,$(subst _, ,$@))
-$(ELIXIR_BUILDS): ELIXIR_VERSION = $(word 4,$(subst _, ,$@))
+$(ELIXIR_BUILDS): ELIXIR_VERSION = $(word 2,$(subst _, ,$@))
+$(ELIXIR_BUILDS): OS = $(word 3,$(subst _, ,$@))
+$(ELIXIR_BUILDS): OS_VERSION = $(word 4,$(subst _, ,$@))
 
 .PHONY: $(ELIXIR_BUILDS)
 $(ELIXIR_BUILDS): create-buildx
