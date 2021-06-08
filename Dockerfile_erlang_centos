@@ -4,8 +4,6 @@ ARG os_version
 FROM $os:$os_version as builder
 ARG os
 ARG os_version
-ARG erlang_version
-ARG erlang_iteration
 ADD yumdnf /usr/local/bin/
 
 # Setup EPEL
@@ -55,6 +53,7 @@ RUN gem install fpm --no-document --version 1.12.0
 
 # Build it
 WORKDIR /tmp/build
+ARG erlang_version
 RUN wget --quiet https://github.com/erlang/otp/releases/download/OTP-${erlang_version}/otp_src_${erlang_version}.tar.gz
 RUN tar xf otp_src_${erlang_version}.tar.gz
 WORKDIR /tmp/build/otp_src_${erlang_version}
@@ -80,6 +79,7 @@ RUN make DESTDIR=/tmp/install install-docs DOC_TARGETS=chunks
 
 # Package it
 WORKDIR /tmp/output
+ARG erlang_iteration
 RUN fpm -s dir -t rpm \
     --chdir /tmp/install \
     --name esl-erlang \
