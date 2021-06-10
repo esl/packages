@@ -72,6 +72,10 @@ $(ELIXIR_BUILDS):
 
 .PHONY: clean
 clean:
-	@rm -rf build/ cache/
 	@rm -f *.log
+	@rm -rf build/
+
+.PHONY: destroy
+destroy: clean
+	@rm -rf cache/
 	@docker buildx ls | grep docker-container | grep -Eo 'esl-buildx-[a-zA-Z0-9.-]+' | xargs -n1 docker buildx rm
