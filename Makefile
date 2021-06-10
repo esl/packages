@@ -9,6 +9,9 @@ PLATFORMS := linux/amd64,linux/arm64/v8
 DEBIAN_VERSIONS := buster stretch
 UBUNTU_VERSIONS := focal bionic xenial trusty
 CENTOS_VERSIONS := 8 7
+CACHE_FROM = "type=local,src=cache/$(OS)/$(OS_VERSION)"
+CACHE_TO = "type=local,dest=cache/$(OS)/$(OS_VERSION)"
+OUTPUT = "type=local,dest=build/$(OS)/$(OS_VERSION)"
 
 override DEBIANS := $(foreach v,$(DEBIAN_VERSIONS),debian_$(v))
 override UBUNTUS := $(foreach v,$(UBUNTU_VERSIONS),ubuntu_$(v))
@@ -38,9 +41,9 @@ $(ERLANG_BUILDS):
 	--build-arg os_version="$(OS_VERSION)" \
 	--build-arg erlang_version="$(ERLANG_VERSION)" \
 	--build-arg erlang_iteration="$(ERLANG_ITERATION)" \
-	--cache-from="type=local,src=cache" \
-	--cache-to="type=local,dest=cache" \
-	--output "type=local,dest=build/$@" \
+	--cache-from="$(CACHE_FROM)" \
+	--cache-to="$(CACHE_TO)" \
+	--output "$(OUTPUT)" \
 	--file "Dockerfile_erlang_$(OS)" \
 	. 2>&1 | tee $@.log
 
@@ -62,9 +65,9 @@ $(ELIXIR_BUILDS):
 	--build-arg elixir_version="${ELIXIR_VERSION}" \
 	--build-arg elixir_iteration="$(ELIXIR_ITERATION)" \
 	--file "Dockerfile_elixir_$(OS)" \
-	--cache-from="type=local,src=cache" \
-	--cache-to="type=local,dest=cache" \
-	--output="type=local,dest=build/$@" \
+	--cache-from="$(CACHE_FROM)" \
+	--cache-to="$(CACHE_TO)" \
+	--output "$(OUTPUT)" \
 	. 2>&1 | tee $@.log
 
 .PHONY: clean
