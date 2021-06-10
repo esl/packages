@@ -19,7 +19,10 @@ system. The Makefile is parameterized, allowing run-time selection of
 all these things. It defaults to building the latest elixir build and
 the latest patch release of the four most recent major releases of
 Erlang for the last two Debian releases, the last four Ubuntu LTS
-releases, and the last two CentOS releases, for both amd64 and arch64.
+releases, and the last two CentOS releases, for both amd64 and
+arch64. This is controlled by the `ERLANG_VERSIONS`,
+`ELIXIR_VERSIONS`, `DEBIAN_VERSIONS`, `UBUNTU_VERSIONS`,
+`CENTOS_VERSIONS` and `PLATFORMS` parameters.
 
 The build system uses Docker and in particular the `buildx`
 enhancements. Docker is configured for multi-arch support. The
@@ -27,8 +30,8 @@ enhancements. Docker is configured for multi-arch support. The
 instance, installs Docker, and configures it for multi-arch builds.
 
 The production version of this should attach an `EBS` volume to the
-instance and adjust the `cache-from`, `cache-to` and `output`
-arguments to `buildx` to point to this volume. The volume should be
+instance and adjust the `CACHE-FROM`, `CACHE-TO` and `OUTPUT`
+arguments to the makefile to point to this volume. The volume should be
 preserved beyond the termination of the instance, and re-attached to a
 future instance, when new Erlang or Elixir versions are released by
 upstream.
