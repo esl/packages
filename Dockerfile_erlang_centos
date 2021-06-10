@@ -91,7 +91,9 @@ RUN fpm -s dir -t rpm \
     --category interpreters \
     --description "Concurrent, real-time, distributed functional language" \
     --url "https://erlang-solutions.com" \
-    --provides erlang \
+    --provides "erlang = ${erlang_version}-${erlang_iteration}" \
+    --provides "erlang-erts = ${erlang_version}-${erlang_iteration}" \
+    --provides "erlang-inets = ${erlang_version}-${erlang_iteration}" \
     .
 
 # Test it
