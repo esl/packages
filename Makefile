@@ -32,7 +32,7 @@ all: $(ERLANG_BUILDS) $(ELIXIR_BUILDS)
 .PHONY: $(ERLANG_BUILDS)
 $(ERLANG_BUILDS):
 	@echo "Building erlang $(ERLANG_VERSION) for $(OS) $(OS_VERSION)"
-	@docker buildx create --name "$(BUILDER)" --platform "$(PLATFORMS)" || true
+	@docker buildx create --name "$(BUILDER)" --platform "$(PLATFORMS)" >/dev/null 2>&1 || true
 	@docker buildx build \
 	--progress=plain \
 	--platform "$(PLATFORMS)" \
@@ -55,7 +55,7 @@ $(ELIXIR_BUILDS): BUILDER = "esl-buildx-elixir-$(OS)-$(OS_VERSION)"
 .PHONY: $(ELIXIR_BUILDS)
 $(ELIXIR_BUILDS):
 	@echo "Building elixir $(ELIXIR_VERSION) for $(OS) $(OS_VERSION)"
-	@docker buildx create --name "$(BUILDER)" --platform "$(PLATFORMS)" || true
+	@docker buildx create --name "$(BUILDER)" --platform "$(PLATFORMS)"  >/dev/null 2>&1 || true
 	@docker buildx build \
 	--progress=plain \
 	--platform="linux/amd64" \
