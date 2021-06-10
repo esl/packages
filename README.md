@@ -128,3 +128,33 @@ volume using the `Acquire-By-Hash` feature. The S3 volume can be be
 published indirectly via CloudFront as it is today.
 
 
+# Deploying to Production
+
+A temporary EC2 instance (of type `c5.xlarge`) is needed to run the
+build process itself. I include two files (`main.tf` and
+`cloud-init.yaml`) which automate the creation and configuration of
+the instance, ensuring it is capable of Docker multi-arch builds.
+
+This instance should be equipped with two EBS volumes that survive the
+termination of the instance. I recommend a `gpt` partition table and
+the `ext4` filesystem on all these volumes.
+
+The first EBS volume (designated `cache`) will hold the docker cache
+files, which can improve the speed of future builds. The `CACHE_FROM`
+and `CACHE_TO` parameters to the makefile must be set to its
+mountpoint.
+
+The second EBS volume (designated `builds`) will hold the build
+artifacts themselves (`.deb` and `.rpm`) files as well as the Aptly
+metadata. The `OUTPUT` parameter to the makefile must be set to its
+mountpoint.
+
+If you like, you could use a single EBS volume here, but remember to
+put the cache and the builds in separate subdirectories.
+
+Finally, an S3 bucket is needed, which Aptly will publish the Debian
+and Ubuntu repository updates to. I have looked at how we build the
+CentOS repositories and am satisfied that the standard `createrepo`
+tool is still the right approach, so we should import that work from
+packages-pipeline as we do the integration.
+
