@@ -21,15 +21,15 @@ override ELIXIR_BUILDS = $(foreach elixir,$(ELIXIR_VERSIONS),$(foreach image_tag
 $(ERLANG_BUILDS): ERLANG_VERSION = $(word 2,$(subst _, ,$@))
 $(ERLANG_BUILDS): OS = $(word 3,$(subst _, ,$@))
 $(ERLANG_BUILDS): OS_VERSION = $(word 4,$(subst _, ,$@))
-
-override BUILDER = "esl-buildx"
+$(ERLANG_BUILDS): BUILDER = "esl-buildx-erlang-$(OS)-$(OS_VERSION)"
 
 .PHONY: all
 all: $(ERLANG_BUILDS) $(ELIXIR_BUILDS)
 
 .PHONY: $(ERLANG_BUILDS)
-$(ERLANG_BUILDS): create-buildx
+$(ERLANG_BUILDS):
 	@echo "Building erlang $(ERLANG_VERSION) for $(OS) $(OS_VERSION)"
+	@docker buildx create --name "$(BUILDER)" --platform "$(PLATFORMS)" || true
 	@docker buildx build \
 	--progress=plain \
 	--platform "$(PLATFORMS)" \
@@ -47,10 +47,12 @@ $(ERLANG_BUILDS): create-buildx
 $(ELIXIR_BUILDS): ELIXIR_VERSION = $(word 2,$(subst _, ,$@))
 $(ELIXIR_BUILDS): OS = $(word 3,$(subst _, ,$@))
 $(ELIXIR_BUILDS): OS_VERSION = $(word 4,$(subst _, ,$@))
+$(ELIXIR_BUILDS): BUILDER = "esl-buildx-elixir-$(OS)-$(OS_VERSION)"
 
 .PHONY: $(ELIXIR_BUILDS)
-$(ELIXIR_BUILDS): create-buildx
+$(ELIXIR_BUILDS):
 	@echo "Building elixir $(ELIXIR_VERSION) for $(OS) $(OS_VERSION)"
+	@docker buildx create --name "$(BUILDER)" --platform "$(PLATFORMS)" || true
 	@docker buildx build \
 	--progress=plain \
 	--platform="linux/amd64" \
@@ -65,12 +67,8 @@ $(ELIXIR_BUILDS): create-buildx
 	--output="type=local,dest=build/$@" \
 	. 2>&1 | tee $@.log
 
-.PHONY: create-buildx
-create-buildx:
-	@docker buildx create --name "$(BUILDER)" --platform "$(PLATFORMS)" >/dev/null 2>&1 || true
-
 .PHONY: clean
 clean:
 	@rm -rf build/ cache/
 	@rm -f *.log
-	@docker buildx rm "$(BUILDER)" >/dev/null 2>&1 || true
+	@docker buildx ls | grep docker-container | grep -Eo 'esl-buildx-[a-zA-Z0-9.-]+' | xargs -n1 docker buildx rm
