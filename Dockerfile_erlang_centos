@@ -91,6 +91,7 @@ RUN fpm -s dir -t rpm \
     --category interpreters \
     --description "Concurrent, real-time, distributed functional language" \
     --url "https://erlang-solutions.com" \
+    --depends 'openssl-libs' \
     --provides "erlang = ${erlang_version}-${erlang_iteration}" \
     --provides "erlang-erts = ${erlang_version}-${erlang_iteration}" \
     --provides "erlang-inets = ${erlang_version}-${erlang_iteration}" \
