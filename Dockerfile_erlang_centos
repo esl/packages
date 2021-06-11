@@ -87,7 +87,7 @@ RUN fpm -s dir -t rpm \
     --package-name-suffix ${os_version} \
     --epoch 1 \
     --iteration ${erlang_iteration} \
-    --package esl-erlang_VERSION_ITERATION~${os}~${os_version}_ARCH.deb \
+    --package esl-erlang_VERSION_ITERATION~${os}~${os_version}_ARCH.rpm \
     --category interpreters \
     --description "Concurrent, real-time, distributed functional language" \
     --url "https://erlang-solutions.com" \
