@@ -96,7 +96,8 @@ RUN fpm -s dir -t deb \
     --category interpreters \
     --description "Concurrent, real-time, distributed functional language" \
     --url "https://erlang-solutions.com" \
-    --depends 'procps, libc6, libncurses5, libssl1.0.0 | libssl1.0.2 | libssl1.1, libsctp1' \
+    --depends 'procps, libc6, libncurses5, libsctp1' \
+    --depends $(dpkg -l libssl* | grep $(dpkg --print-architecture) | grep -Eo 'libssl[0-9.]+') \
     --deb-recommends 'libwxbase2.8-0 | libwxbase3.0-0 | libwxbase3.0-0v5, libwxgtk2.8-0 | libwxgtk3.0-0 | libwxgtk3.0-0v5 | libwxgtk3.0-gtk3-0v5' \
     --deb-suggests 'default-jre-headless | java2-runtime-headless | java1-runtime-headless | java2-runtime | java1-runtime' \
     $(for pkg in erlang-base-hipe erlang-base erlang-dev erlang-appmon erlang-asn1 erlang-common-test erlang-corba erlang-crypto erlang-debugger erlang-dialyzer erlang-docbuilder erlang-edoc erlang-erl-docgen erlang-et erlang-eunit erlang-gs erlang-ic erlang-inets erlang-inviso erlang-megaco erlang-mnesia erlang-observer erlang-odbc erlang-os-mon erlang-parsetools erlang-percept erlang-pman erlang-public-key erlang-reltool erlang-runtime-tools erlang-snmp erlang-ssh erlang-ssl erlang-syntax-tools erlang-test-server erlang-toolbar erlang-tools erlang-tv erlang-typer erlang-webtool erlang-wx erlang-xmerl; do \
