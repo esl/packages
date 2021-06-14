@@ -1,0 +1,19 @@
+#!/bin/sh
+
+case $1 in
+    "linux/amd64")
+	echo "amd64"
+	;;
+    "linux/arm64")
+	echo "arm64"
+	;;
+    "linux/ppc64el")
+	echo "ppc64el"
+	;;
+    "linux/s390x")
+	echo "s390x"
+	;;
+    "linux/386")
+	echo "i386"
+	;;
+esac
