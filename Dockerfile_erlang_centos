@@ -71,11 +71,12 @@ RUN ./configure \
     --with-java \
     --with-ssl
 
-RUN make -j2
-RUN make docs DOC_TARGETS="chunks man"
+ARG jobs
+RUN make --jobs=${jobs}
+RUN make --jobs=${jobs} docs DOC_TARGETS="chunks man"
 RUN mkdir -p /tmp/install
-RUN make DESTDIR=/tmp/install install
-RUN make DESTDIR=/tmp/install install-docs DOC_TARGETS="chunks man"
+RUN make --jobs=${jobs} DESTDIR=/tmp/install install
+RUN make --jobs=${jobs} DESTDIR=/tmp/install install-docs DOC_TARGETS="chunks man"
 
 # Package it
 WORKDIR /tmp/output

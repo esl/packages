@@ -25,6 +25,7 @@ $(ERLANG_BUILDS): ERLANG_VERSION = $(word 2,$(subst _, ,$@))
 $(ERLANG_BUILDS): OS = $(word 3,$(subst _, ,$@))
 $(ERLANG_BUILDS): OS_VERSION = $(word 4,$(subst _, ,$@))
 $(ERLANG_BUILDS): BUILDER = "esl-buildx-erlang-$(OS)-$(OS_VERSION)"
+$(ERLANG_BUILDS): NPROC = $(shell nproc)
 
 .PHONY: all
 all: $(ERLANG_BUILDS) $(ELIXIR_BUILDS)
@@ -37,6 +38,7 @@ $(ERLANG_BUILDS):
 	--progress=plain \
 	--platform "$(PLATFORMS)" \
 	--builder "$(BUILDER)" \
+	--build-arg jobs="$(NPROC)" \
 	--build-arg os="$(OS)" \
 	--build-arg os_version="$(OS_VERSION)" \
 	--build-arg erlang_version="$(ERLANG_VERSION)" \
