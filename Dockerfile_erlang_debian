@@ -60,10 +60,10 @@ RUN eval "$(dpkg-buildflags --export=sh)" && \
     --with-ssl
 
 RUN make -j 2
-RUN make docs DOC_TARGETS=chunks
+RUN make docs DOC_TARGETS="chunks man"
 RUN mkdir -p /tmp/install
 RUN make DESTDIR=/tmp/install install
-RUN make DESTDIR=/tmp/install install-docs DOC_TARGETS=chunks
+RUN make DESTDIR=/tmp/install install-docs DOC_TARGETS="chunks man"
 
 # Install FPM dependencies
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
