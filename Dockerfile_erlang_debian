@@ -111,7 +111,10 @@ RUN fpm -s dir -t deb \
 # Test it
 RUN dpkg -i /tmp/output/*.deb
 RUN if [ -f /usr/bin/hardening-check ]; then \
-    hardening-check --nobindnow $(find /usr/lib/erlang -name erlexec); \
+    hardening-check \
+    --nobindnow \
+    $(if [ "${os}:${os_version}" = "debian:bullseye" ]; then echo "--nocfprotection"; fi) \
+    $(find /usr/lib/erlang -name erlexec); \
     fi
 RUN erl -eval "ssl:start(), erlang:halt()."
 
