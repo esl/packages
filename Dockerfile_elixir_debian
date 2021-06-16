@@ -33,9 +33,9 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
 # Install FPM dependencies
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
     --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
-  apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
-  ruby \
-  ruby-dev
+    apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
+    ruby \
+    ruby-dev
 
 # Install FPM
 RUN if [ "${os}:${os_version}" = "ubuntu:trusty" ]; then \
