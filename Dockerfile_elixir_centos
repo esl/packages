@@ -4,8 +4,6 @@ ARG os_version
 FROM $os:$os_version as builder
 ARG os
 ARG os_version
-ARG elixir_version
-ARG elixir_iteration
 ADD yumdnf /usr/local/bin/
 
 # Setup ESL repo
@@ -57,6 +55,7 @@ ENV LC_ALL=en_US.UTF-8
 
 # Build it
 WORKDIR /tmp/build
+ARG elixir_version
 RUN wget --quiet https://github.com/elixir-lang/elixir/archive/v${elixir_version}.tar.gz
 RUN tar xf v${elixir_version}.tar.gz
 RUN ls -lhR
@@ -67,6 +66,7 @@ RUN make install PREFIX=/usr DESTDIR=/tmp/install
 
 # Package it
 WORKDIR /tmp/output
+ARG elixir_iteration
 RUN fpm -s dir -t rpm \
     --chdir /tmp/install \
     --name elixir \
