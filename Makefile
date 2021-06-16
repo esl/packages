@@ -9,6 +9,7 @@ PLATFORMS := linux/amd64,linux/arm64/v8
 DEBIAN_VERSIONS := buster stretch
 UBUNTU_VERSIONS := focal bionic xenial trusty
 CENTOS_VERSIONS := 8 7
+ALMALINUX_VERSIONS := 8
 CACHE_FROM = "type=local,src=cache/$(OS)/$(OS_VERSION)"
 CACHE_TO = "type=local,dest=cache/$(OS)/$(OS_VERSION)"
 OUTPUT = "type=local,dest=build/$(OS)/$(OS_VERSION)"
@@ -16,7 +17,8 @@ OUTPUT = "type=local,dest=build/$(OS)/$(OS_VERSION)"
 override DEBIANS := $(foreach v,$(DEBIAN_VERSIONS),debian_$(v))
 override UBUNTUS := $(foreach v,$(UBUNTU_VERSIONS),ubuntu_$(v))
 override CENTOSES := $(foreach v,$(CENTOS_VERSIONS),centos_$(v))
-override IMAGE_TAGS := $(DEBIANS) $(UBUNTUS) $(CENTOSES)
+override ALMALINUXES := $(foreach v,$(ALMALINUX_VERSIONS),almalinux_$(v))
+override IMAGE_TAGS := $(DEBIANS) $(UBUNTUS) $(CENTOSES) $(ALMALINUXES)
 
 override ERLANG_BUILDS = $(foreach erlang,$(ERLANG_VERSIONS),$(foreach image_tag,$(IMAGE_TAGS),erlang_$(erlang)_$(image_tag)))
 override ELIXIR_BUILDS = $(foreach elixir,$(ELIXIR_VERSIONS),$(foreach image_tag,$(IMAGE_TAGS),elixir_$(elixir)_$(image_tag)))
