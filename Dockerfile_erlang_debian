@@ -13,32 +13,32 @@ RUN rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloa
 # Install Erlang/OTP dependencies
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
     --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
-  apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
-  autoconf \
-  build-essential \
-  ca-certificates \
-  $(apt-cache show default-jdk-headless >/dev/null 2>&1; \
+    apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
+    autoconf \
+    build-essential \
+    ca-certificates \
+    $(apt-cache show default-jdk-headless >/dev/null 2>&1; \
     if [ $? -eq 0 ]; then \
-      echo "default-jdk-headless"; \
+    echo "default-jdk-headless"; \
     else \
-      echo "default-jdk"; \
+    echo "default-jdk"; \
     fi) \
-  devscripts \
-  flex \
-  git \
-  libkrb5-dev \
-  libncurses5 \
-  libncurses5-dev \
-  libsctp-dev \
-  libssl-dev \
-  $(apt-cache show libwxgtk3.0-gtk3-dev >/dev/null 2>&1; \
+    devscripts \
+    flex \
+    git \
+    libkrb5-dev \
+    libncurses5 \
+    libncurses5-dev \
+    libsctp-dev \
+    libssl-dev \
+    $(apt-cache show libwxgtk3.0-gtk3-dev >/dev/null 2>&1; \
     if [ $? -eq 0 ]; then \
-      echo "libwxgtk3.0-gtk3-dev libwxgtk-webview3.0-gtk3-dev"; \
+    echo "libwxgtk3.0-gtk3-dev libwxgtk-webview3.0-gtk3-dev"; \
     fi) \
-  procps \
-  unixodbc-dev \
-  wget \
-  xsltproc
+    procps \
+    unixodbc-dev \
+    wget \
+    xsltproc
 
 # Build it
 WORKDIR /tmp/build
@@ -50,7 +50,7 @@ RUN if [ ! -f configure ]; then \
     ./otp_build autoconf; \
     fi
 RUN eval "$(dpkg-buildflags --export=sh)" && \
-  ./configure \
+    ./configure \
     --prefix=/usr \
     --enable-dirty-schedulers \
     --enable-dynamic-ssl-lib \
@@ -69,9 +69,9 @@ RUN make --jobs=${jobs} DESTDIR=/tmp/install install-docs DOC_TARGETS="chunks ma
 # Install FPM dependencies
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
     --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
-  apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
-  ruby \
-  ruby-dev
+    apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
+    ruby \
+    ruby-dev
 
 # Install FPM
 RUN if [ "${os}:${os_version}" = "ubuntu:trusty" ]; then \
