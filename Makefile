@@ -1,16 +1,16 @@
 SHELL = /bin/sh
 
 # Override these if you like
-ERLANG_VERSIONS := 24.0.2 23.3.4.2 22.3.4.20 21.3.8.24
+ERLANG_VERSIONS :=
 ERLANG_ITERATION := 1
-ELIXIR_VERSIONS := 1.12.0
+ELIXIR_VERSIONS :=
 ELIXIR_ITERATION := 1
 PLATFORMS := linux/amd64,linux/arm64/v8
-DEBIAN_VERSIONS := buster stretch
-UBUNTU_VERSIONS := focal bionic xenial trusty
-CENTOS_VERSIONS := 8 7
-ALMALINUX_VERSIONS := 8
-AMAZON_VERSIONS := 2
+DEBIAN_VERSIONS :=
+UBUNTU_VERSIONS :=
+CENTOS_VERSIONS :=
+ALMALINUX_VERSIONS :=
+AMAZON_VERSIONS :=
 CACHE_FROM = "type=local,src=cache/$(OS)/$(OS_VERSION)"
 CACHE_TO = "type=local,dest=cache/$(OS)/$(OS_VERSION)"
 OUTPUT = "type=local,dest=build/$(OS)/$(OS_VERSION)"
