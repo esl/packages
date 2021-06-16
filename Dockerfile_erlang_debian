@@ -76,7 +76,7 @@ RUN eval "$(dpkg-buildflags --export=sh)" && \
     --with-ssl
 
 ARG jobs
-RUN make -j --jobs=${jobs}
+RUN make --jobs=${jobs}
 RUN make docs --jobs=${jobs} DOC_TARGETS="chunks man"
 RUN mkdir -p /tmp/install
 RUN make --jobs=${jobs} DESTDIR=/tmp/install install
