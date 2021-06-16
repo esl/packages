@@ -1,0 +1,21 @@
+#!/bin/sh
+
+ERLANG="21 22 23 24"
+DEBIAN="stretch buster"
+UBUNTU="trusty xenial bionic focal groovy hirsute"
+
+for distro in $DEBIAN
+do
+    for erlang in $ERLANG
+    do
+	aptly publish update "$distro-erlang-$erlang" filesystem:test:debian/
+    done
+done
+
+for distro in $UBUNTU
+do
+    for erlang in $ERLANG
+    do
+	aptly publish update "$distro-erlang-$erlang" filesystem:test:ubuntu/
+    done
+done
