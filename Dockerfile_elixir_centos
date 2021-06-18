@@ -1,3 +1,4 @@
+# -*- mode: dockerfile -*-
 # syntax = docker/dockerfile:1.2
 ARG os
 ARG os_version
