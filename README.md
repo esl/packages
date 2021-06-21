@@ -126,8 +126,8 @@ published indirectly via CloudFront as it is today.
 
 # Deploying to Production
 
-A temporary EC2 instance (of type `c5.xlarge`) is needed to run the
-build process itself. I include two files (`main.tf` and
+A temporary EC2 instance (of type `c5.xlarge` or better) is needed to run
+the build process itself. I include two files (`main.tf` and
 `cloud-init.yaml`) which automate the creation and configuration of
 the instance, ensuring it is capable of Docker multi-arch builds.
 
