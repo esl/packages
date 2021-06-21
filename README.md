@@ -16,13 +16,9 @@ We wish to build any version of Erlang or Elixir for a variety of
 different operating systems and hardware architectures. Collectively
 the `Makefile` and `Dockerfile_*` files constitute this new build
 system. The Makefile is parameterized, allowing run-time selection of
-all these things. It defaults to building the latest elixir build and
-the latest patch release of the four most recent major releases of
-Erlang for the last two Debian releases, the last four Ubuntu LTS
-releases, and the last two CentOS releases, for both amd64 and
-arch64. This is controlled by the `ERLANG_VERSIONS`,
-`ELIXIR_VERSIONS`, `DEBIAN_VERSIONS`, `UBUNTU_VERSIONS`,
-`CENTOS_VERSIONS` and `PLATFORMS` parameters.
+all these things. By default, nothing is built. You must set the
+`ERLANG_VERSIONS`, `ELIXIR_VERSIONS`, `DEBIAN_VERSIONS`,
+`UBUNTU_VERSIONS`, `CENTOS_VERSIONS` and `PLATFORMS` parameters.
 
 The build system uses Docker and in particular the `buildx`
 enhancements. Docker is configured for multi-arch support. The
