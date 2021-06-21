@@ -41,7 +41,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
 RUN if [ "${os}:${os_version}" = "centos:7" ]; then \
     gem install git --no-document --version 1.7.0; \
     fi
-RUN gem install fpm --no-document --version 1.12.0
+RUN gem install fpm --no-document --version 1.13.0
 
 # Ensure UTF-8 locale
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=private \

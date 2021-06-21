@@ -54,7 +54,7 @@ RUN if [ "${os}:${os_version}" = "ubuntu:trusty" ]; then \
     gem install ffi --no-rdoc --no-ri --version 1.9.25; \
     gem install fpm --no-rdoc --no-ri --version 1.11.0; \
     else \
-    gem install fpm --no-document --version 1.12.0; \
+    gem install fpm --no-document --version 1.13.0; \
     fi
 
 # Build it
