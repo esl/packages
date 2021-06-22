@@ -26,7 +26,7 @@ data "template_file" "user_data" {
 
 resource "aws_instance" "esl_package_builder" {
   ami           = "ami-0245697ee3e07e755"
-  instance_type = "c5.xlarge"
+  instance_type = "c5.2xlarge"
   key_name      = "esl_ec2_key_pair"
   user_data     = data.template_file.user_data.rendered
 
