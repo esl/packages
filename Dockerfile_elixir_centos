@@ -19,7 +19,9 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
 # Setup EPEL
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=private \
     --mount=type=cache,id=${os}_${os_version},target=/var/cache/yum,sharing=private \
-    yumdnf install -y epel-release
+    if [ "${os}" = "centos" -o "${os}" = "almalinux" ]; then \
+    yumdnf install -y epel-release; \
+    fi
 
 # Install Erlang/OTP
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=private \
