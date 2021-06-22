@@ -33,8 +33,18 @@ $(ERLANG_BUILDS): NPROC = $(shell nproc)
 $(ERLANG_BUILDS): PLATFORM_COUNT = $(words $(shell echo "$(PLATFORMS)" | tr ',' ' '))
 $(ERLANG_BUILDS): JOBS = $$(($(NPROC) / $(PLATFORM_COUNT)))
 
-.PHONY: all
-all: $(ERLANG_BUILDS) $(ELIXIR_BUILDS)
+.PHONY: build
+build: $(ERLANG_BUILDS) $(ELIXIR_BUILDS)
+
+.PHONY: full
+full:
+	@$(MAKE) \
+	ERLANG_VERSIONS="24.0.2 23.3.4.4 22.3.4.20 21.3.8.24" \
+	DEBIAN_VERSIONS="buster stretch" \
+	UBUNTU_VERSIONS="focal bionic xenial trusty" \
+	CENTOS_VERSIONS="8 7" \
+	ALMALINUX_VERSIONS="8" \
+	AMAZON_VERSIONS="2"
 
 .PHONY: $(ERLANG_BUILDS)
 $(ERLANG_BUILDS):
