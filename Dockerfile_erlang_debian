@@ -2,21 +2,38 @@
 # syntax = docker/dockerfile:1.2
 ARG os
 ARG os_version
-FROM $os:$os_version as builder
+FROM --platform=$BUILDPLATFORM $os:$os_version as builder
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
 ARG os
 ARG os_version
 
 ENV DEBIAN_FRONTEND=noninteractive
+ADD darch /usr/local/bin/
 
 # Don't clean up
 RUN rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
 
 # Install Erlang/OTP dependencies
+RUN dpkg --add-architecture $(darch $TARGETPLATFORM)
+
+# Cross-compilation setup for Ubuntu is a bit more involved...
+RUN if [ "${os}" = "ubuntu" -a "${BUILDPLATFORM}" != "${TARGETPLATFORM}" ]; then \
+    sed -i "s/deb http/deb [arch=$(darch $BUILDPLATFORM)] http/g" /etc/apt/sources.list; \
+    echo "deb [arch=$(darch $TARGETPLATFORM)] http://ports.ubuntu.com/ubuntu-ports/ ${os_version} main" > /etc/apt/sources.list.d/cross.list; \
+    echo "deb [arch=$(darch $TARGETPLATFORM)] http://ports.ubuntu.com/ubuntu-ports/ ${os_version}-updates main" >> /etc/apt/sources.list.d/cross.list; \
+    echo "deb [arch=$(darch $TARGETPLATFORM)] http://ports.ubuntu.com/ubuntu-ports/ ${os_version}-security main" >> /etc/apt/sources.list.d/cross.list; \
+    fi
+
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
     --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
     apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
     autoconf \
     build-essential \
+    $(apt-cache show "crossbuild-essential-$(darch $TARGETPLATFORM)" > /dev/null 2>&1; \
+    if [ $? -eq 0 ]; then \
+      echo "crossbuild-essential-$(darch $TARGETPLATFORM)"; \
+    fi) \
     ca-certificates \
     $(apt-cache show default-jdk-headless >/dev/null 2>&1; \
     if [ $? -eq 0 ]; then \
@@ -27,17 +44,15 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
     devscripts \
     flex \
     git \
-    libkrb5-dev \
-    libncurses5 \
-    libncurses5-dev \
-    libsctp-dev \
-    libssl-dev \
     $(apt-cache show libwxgtk3.0-gtk3-dev >/dev/null 2>&1; \
     if [ $? -eq 0 ]; then \
-    echo "libwxgtk3.0-gtk3-dev libwxgtk-webview3.0-gtk3-dev"; \
+    echo "libwxgtk3.0-gtk3-dev:$(darch $TARGETPLATFORM) libwxgtk-webview3.0-gtk3-dev:$(darch $TARGETPLATFORM)"; \
     fi) \
+    libncurses-dev:$(darch $TARGETPLATFORM) \
+    libsctp-dev:$(darch $TARGETPLATFORM) \
+    libssl-dev:$(darch $TARGETPLATFORM) \
     procps \
-    unixodbc-dev \
+    unixodbc-dev:$(darch $TARGETPLATFORM) \
     wget \
     xsltproc
 
@@ -66,8 +81,15 @@ WORKDIR /tmp/build/otp_src_${erlang_version}
 RUN if [ ! -f configure ]; then \
     ./otp_build autoconf; \
     fi
+# Bootstrap
+RUN eval "$(dpkg-buildflags --export=sh)" && \
+    ./configure --enable-bootstrap-only
+ARG jobs
+RUN make --jobs=${jobs}
 RUN eval "$(dpkg-buildflags --export=sh)" && \
     ./configure \
+    --host=$(dpkg-architecture -a $(darch $TARGETPLATFORM) -qDEB_TARGET_MULTIARCH) \
+    erl_xcomp_sysroot=/ \
     --prefix=/usr \
     --enable-dirty-schedulers \
     --enable-dynamic-ssl-lib \
@@ -76,9 +98,8 @@ RUN eval "$(dpkg-buildflags --export=sh)" && \
     --with-java \
     --with-ssl
 
-ARG jobs
 RUN make --jobs=${jobs}
-RUN make docs --jobs=${jobs} DOC_TARGETS="chunks man"
+RUN make --jobs=${jobs} docs DOC_TARGETS="chunks man"
 RUN mkdir -p /tmp/install
 RUN make --jobs=${jobs} DESTDIR=/tmp/install install
 RUN make --jobs=${jobs} DESTDIR=/tmp/install install-docs DOC_TARGETS="chunks man"
@@ -91,6 +112,7 @@ RUN fpm -s dir -t deb \
     --name esl-erlang \
     --version ${erlang_version} \
     --package-name-suffix ${os_version} \
+    --architecture $(darch $TARGETPLATFORM) \
     --epoch 1 \
     --iteration ${erlang_iteration} \
     --package esl-erlang_VERSION-ITERATION~${os}~${os_version}_ARCH.deb \
@@ -111,7 +133,13 @@ RUN fpm -s dir -t deb \
     .
 
 # Test it
-RUN dpkg -i /tmp/output/*.deb
+FROM --platform=$TARGETPLATFORM $os:$os_version as testing
+COPY --from=builder /tmp/output/*.deb /tmp
+RUN dpkg -i /tmp/*.deb || true
+RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
+    --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
+    apt-get --quiet update && apt-get --quiet --yes --no-install-recommends --fix-broken install
+
 RUN if [ -f /usr/bin/hardening-check ]; then \
     hardening-check \
     --nobindnow \
@@ -122,4 +150,4 @@ RUN erl -eval "ssl:start(), erlang:halt()."
 
 # Export it
 FROM scratch as exporting
-COPY --from=builder /tmp/output /
+COPY --from=testing /tmp/*.deb /

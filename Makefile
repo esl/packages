@@ -58,6 +58,7 @@ $(ELIXIR_BUILDS): ELIXIR_VERSION = $(word 2,$(subst _, ,$@))
 $(ELIXIR_BUILDS): OS = $(word 3,$(subst _, ,$@))
 $(ELIXIR_BUILDS): OS_VERSION = $(word 4,$(subst _, ,$@))
 $(ELIXIR_BUILDS): BUILDER = "esl-buildx-elixir-$(OS)-$(OS_VERSION)"
+$(ELIXIR_BUILDS): JOBS = $(shell nproc)
 
 .PHONY: $(ELIXIR_BUILDS)
 $(ELIXIR_BUILDS):
@@ -66,6 +67,7 @@ $(ELIXIR_BUILDS):
 	@docker buildx build \
 	--platform="linux/amd64" \
 	--builder "$(BUILDER)" \
+	--build-arg jobs="$(JOBS)" \
 	--build-arg os="$(OS)" \
 	--build-arg os_version="$(OS_VERSION)" \
 	--build-arg elixir_version="${ELIXIR_VERSION}" \
