@@ -85,7 +85,7 @@ RUN fpm -s dir -t deb \
     --description "Elixir functional meta-programming language" \
     --url "https://erlang-solutions.com" \
     --architecture "all" \
-    --depends "erlang-base | erlang-base-hipe | esl-erlang" \
+    --depends "esl-erlang" \
     $(if [ "${os}:${os_version}" != "ubuntu:trusty" ]; then echo '--deb-compression xz'; fi) \
     .
 

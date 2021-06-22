@@ -83,6 +83,7 @@ RUN fpm -s dir -t rpm \
     --description "Elixir functional meta-programming language" \
     --url "https://erlang-solutions.com" \
     --architecture "all" \
+    --depends "esl-erlang" \
     .
 
 # Export it
