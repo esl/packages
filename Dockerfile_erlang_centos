@@ -51,8 +51,10 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
 # Install FPM
 RUN if [ "${os}:${os_version}" = "centos:7" -o "${os}:${os_version}" = "amazonlinux:2" ]; then \
     gem install git --no-document --version 1.7.0; \
+    gem install fpm --no-document --version 1.12.0; \
+    else \
+    gem install fpm --no-document --version 1.13.0; \
     fi
-RUN gem install fpm --no-document --version 1.13.0
 
 # Build it
 WORKDIR /tmp/build
