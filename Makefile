@@ -40,6 +40,7 @@ build: $(ERLANG_BUILDS) $(ELIXIR_BUILDS)
 full:
 	@$(MAKE) \
 	ERLANG_VERSIONS="24.0.2 23.3.4.4 22.3.4.20 21.3.8.24" \
+	ELIXIR_VERSIONS="1.12" \
 	DEBIAN_VERSIONS="buster stretch" \
 	UBUNTU_VERSIONS="focal bionic xenial trusty" \
 	CENTOS_VERSIONS="8 7" \
