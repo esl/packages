@@ -41,7 +41,6 @@ $(ERLANG_BUILDS):
 	@echo "Building erlang $(ERLANG_VERSION) for $(OS) $(OS_VERSION)"
 	@docker buildx create --name "$(BUILDER)" --platform "$(PLATFORMS)" >/dev/null 2>&1 || true
 	@docker buildx build \
-	--progress=plain \
 	--platform "$(PLATFORMS)" \
 	--builder "$(BUILDER)" \
 	--build-arg jobs="$(JOBS)" \
@@ -65,7 +64,6 @@ $(ELIXIR_BUILDS):
 	@echo "Building elixir $(ELIXIR_VERSION) for $(OS) $(OS_VERSION)"
 	@docker buildx create --name "$(BUILDER)" --platform "$(PLATFORMS)"  >/dev/null 2>&1 || true
 	@docker buildx build \
-	--progress=plain \
 	--platform="linux/amd64" \
 	--builder "$(BUILDER)" \
 	--build-arg os="$(OS)" \
