@@ -20,9 +20,9 @@ RUN dpkg --add-architecture $(darch $TARGETPLATFORM)
 # Cross-compilation setup for Ubuntu is a bit more involved...
 RUN if [ "${os}" = "ubuntu" -a "${BUILDPLATFORM}" != "${TARGETPLATFORM}" ]; then \
     sed -i "s/deb http/deb [arch=$(darch $BUILDPLATFORM)] http/g" /etc/apt/sources.list; \
-    echo "deb [arch=$(darch $TARGETPLATFORM)] http://ports.ubuntu.com/ubuntu-ports/ ${os_version} main" > /etc/apt/sources.list.d/cross.list; \
-    echo "deb [arch=$(darch $TARGETPLATFORM)] http://ports.ubuntu.com/ubuntu-ports/ ${os_version}-updates main" >> /etc/apt/sources.list.d/cross.list; \
-    echo "deb [arch=$(darch $TARGETPLATFORM)] http://ports.ubuntu.com/ubuntu-ports/ ${os_version}-security main" >> /etc/apt/sources.list.d/cross.list; \
+    echo "deb [arch=$(darch $TARGETPLATFORM)] http://ports.ubuntu.com/ubuntu-ports/ ${os_version} main universe" > /etc/apt/sources.list.d/cross.list; \
+    echo "deb [arch=$(darch $TARGETPLATFORM)] http://ports.ubuntu.com/ubuntu-ports/ ${os_version}-updates main universe" >> /etc/apt/sources.list.d/cross.list; \
+    echo "deb [arch=$(darch $TARGETPLATFORM)] http://ports.ubuntu.com/ubuntu-ports/ ${os_version}-security main universe" >> /etc/apt/sources.list.d/cross.list; \
     fi
 
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
