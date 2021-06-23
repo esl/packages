@@ -28,7 +28,7 @@ override ELIXIR_BUILDS = $(foreach elixir,$(ELIXIR_VERSIONS),$(foreach image_tag
 $(ERLANG_BUILDS): ERLANG_VERSION = $(word 2,$(subst _, ,$@))
 $(ERLANG_BUILDS): OS = $(word 3,$(subst _, ,$@))
 $(ERLANG_BUILDS): OS_VERSION = $(word 4,$(subst _, ,$@))
-$(ERLANG_BUILDS): BUILDER = "esl-buildx-erlang-$(OS)-$(OS_VERSION)"
+$(ERLANG_BUILDS): BUILDER = esl-buildx-erlang-$(OS)-$(OS_VERSION)
 $(ERLANG_BUILDS): NPROC = $(shell nproc)
 $(ERLANG_BUILDS): PLATFORM_COUNT = $(words $(shell echo "$(PLATFORMS)" | tr ',' ' '))
 $(ERLANG_BUILDS): JOBS = $$(($(NPROC) / $(PLATFORM_COUNT)))
@@ -40,7 +40,7 @@ build: $(ERLANG_BUILDS) $(ELIXIR_BUILDS)
 full:
 	@$(MAKE) \
 	ERLANG_VERSIONS="24.0.2 23.3.4.4 22.3.4.20 21.3.8.24" \
-	ELIXIR_VERSIONS="1.12" \
+	ELIXIR_VERSIONS="1.12_22.3.4.9-1" \
 	DEBIAN_VERSIONS="buster stretch" \
 	UBUNTU_VERSIONS="focal bionic xenial trusty" \
 	CENTOS_VERSIONS="8 7" \
@@ -66,14 +66,15 @@ $(ERLANG_BUILDS):
 	. 2>&1 | tee $@.log
 
 $(ELIXIR_BUILDS): ELIXIR_VERSION = $(word 2,$(subst _, ,$@))
-$(ELIXIR_BUILDS): OS = $(word 3,$(subst _, ,$@))
-$(ELIXIR_BUILDS): OS_VERSION = $(word 4,$(subst _, ,$@))
-$(ELIXIR_BUILDS): BUILDER = "esl-buildx-elixir-$(OS)-$(OS_VERSION)"
+$(ELIXIR_BUILDS): ERLANG_VERSION = $(word 3,$(subst _, ,$@))
+$(ELIXIR_BUILDS): OS = $(word 4,$(subst _, ,$@))
+$(ELIXIR_BUILDS): OS_VERSION = $(word 5,$(subst _, ,$@))
+$(ELIXIR_BUILDS): BUILDER = esl-buildx-elixir-$(OS)-$(OS_VERSION)
 $(ELIXIR_BUILDS): JOBS = $(shell nproc)
 
 .PHONY: $(ELIXIR_BUILDS)
 $(ELIXIR_BUILDS):
-	@echo "Building elixir $(ELIXIR_VERSION) for $(OS) $(OS_VERSION)"
+	@echo "Building elixir $(ELIXIR_VERSION) against erlang $(ERLANG_VERSION) for $(OS) $(OS_VERSION)"
 	@docker buildx create --name "$(BUILDER)" --platform "$(PLATFORMS)"  >/dev/null 2>&1 || true
 	@docker buildx build \
 	--platform="linux/amd64" \
@@ -81,7 +82,8 @@ $(ELIXIR_BUILDS):
 	--build-arg jobs="$(JOBS)" \
 	--build-arg os="$(OS)" \
 	--build-arg os_version="$(OS_VERSION)" \
-	--build-arg elixir_version="${ELIXIR_VERSION}" \
+	--build-arg erlang_version="$(ERLANG_VERSION)" \
+	--build-arg elixir_version="$(ELIXIR_VERSION)" \
 	--build-arg elixir_iteration="$(ELIXIR_ITERATION)" \
 	--file "Dockerfile_elixir_$(OS)" \
 	--cache-from="$(CACHE_FROM)" \

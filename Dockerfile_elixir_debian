@@ -23,11 +23,12 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
     dpkg -i erlang-solutions_2.0_all.deb
 
 # Install Erlang/OTP
+ARG erlang_version
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
     --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
     apt-get --quiet update && \
     apt-get --quiet --yes --no-install-recommends install \
-    esl-erlang
+    esl-erlang=1:${erlang_version}
 
 # Install FPM dependencies
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
@@ -65,10 +66,9 @@ ARG elixir_version
 RUN wget --quiet https://github.com/elixir-lang/elixir/archive/v${elixir_version}.tar.gz
 RUN tar xf v${elixir_version}.tar.gz
 WORKDIR /tmp/build/elixir-${elixir_version}
-ARG jobs
-RUN make --jobs=${jobs}
-RUN make --jobs=${jobs} test
-RUN make --jobs=${jobs} install PREFIX=/usr DESTDIR=/tmp/install
+RUN make
+RUN make test
+RUN make install PREFIX=/usr DESTDIR=/tmp/install
 
 # Package it
 WORKDIR /tmp/output
@@ -85,7 +85,7 @@ RUN fpm -s dir -t deb \
     --description "Elixir functional meta-programming language" \
     --url "https://erlang-solutions.com" \
     --architecture "all" \
-    --depends "esl-erlang" \
+    --depends "esl-erlang >= ${erlang_version}" \
     $(if [ "${os}:${os_version}" != "ubuntu:trusty" ]; then echo '--deb-compression xz'; fi) \
     .
 
