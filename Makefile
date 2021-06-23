@@ -49,7 +49,7 @@ full:
 
 .PHONY: $(ERLANG_BUILDS)
 $(ERLANG_BUILDS):
-	@echo "Building erlang $(ERLANG_VERSION) for $(OS) $(OS_VERSION)"
+	@echo "Building erlang $(ERLANG_VERSION) for $(OS) $(OS_VERSION) $(PLATFORMS)"
 	@docker buildx create --name "$(BUILDER)" --platform "$(PLATFORMS)" >/dev/null 2>&1 || true
 	@docker buildx build \
 	--platform "$(PLATFORMS)" \
