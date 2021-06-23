@@ -28,7 +28,7 @@ override ELIXIR_BUILDS = $(foreach elixir,$(ELIXIR_VERSIONS),$(foreach image_tag
 $(ERLANG_BUILDS): ERLANG_VERSION = $(word 2,$(subst _, ,$@))
 $(ERLANG_BUILDS): OS = $(word 3,$(subst _, ,$@))
 $(ERLANG_BUILDS): OS_VERSION = $(word 4,$(subst _, ,$@))
-$(ERLANG_BUILDS): BUILDER = "esl-buildx-erlang-$(OS)-$(OS_VERSION)"
+$(ERLANG_BUILDS): BUILDER = esl-buildx-erlang-$(OS)-$(OS_VERSION)
 $(ERLANG_BUILDS): NPROC = $(shell nproc)
 $(ERLANG_BUILDS): PLATFORM_COUNT = $(words $(shell echo "$(PLATFORMS)" | tr ',' ' '))
 $(ERLANG_BUILDS): JOBS = $$(($(NPROC) / $(PLATFORM_COUNT)))
@@ -69,7 +69,7 @@ $(ELIXIR_BUILDS): ELIXIR_VERSION = $(word 2,$(subst _, ,$@))
 $(ELIXIR_BUILDS): ERLANG_VERSION = $(word 3,$(subst _, ,$@))
 $(ELIXIR_BUILDS): OS = $(word 4,$(subst _, ,$@))
 $(ELIXIR_BUILDS): OS_VERSION = $(word 5,$(subst _, ,$@))
-$(ELIXIR_BUILDS): BUILDER = "esl-buildx-elixir-$(OS)-$(OS_VERSION)"
+$(ELIXIR_BUILDS): BUILDER = esl-buildx-elixir-$(OS)-$(OS_VERSION)
 $(ELIXIR_BUILDS): JOBS = $(shell nproc)
 
 .PHONY: $(ELIXIR_BUILDS)
