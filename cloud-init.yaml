@@ -72,4 +72,5 @@ packages:
   - containerd.io
 
 runcmd:
+  - sudo chmod o+rw /var/run/docker.sock
   - sudo docker run --privileged --rm tonistiigi/binfmt --install all
