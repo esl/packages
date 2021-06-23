@@ -66,10 +66,9 @@ ARG elixir_version
 RUN wget --quiet https://github.com/elixir-lang/elixir/archive/v${elixir_version}.tar.gz
 RUN tar xf v${elixir_version}.tar.gz
 WORKDIR /tmp/build/elixir-${elixir_version}
-ARG jobs
-RUN make --jobs=${jobs}
-RUN make --jobs=${jobs} test
-RUN make --jobs=${jobs} install PREFIX=/usr DESTDIR=/tmp/install
+RUN make
+RUN make test
+RUN make install PREFIX=/usr DESTDIR=/tmp/install
 
 # Package it
 WORKDIR /tmp/output
