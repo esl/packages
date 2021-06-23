@@ -61,7 +61,8 @@ WORKDIR /tmp/build
 ARG erlang_version
 RUN wget --quiet https://github.com/erlang/otp/releases/download/OTP-${erlang_version}/otp_src_${erlang_version}.tar.gz
 RUN tar xf otp_src_${erlang_version}.tar.gz
-WORKDIR /tmp/build/otp_src_${erlang_version}
+ENV ERL_TOP=/tmp/build/otp_src_${erlang_version}
+WORKDIR $ERL_TOP
 RUN if [ ! -f configure ]; then \
     ./otp_build autoconf; \
     fi
@@ -78,6 +79,17 @@ RUN ./configure \
 
 ARG jobs
 RUN make --jobs=${jobs}
+
+# Test it
+RUN make --jobs=${jobs} release_tests
+WORKDIR $ERL_TOP/release/tests/test_server
+RUN $ERL_TOP/bin/erl -noshell -s ts install -s ts smoke_test batch -s init stop
+RUN if grep -q '=failed *[1-9]' ct_run.test_server@*/*/run.*/suite.log; then \
+    echo "One or more tests failed."; \
+    exit 1; \
+    fi
+
+WORKDIR $ERL_TOP
 RUN make --jobs=${jobs} docs DOC_TARGETS="chunks man"
 RUN mkdir -p /tmp/install
 RUN make --jobs=${jobs} DESTDIR=/tmp/install install
@@ -102,10 +114,6 @@ RUN fpm -s dir -t rpm \
     --provides "erlang-erts = ${erlang_version}-${erlang_iteration}" \
     --provides "erlang-inets = ${erlang_version}-${erlang_iteration}" \
     .
-
-# Test it
-RUN rpm -i /tmp/output/*.rpm
-RUN erl -eval "ssl:start(), erlang:halt()."
 
 # Export it
 FROM scratch
