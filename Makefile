@@ -11,9 +11,9 @@ UBUNTU_VERSIONS :=
 CENTOS_VERSIONS :=
 ALMALINUX_VERSIONS :=
 AMAZONLINUX_VERSIONS :=
-CACHE_FROM = "type=local,src=cache/$(OS)/$(OS_VERSION)"
-CACHE_TO = "type=local,dest=cache/$(OS)/$(OS_VERSION)"
-OUTPUT = "type=local,dest=build/$(OS)/$(OS_VERSION)"
+CACHE_FROM = type=local,src=cache/$(OS)/$(OS_VERSION)
+CACHE_TO = type=local,dest=cache/$(OS)/$(OS_VERSION)
+OUTPUT = type=local,dest=build/$(OS)/$(OS_VERSION)
 
 override DEBIANS := $(foreach v,$(DEBIAN_VERSIONS),debian_$(v))
 override UBUNTUS := $(foreach v,$(UBUNTU_VERSIONS),ubuntu_$(v))
