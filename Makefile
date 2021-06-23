@@ -83,7 +83,7 @@ $(ELIXIR_BUILDS):
 	--build-arg os="$(OS)" \
 	--build-arg os_version="$(OS_VERSION)" \
 	--build-arg erlang_version="$(ERLANG_VERSION)" \
-	--build-arg elixir_version="${ELIXIR_VERSION}" \
+	--build-arg elixir_version="$(ELIXIR_VERSION)" \
 	--build-arg elixir_iteration="$(ELIXIR_ITERATION)" \
 	--file "Dockerfile_elixir_$(OS)" \
 	--cache-from="$(CACHE_FROM)" \
