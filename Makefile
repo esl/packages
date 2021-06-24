@@ -20,10 +20,11 @@ override UBUNTUS := $(foreach v,$(UBUNTU_VERSIONS),ubuntu_$(v))
 override CENTOSES := $(foreach v,$(CENTOS_VERSIONS),centos_$(v))
 override ALMALINUXES := $(foreach v,$(ALMALINUX_VERSIONS),almalinux_$(v))
 override AMAZONLINUXES := $(foreach v,$(AMAZONLINUX_VERSIONS),amazonlinux_$(v))
-override IMAGE_TAGS := $(DEBIANS) $(UBUNTUS) $(CENTOSES) $(ALMALINUXES) $(AMAZONLINUXES)
+override ERLANG_IMAGE_TAGS := $(DEBIANS) $(UBUNTUS) $(CENTOSES) $(ALMALINUXES) $(AMAZONLINUXES)
+override ELIXIR_IMAGE_TAGS = debian_buster centos_8
 
-override ERLANG_BUILDS = $(foreach erlang,$(ERLANG_VERSIONS),$(foreach image_tag,$(IMAGE_TAGS),erlang_$(erlang)_$(image_tag)))
-override ELIXIR_BUILDS = $(foreach elixir,$(ELIXIR_VERSIONS),$(foreach image_tag,$(IMAGE_TAGS),elixir_$(elixir)_$(image_tag)))
+override ERLANG_BUILDS = $(foreach erlang,$(ERLANG_VERSIONS),$(foreach image_tag,$(ERLANG_IMAGE_TAGS),erlang_$(erlang)_$(image_tag)))
+override ELIXIR_BUILDS = $(foreach elixir,$(ELIXIR_VERSIONS),$(foreach image_tag,$(ELIXIR_IMAGE_TAGS),elixir_$(elixir)_$(image_tag)))
 
 $(ERLANG_BUILDS): ERLANG_VERSION = $(word 2,$(subst _, ,$@))
 $(ERLANG_BUILDS): OS = $(word 3,$(subst _, ,$@))
