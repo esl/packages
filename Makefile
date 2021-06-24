@@ -51,6 +51,7 @@ full:
 $(ERLANG_BUILDS):
 	@echo "Building erlang $(ERLANG_VERSION) for $(OS) $(OS_VERSION) $(PLATFORMS)"
 	@docker buildx create --name "$(BUILDER)" --platform "$(PLATFORMS)" >/dev/null 2>&1 || true
+	@date +%s > $@.start
 	@docker buildx build \
 	--platform "$(PLATFORMS)" \
 	--builder "$(BUILDER)" \
@@ -64,6 +65,7 @@ $(ERLANG_BUILDS):
 	--output "$(OUTPUT)" \
 	--file "Dockerfile_erlang_$(OS)" \
 	. 2>&1 | tee $@.log
+	@date +%s > $@.end
 
 $(ELIXIR_BUILDS): ELIXIR_VERSION = $(word 2,$(subst _, ,$@))
 $(ELIXIR_BUILDS): ERLANG_VERSION = $(word 3,$(subst _, ,$@))
@@ -76,6 +78,7 @@ $(ELIXIR_BUILDS): JOBS = $(shell nproc)
 $(ELIXIR_BUILDS):
 	@echo "Building elixir $(ELIXIR_VERSION) against erlang $(ERLANG_VERSION) for $(OS) $(OS_VERSION)"
 	@docker buildx create --name "$(BUILDER)" --platform "$(PLATFORMS)"  >/dev/null 2>&1 || true
+	@date +%s > $@.start
 	@docker buildx build \
 	--platform="linux/amd64" \
 	--builder "$(BUILDER)" \
@@ -90,10 +93,11 @@ $(ELIXIR_BUILDS):
 	--cache-to="$(CACHE_TO)" \
 	--output "$(OUTPUT)" \
 	. 2>&1 | tee $@.log
+	@date +%s > $@.end
 
 .PHONY: clean
 clean:
-	@rm -f *.log
+	@rm -f *.log *.start *.end
 	@rm -rf build/
 
 .PHONY: destroy
