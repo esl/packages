@@ -25,6 +25,16 @@ RUN if [ "${os}" = "ubuntu" -a "${BUILDPLATFORM}" != "${TARGETPLATFORM}" ]; then
     echo "deb [arch=$(darch $TARGETPLATFORM)] http://ports.ubuntu.com/ubuntu-ports/ ${os_version}-security main universe" >> /etc/apt/sources.list.d/cross.list; \
     fi
 
+# install WX dependencies from stretch-backports, if needed.
+RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
+    --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
+    if [ "${os}:${os_version}" = "debian:stretch" ]; then \
+    echo "deb [arch=$(darch $TARGETPLATFORM)] http://deb.debian.org/debian stretch-backports main" > /etc/apt/sources.list.d/stretch-backports.list; \
+    apt-get --quiet update; \
+    apt-get --quiet --yes --no-install-recommends --target-release=stretch-backports install \
+    libwxgtk3.0-gtk3-dev:$(darch $TARGETPLATFORM) libwxgtk-webview3.0-gtk3-dev:$(darch $TARGETPLATFORM); \
+    fi
+
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
     --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
     apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
