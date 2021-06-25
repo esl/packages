@@ -29,10 +29,15 @@ RUN if [ "${os}" = "ubuntu" -a "${BUILDPLATFORM}" != "${TARGETPLATFORM}" ]; then
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
     --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
     if [ "${os}:${os_version}" = "debian:stretch" ]; then \
-    echo "deb [arch=$(darch $TARGETPLATFORM)] http://deb.debian.org/debian stretch-backports main" > /etc/apt/sources.list.d/stretch-backports.list; \
+    echo "deb http://deb.debian.org/debian stretch-backports main" > /etc/apt/sources.list.d/stretch-backports.list; \
     apt-get --quiet update; \
-    apt-get --quiet --yes --no-install-recommends --target-release=stretch-backports install \
-    libwxgtk3.0-gtk3-dev:$(darch $TARGETPLATFORM) libwxgtk-webview3.0-gtk3-dev:$(darch $TARGETPLATFORM); \
+    apt-get --quiet --yes --no-install-recommends install \
+    libwxbase3.0-0v5:$(darch $TARGETPLATFORM)/stretch-backports \
+    libwxbase3.0-dev:$(darch $TARGETPLATFORM)/stretch-backports \
+    libwxgtk-webview3.0-gtk3-dev:$(darch $TARGETPLATFORM)/stretch-backports \
+    libwxgtk3.0-gtk3-0v5:$(darch $TARGETPLATFORM)/stretch-backports \
+    libwxgtk3.0-gtk3-dev:$(darch $TARGETPLATFORM)/stretch-backports \
+    wx3.0-headers/stretch-backports; \
     fi
 
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
