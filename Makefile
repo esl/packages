@@ -51,6 +51,8 @@ full: ELIXIR_VERSIONS = 1.12_22.3.4.9-1
 full: DEBIAN_VERSIONS = buster stretch
 full: UBUNTU_VERSIONS = focal bionic xenial trusty
 full: CENTOS_VERSIONS = 8 7
+full: ALMALINUX_VERSIONS = 8
+full: AMAZONLINUX_VERSIONS = 2
 
 .PHONY: full
 full:
