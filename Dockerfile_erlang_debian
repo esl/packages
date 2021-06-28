@@ -2,7 +2,7 @@
 # syntax = docker/dockerfile:1.2
 ARG os
 ARG os_version
-FROM --platform=$BUILDPLATFORM $os:$os_version as builder
+FROM --platform=$BUILDPLATFORM ${os}:${os_version} as builder
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 ARG os
