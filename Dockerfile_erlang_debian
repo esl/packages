@@ -165,9 +165,16 @@ RUN fpm -s dir -t deb \
     echo "--conflicts $pkg"; \
     echo "--replaces $pkg"; \
     echo "--provides $pkg"; \
-    done) \
-    .
+    done)
+
+# Prove it is installable
+FROM --platform=$TARGETPLATFORM ${os}:${os_version} as testing
+WORKDIR /tmp/output
+COPY --from=builder /tmp/output .
+RUN dpkg -i *.deb || true
+RUN apt-get --quiet update && apt-get --quiet --yes --fix-broken install
+RUN erl -eval "ssl:start(), wx:new(), erlang:halt()."
 
 # Export it
 FROM scratch
-COPY --from=builder /tmp/output /
+COPY --from=testing /tmp/output /
