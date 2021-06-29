@@ -46,19 +46,8 @@ RUN if [ "${os}:${os_version}" = "ubuntu:trusty" ]; then \
     gem install fpm --no-document --version 1.13.0; \
     fi
 
-# Apply special fix for locale for all OSs other than Ubuntu Trusty (release 14)
-RUN if [ "${os}:${os_version}" = "ubuntu:trusty" ]; then \
-    locale-gen en_US.UTF-8; \
-    else \
-    apt-get update && apt-get install -y locales && \
-    sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
-    dpkg-reconfigure --frontend=noninteractive locales && \
-    update-locale LANG=en_US.UTF-8; \
-    fi
-
-ENV LANG=en_US.UTF-8
-ENV LANGUAGE=en_US:en
-ENV LC_ALL=en_US.UTF-8
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
 
 # Build and test it
 WORKDIR /tmp/build
