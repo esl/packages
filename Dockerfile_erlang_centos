@@ -98,6 +98,7 @@ RUN make --jobs=${jobs} DESTDIR=/tmp/install install-docs DOC_TARGETS="chunks ma
 # Package it
 WORKDIR /tmp/output
 ARG erlang_iteration
+ADD determine-license /usr/local/bin
 RUN fpm -s dir -t rpm \
     --chdir /tmp/install \
     --name esl-erlang \
@@ -109,6 +110,7 @@ RUN fpm -s dir -t rpm \
     --category interpreters \
     --description "Concurrent, real-time, distributed functional language" \
     --url "https://erlang-solutions.com" \
+    --license "$(determine-license ${erlang_version})" \
     --depends 'openssl-libs' \
     --provides "erlang = ${erlang_version}-${erlang_iteration}" \
     --provides "erlang-erts = ${erlang_version}-${erlang_iteration}" \

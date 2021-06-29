@@ -1,0 +1,9 @@
+#!/bin/sh -e
+
+LEAST=$(echo "18.0\n$1" | sort --version-sort | head -n1)
+
+if [ "${LEAST}" = "18.0" ]; then
+    echo "Apache Software License"
+else
+    echo "Erlang Public License"
+fi

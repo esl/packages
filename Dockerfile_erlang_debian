@@ -68,6 +68,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
     libncurses-dev:$(darch $TARGETPLATFORM) \
     libsctp-dev:$(darch $TARGETPLATFORM) \
     libssl-dev:$(darch $TARGETPLATFORM) \
+    openssl \
     procps \
     unixodbc-dev:$(darch $TARGETPLATFORM) \
     wget \
@@ -145,6 +146,7 @@ RUN make --jobs=${jobs} DESTDIR=/tmp/install install-docs DOC_TARGETS="chunks ma
 # Package it
 WORKDIR /tmp/output
 ARG erlang_iteration
+ADD determine-license /usr/local/bin
 RUN fpm -s dir -t deb \
     --chdir /tmp/install \
     --name esl-erlang \
@@ -158,6 +160,7 @@ RUN fpm -s dir -t deb \
     --category interpreters \
     --description "Concurrent, real-time, distributed functional language" \
     --url "https://erlang-solutions.com" \
+    --license "$(determine-license ${erlang_version})" \
     --depends 'procps, libc6, libncurses5, libsctp1' \
     --depends $(apt-cache depends libssl-dev | grep Depends | grep -Eo 'libssl[0-9.]+') \
     $(if [ "${os}:${os_version}" != "ubuntu:trusty" ]; then echo '--deb-compression xz'; fi) \
