@@ -92,9 +92,11 @@ RUN if [ "${os}:${os_version}" = "ubuntu:trusty" ]; then \
 # Build it
 WORKDIR /tmp/build
 ARG erlang_version
-RUN wget --quiet https://github.com/erlang/otp/releases/download/OTP-${erlang_version}/otp_src_${erlang_version}.tar.gz
-RUN tar xf otp_src_${erlang_version}.tar.gz
 ENV ERL_TOP=/tmp/build/otp_src_${erlang_version}
+RUN mkdir -p $ERL_TOP
+RUN wget --quiet https://github.com/erlang/otp/releases/download/OTP-${erlang_version}/otp_src_${erlang_version}.tar.gz || \
+    wget --quiet https://github.com/erlang/otp/archive/refs/tags/OTP-${erlang_version}.tar.gz
+RUN tar -C $ERL_TOP --strip-components=1 -xf *${erlang_version}.tar.gz
 WORKDIR $ERL_TOP
 RUN if [ ! -f configure ]; then \
     ./otp_build autoconf; \
