@@ -33,30 +33,27 @@ override ERLANG_BUILDS = $(foreach erlang,$(ERLANG_VERSIONS),$(foreach image_tag
 override ELIXIR_BUILDS = $(foreach elixir,$(ELIXIR_VERSIONS),$(foreach image_tag,$(ELIXIR_IMAGE_TAGS),elixir_$(elixir)_$(image_tag)))
 
 .PHONY: custom
-custom:
-	$(MAKE) $(ERLANG_BUILDS) $(ELIXIR_BUILDS)
+custom: $(ERLANG_BUILDS) $(ELIXIR_BUILDS)
 
-latest: ERLANG_VERSIONS = $(ERLANG_MAINTS)
-latest: ELIXIR_VERSIONS = 1.12_22.3.4.9-1
-latest: DEBIAN_VERSIONS = buster
-latest: UBUNTU_VERSIONS = focal
-latest: CENTOS_VERSIONS = 8
+ERLANG_VERSIONS = $(ERLANG_MAINTS)
+ELIXIR_VERSIONS = 1.12_22.3.4.9-1
+DEBIAN_VERSIONS = buster
+UBUNTU_VERSIONS = focal
+CENTOS_VERSIONS = 8
 
 .PHONY: latest
-latest:
-	$(MAKE) $(ERLANG_BUILDS) $(ELIXIR_BUILDS)
+latest: $(ERLANG_BUILDS) $(ELIXIR_BUILDS)
 
-full: ERLANG_VERSIONS = $(ERLANG_MAINTS)
-full: ELIXIR_VERSIONS = 1.12_22.3.4.9-1
-full: DEBIAN_VERSIONS = buster stretch
-full: UBUNTU_VERSIONS = focal bionic xenial trusty
-full: CENTOS_VERSIONS = 8 7
-full: ALMALINUX_VERSIONS = 8
-full: AMAZONLINUX_VERSIONS = 2
+ERLANG_VERSIONS = $(ERLANG_MAINTS)
+ELIXIR_VERSIONS = 1.12_22.3.4.9-1
+DEBIAN_VERSIONS = buster stretch
+UBUNTU_VERSIONS = focal bionic xenial trusty
+CENTOS_VERSIONS = 8 7
+ALMALINUX_VERSIONS = 8
+AMAZONLINUX_VERSIONS = 2
 
 .PHONY: full
-full:
-	$(MAKE) $(ERLANG_BUILDS) $(ELIXIR_BUILDS)
+full: $(ERLANG_BUILDS) $(ELIXIR_BUILDS)
 
 erlang_%: ERLANG_VERSION = $(word 2,$(subst _, ,$@))
 erlang_%: OS = $(word 3,$(subst _, ,$@))
