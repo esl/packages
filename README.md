@@ -2,10 +2,7 @@
 
 
 This repository contains a new approach to Erlang/Elixir package
-creation and publishing. As I'm not familiar with ESL's existing
-infrastructure setup or tooling I cannot fully deliver this work to
-production on my own. Hence, I describe the components here and
-further describe how they should be deployed and managed.
+creation and publishing.
 
 The packaging repo consists of three distinct pieces: building from
 source, packaging and publishing.
@@ -42,12 +39,16 @@ additional future nuances.
 In order to improve build times, especially if a previous build has
 been run (or partially run), the docker scripts use the `buildx`
 "mount cache" feature, ensuring we cache any dependencies that we need
-to downloaded.
+to downloaded. Foreign architecture builds are built with a
+cross-compiler where available (Debian and Ubuntu).
 
-Additionally the docker files are ordered such that as much work as
+The docker files are ordered such that as much work as
 possible is done before the version-specific build begins, so that the
 docker cache can be leveraged when building multiple erlang versions
 for the same operating system targets.
+
+Finally, the OTP smoke test must run successfully for an artifact to
+be produced.
 
 ## Package Generation
 
