@@ -32,28 +32,45 @@ override ELIXIR_IMAGE_TAGS = debian_buster centos_8
 override ERLANG_BUILDS = $(foreach erlang,$(ERLANG_VERSIONS),$(foreach image_tag,$(ERLANG_IMAGE_TAGS),erlang_$(erlang)_$(image_tag)))
 override ELIXIR_BUILDS = $(foreach elixir,$(ELIXIR_VERSIONS),$(foreach image_tag,$(ELIXIR_IMAGE_TAGS),elixir_$(elixir)_$(image_tag)))
 
+override LATEST_DEBIAN := buster
+override LATEST_UBUNTU := focal
+override LATEST_CENTOS := 8
+
+override FULL_DEBIAN := bullseye buster stretch
+override FULL_UBUNTU := focal bionic xenial trusty
+override FULL_CENTOS := 8 7
+
+override DEFAULT_ELIXIR := 1.12_22.3.4.9-1
+
 .PHONY: custom
 custom: $(ERLANG_BUILDS) $(ELIXIR_BUILDS)
 
 ERLANG_VERSIONS = $(ERLANG_MAINTS)
-ELIXIR_VERSIONS = 1.12_22.3.4.9-1
-DEBIAN_VERSIONS = buster
-UBUNTU_VERSIONS = focal
-CENTOS_VERSIONS = 8
+ELIXIR_VERSIONS = $(DEFAULT_ELIXIR)
+DEBIAN_VERSIONS = $(LATEST_DEBIAN)
+UBUNTU_VERSIONS = $(LATEST_UBUNTU)
+CENTOS_VERSIONS = $(LATEST_CENTOS)
 
 .PHONY: latest
 latest: $(ERLANG_BUILDS) $(ELIXIR_BUILDS)
 
 ERLANG_VERSIONS = $(ERLANG_MAINTS)
-ELIXIR_VERSIONS = 1.12_22.3.4.9-1
-DEBIAN_VERSIONS = buster stretch
-UBUNTU_VERSIONS = focal bionic xenial trusty
-CENTOS_VERSIONS = 8 7
-ALMALINUX_VERSIONS = 8
-AMAZONLINUX_VERSIONS = 2
+ELIXIR_VERSIONS = $(DEFAULT_ELIXIR)
+DEBIAN_VERSIONS = $(FULL_DEBIAN)
+UBUNTU_VERSIONS = $(FULL_UBUNTU)
+CENTOS_VERSIONS = $(FULL_CENTOS)
 
 .PHONY: full
 full: $(ERLANG_BUILDS) $(ELIXIR_BUILDS)
+
+ERLANG_VERSIONS =
+ELIXIR_VERSIONS = $(DEFAULT_ELIXIR)
+DEBIAN_VERSIONS = $(LATEST_DEBIAN)
+UBUNTU_VERSIONS = $(LATEST_UBUNTU)
+CENTOS_VERSIONS = $(LATEST_CENTOS)
+
+.PHONY: single
+single: $(ERLANG_BUILDS)
 
 erlang_%: ERLANG_VERSION = $(word 2,$(subst _, ,$@))
 erlang_%: OS = $(word 3,$(subst _, ,$@))
