@@ -47,7 +47,6 @@ RUN if [ "${os}:${os_version}" = "ubuntu:trusty" ]; then \
     fi
 
 ENV LANG=C.UTF-8
-ENV LC_ALL=C.UTF-8
 
 # Build and test it
 WORKDIR /tmp/build
