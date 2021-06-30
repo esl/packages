@@ -75,7 +75,7 @@ single: $(ERLANG_BUILDS)
 erlang_%: ERLANG_VERSION = $(word 2,$(subst _, ,$@))
 erlang_%: OS = $(word 3,$(subst _, ,$@))
 erlang_%: OS_VERSION = $(word 4,$(subst _, ,$@))
-erlang_%: BUILDER = esl-buildx-erlang-$(OS)-$(OS_VERSION)
+erlang_%: BUILDER = esl-buildx-erlang
 erlang_%: NPROC = $(shell nproc)
 erlang_%: PLATFORM_COUNT = $(words $(shell echo "$(PLATFORMS)" | tr ',' ' '))
 erlang_%: JOBS = $$(($(NPROC) / $(PLATFORM_COUNT)))
@@ -104,7 +104,7 @@ elixir_%: ELIXIR_VERSION = $(word 2,$(subst _, ,$@))
 elixir_%: ERLANG_VERSION = $(word 3,$(subst _, ,$@))
 elixir_%: OS = $(word 4,$(subst _, ,$@))
 elixir_%: OS_VERSION = $(word 5,$(subst _, ,$@))
-elixir_%: BUILDER = esl-buildx-elixir-$(OS)-$(OS_VERSION)
+elixir_%: BUILDER = esl-buildx-elixir
 elixir_%: JOBS = $(shell nproc)
 
 .PHONY: elixir_%
