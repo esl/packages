@@ -11,6 +11,7 @@ UBUNTU_VERSIONS :=
 CENTOS_VERSIONS :=
 ALMALINUX_VERSIONS :=
 AMAZONLINUX_VERSIONS :=
+ROCKYLINUX_VERSIONS :=
 CACHE_FROM = type=local,src=cache/$(OS)/$(OS_VERSION)
 CACHE_TO = type=local,dest=cache/$(OS)/$(OS_VERSION)
 OUTPUT = type=local,dest=build/$(OS)/$(OS_VERSION)
@@ -26,7 +27,8 @@ override UBUNTUS = $(foreach v,$(UBUNTU_VERSIONS),ubuntu_$(v))
 override CENTOSES = $(foreach v,$(CENTOS_VERSIONS),centos_$(v))
 override ALMALINUXES = $(foreach v,$(ALMALINUX_VERSIONS),almalinux_$(v))
 override AMAZONLINUXES = $(foreach v,$(AMAZONLINUX_VERSIONS),amazonlinux_$(v))
-override ERLANG_IMAGE_TAGS = $(DEBIANS) $(UBUNTUS) $(CENTOSES) $(ALMALINUXES) $(AMAZONLINUXES)
+override ROCKYLINUXES = $(foreach v,$(ROCKYLINUX_VERSIONS),rockylinux_$(v))
+override ERLANG_IMAGE_TAGS = $(DEBIANS) $(UBUNTUS) $(CENTOSES) $(ALMALINUXES) $(AMAZONLINUXES) $(ROCKYLINUXES)
 override ELIXIR_IMAGE_TAGS = debian_buster centos_8
 
 override ERLANG_BUILDS = $(foreach erlang,$(ERLANG_VERSIONS),$(foreach image_tag,$(ERLANG_IMAGE_TAGS),erlang_$(erlang)_$(image_tag)))
@@ -72,10 +74,12 @@ CENTOS_VERSIONS = $(LATEST_CENTOS)
 .PHONY: single
 single: $(ERLANG_BUILDS)
 
+override FIX_IMAGE = $(subst rockylinux,rockylinux/rockylinux,$(OS):$(OS_VERSION))
+
 erlang_%: ERLANG_VERSION = $(word 2,$(subst _, ,$@))
 erlang_%: OS = $(word 3,$(subst _, ,$@))
 erlang_%: OS_VERSION = $(word 4,$(subst _, ,$@))
-erlang_%: IMAGE = $(OS):$(OS_VERSION)
+erlang_%: IMAGE = $(FIX_IMAGE)
 erlang_%: BUILDER = esl-buildx-erlang
 erlang_%: NPROC = $(shell nproc)
 erlang_%: PLATFORM_COUNT = $(words $(shell echo "$(PLATFORMS)" | tr ',' ' '))
@@ -106,7 +110,7 @@ elixir_%: ELIXIR_VERSION = $(word 2,$(subst _, ,$@))
 elixir_%: ERLANG_VERSION = $(word 3,$(subst _, ,$@))
 elixir_%: OS = $(word 4,$(subst _, ,$@))
 elixir_%: OS_VERSION = $(word 5,$(subst _, ,$@))
-elixir_%: IMAGE = $(OS):$(OS_VERSION)
+elixir_%: IMAGE = $(FIX_IMAGE)
 elixir_%: BUILDER = esl-buildx-elixir
 elixir_%: JOBS = $(shell nproc)
 

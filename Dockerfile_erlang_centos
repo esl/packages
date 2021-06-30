@@ -9,7 +9,7 @@ ADD yumdnf /usr/local/bin/
 # Setup EPEL
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=private \
     --mount=type=cache,id=${os}_${os_version},target=/var/cache/yum,sharing=private \
-    if [ "${os}" = "centos" -o "${os}" = "almalinux" ]; then \
+    if [ "${os}" = "centos" -o "${os}" = "almalinux" -o "${os}" = "rockylinux" ]; then \
     yumdnf install -y epel-release; \
     fi
 
