@@ -1,8 +1,7 @@
 # -*- mode: dockerfile -*-
 # syntax = docker/dockerfile:1.2
-ARG os
-ARG os_version
-FROM --platform=$BUILDPLATFORM ${os}:${os_version} as builder
+ARG image
+FROM --platform=${BUILDPLATFORM} ${image} as builder
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 ARG os
@@ -174,7 +173,7 @@ RUN fpm -s dir -t deb \
     done)
 
 # Prove it is installable
-FROM --platform=$TARGETPLATFORM ${os}:${os_version} as testing
+FROM --platform=${TARGETPLATFORM} ${image} as testing
 WORKDIR /tmp/output
 COPY --from=builder /tmp/output .
 RUN dpkg -i *.deb || true

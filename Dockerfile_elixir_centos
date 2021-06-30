@@ -1,8 +1,7 @@
 # -*- mode: dockerfile -*-
 # syntax = docker/dockerfile:1.2
-ARG os
-ARG os_version
-FROM $os:$os_version as builder
+ARG image
+FROM ${image} as builder
 ARG os
 ARG os_version
 ADD yumdnf /usr/local/bin/
