@@ -7,7 +7,7 @@ case $1 in
     "linux/arm64")
 	echo "arm64"
 	;;
-    "linux/ppc64el")
+    "linux/ppc64le")
 	echo "ppc64el"
 	;;
     "linux/s390x")
