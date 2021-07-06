@@ -4,8 +4,17 @@ case $1 in
     "linux/amd64")
 	echo "amd64"
 	;;
-    "linux/arm64")
+    "linux/arm/v5")
+	echo "armel"
+	;;
+    "linux/arm/v7")
+	echo "armhf"
+	;;
+    "linux/arm64" | "linux/arm64/v8")
 	echo "arm64"
+	;;
+    "linux/mips64le")
+	echo "mips64el"
 	;;
     "linux/ppc64le")
 	echo "ppc64el"
@@ -16,4 +25,10 @@ case $1 in
     "linux/386")
 	echo "i386"
 	;;
+    *)
+	echo "unknown arch: $1" >&2
+	exit 1
+	;;
 esac
+
+exit 0
