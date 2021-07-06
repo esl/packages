@@ -5,7 +5,7 @@ ERLANG_VERSIONS :=
 ERLANG_ITERATION := 1
 ELIXIR_VERSIONS :=
 ELIXIR_ITERATION := 1
-PLATFORMS := linux/amd64,linux/arm64/v8
+PLATFORMS := linux/amd64 linux/arm64/v8
 DEBIAN_VERSIONS :=
 UBUNTU_VERSIONS :=
 CENTOS_VERSIONS :=
@@ -31,7 +31,7 @@ override ROCKYLINUXES = $(foreach v,$(ROCKYLINUX_VERSIONS),rockylinux_$(v))
 override ERLANG_IMAGE_TAGS = $(DEBIANS) $(UBUNTUS) $(CENTOSES) $(ALMALINUXES) $(AMAZONLINUXES) $(ROCKYLINUXES)
 override ELIXIR_IMAGE_TAGS = debian_buster centos_8
 
-override ERLANG_BUILDS = $(foreach erlang,$(ERLANG_VERSIONS),$(foreach image_tag,$(ERLANG_IMAGE_TAGS),erlang_$(erlang)_$(image_tag)))
+override ERLANG_BUILDS = $(foreach erlang,$(ERLANG_VERSIONS),$(foreach image_tag,$(ERLANG_IMAGE_TAGS),$(foreach platform,$(subst /,-,$(PLATFORMS)),erlang_$(erlang)_$(image_tag)_$(platform))))
 override ELIXIR_BUILDS = $(foreach elixir,$(ELIXIR_VERSIONS),$(foreach image_tag,$(ELIXIR_IMAGE_TAGS),elixir_$(elixir)_$(image_tag)))
 
 override LATEST_DEBIAN := buster
@@ -80,18 +80,17 @@ erlang_%: ERLANG_VERSION = $(word 2,$(subst _, ,$@))
 erlang_%: OS = $(word 3,$(subst _, ,$@))
 erlang_%: OS_VERSION = $(word 4,$(subst _, ,$@))
 erlang_%: IMAGE = $(FIX_IMAGE)
+erlang_%: PLATFORM = $(subst -,/,$(word 5,$(subst _, ,$@)))
 erlang_%: BUILDER = esl-buildx-erlang
-erlang_%: NPROC = $(shell nproc)
-erlang_%: PLATFORM_COUNT = $(words $(shell echo "$(PLATFORMS)" | tr ',' ' '))
-erlang_%: JOBS = $$(($(NPROC) / $(PLATFORM_COUNT)))
+erlang_%: JOBS = $(shell nproc)
 
 .PHONY: erlang_%
 erlang_%:
 	@echo "Building erlang $(ERLANG_VERSION) for $(OS) $(OS_VERSION) $(PLATFORMS)"
-	@docker buildx create --name "$(BUILDER)" --platform "$(PLATFORMS)" >/dev/null 2>&1 || true
+	@docker buildx create --name "$(BUILDER)" >/dev/null 2>&1 || true
 	@date +%s > $@.start
 	@docker buildx build \
-	--platform "$(PLATFORMS)" \
+	--platform "$(PLATFORM)" \
 	--builder "$(BUILDER)" \
 	--build-arg jobs="$(JOBS)" \
 	--build-arg image="$(IMAGE)" \
@@ -117,7 +116,7 @@ elixir_%: JOBS = $(shell nproc)
 .PHONY: elixir_%
 elixir_%:
 	@echo "Building elixir $(ELIXIR_VERSION) against erlang $(ERLANG_VERSION) for $(OS) $(OS_VERSION)"
-	@docker buildx create --name "$(BUILDER)" --platform "$(PLATFORMS)"  >/dev/null 2>&1 || true
+	@docker buildx create --name "$(BUILDER)" >/dev/null 2>&1 || true
 	@date +%s > $@.start
 	@docker buildx build \
 	--platform="linux/amd64" \
