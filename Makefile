@@ -86,8 +86,8 @@ erlang_%: JOBS = $(shell nproc)
 
 .PHONY: erlang_%
 erlang_%:
-	@echo "Building erlang $(ERLANG_VERSION) for $(OS) $(OS_VERSION) $(PLATFORMS)"
-	@docker buildx create --name "$(BUILDER)" >/dev/null 2>&1 || true
+	@echo "Building erlang $(ERLANG_VERSION) for $(OS) $(OS_VERSION) $(PLATFORM)"
+	@docker buildx create --name "$(BUILDER)" --platform "$(PLATFORM)" >/dev/null 2>&1 || true
 	@date +%s > $@.start
 	@docker buildx build \
 	--platform "$(PLATFORM)" \
