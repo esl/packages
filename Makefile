@@ -12,6 +12,7 @@ CENTOS_VERSIONS :=
 ALMALINUX_VERSIONS :=
 AMAZONLINUX_VERSIONS :=
 ROCKYLINUX_VERSIONS :=
+FEDORA_VERSIONS :=
 CACHE_FROM = type=local,src=cache/$(OS)/$(OS_VERSION)
 CACHE_TO = type=local,dest=cache/$(OS)/$(OS_VERSION)
 OUTPUT = type=local,dest=build/$(OS)/$(OS_VERSION)
@@ -28,7 +29,8 @@ override CENTOSES = $(foreach v,$(CENTOS_VERSIONS),centos_$(v))
 override ALMALINUXES = $(foreach v,$(ALMALINUX_VERSIONS),almalinux_$(v))
 override AMAZONLINUXES = $(foreach v,$(AMAZONLINUX_VERSIONS),amazonlinux_$(v))
 override ROCKYLINUXES = $(foreach v,$(ROCKYLINUX_VERSIONS),rockylinux_$(v))
-override ERLANG_IMAGE_TAGS = $(DEBIANS) $(UBUNTUS) $(CENTOSES) $(ALMALINUXES) $(AMAZONLINUXES) $(ROCKYLINUXES)
+override FEDORAS = $(foreach v,$(FEDORA_VERSIONS),fedora_$(v))
+override ERLANG_IMAGE_TAGS = $(DEBIANS) $(UBUNTUS) $(CENTOSES) $(ALMALINUXES) $(AMAZONLINUXES) $(ROCKYLINUXES) $(FEDORAS)
 override ELIXIR_IMAGE_TAGS = debian_buster centos_8
 
 override ERLANG_BUILDS = $(foreach erlang,$(ERLANG_VERSIONS),$(foreach image_tag,$(ERLANG_IMAGE_TAGS),$(foreach platform,$(subst /,-,$(PLATFORMS)),erlang_$(erlang)_$(image_tag)_$(platform))))
@@ -37,10 +39,12 @@ override ELIXIR_BUILDS = $(foreach elixir,$(ELIXIR_VERSIONS),$(foreach image_tag
 override LATEST_DEBIAN := buster
 override LATEST_UBUNTU := focal
 override LATEST_CENTOS := 8
+override LATEST_FEDORA := 34
 
 override FULL_DEBIAN := bullseye buster stretch
 override FULL_UBUNTU := focal bionic xenial trusty
 override FULL_CENTOS := 8 7
+override FULL_FEDORA := 34 33
 
 override DEFAULT_ELIXIR := 1.12_22.3.4.9-1
 
@@ -52,6 +56,7 @@ ELIXIR_VERSIONS = $(DEFAULT_ELIXIR)
 DEBIAN_VERSIONS = $(LATEST_DEBIAN)
 UBUNTU_VERSIONS = $(LATEST_UBUNTU)
 CENTOS_VERSIONS = $(LATEST_CENTOS)
+FEDORA_VERSIONS = $(LATEST_FEDORA)
 
 .PHONY: latest
 latest: $(ERLANG_BUILDS) $(ELIXIR_BUILDS)
@@ -61,6 +66,7 @@ ELIXIR_VERSIONS = $(DEFAULT_ELIXIR)
 DEBIAN_VERSIONS = $(FULL_DEBIAN)
 UBUNTU_VERSIONS = $(FULL_UBUNTU)
 CENTOS_VERSIONS = $(FULL_CENTOS)
+FEDORA_VERSIONS = $(FULL_FEDORA)
 
 .PHONY: full
 full: $(ERLANG_BUILDS) $(ELIXIR_BUILDS)
@@ -70,6 +76,7 @@ ELIXIR_VERSIONS = $(DEFAULT_ELIXIR)
 DEBIAN_VERSIONS = $(LATEST_DEBIAN)
 UBUNTU_VERSIONS = $(LATEST_UBUNTU)
 CENTOS_VERSIONS = $(LATEST_CENTOS)
+FEDORA_VERSIONS = $(LATEST_FEDORA)
 
 .PHONY: single
 single: $(ERLANG_BUILDS)
