@@ -22,6 +22,8 @@ override ERLANG_MAINTS = \
 	$(shell git ls-remote --tags --sort=-version:refname https://github.com/erlang/otp 'OTP-[2-9][0-9]*' | \
 	grep "$$(git ls-remote --heads https://github.com/erlang/otp 'maint-[2-9][0-9]*' | awk '{print $$1}')" | \
 	grep -Eo '[0-9]+\.[0-9.]+')
+override ELIXIR_LATEST = \
+	$(shell curl --fail https://api.github.com/repos/elixir-lang/elixir/releases?per_page=1 | jq -r '.[] | .tag_name')_$(ELIXIR_OTP)
 
 override DEBIANS = $(foreach v,$(DEBIAN_VERSIONS),debian_$(v))
 override UBUNTUS = $(foreach v,$(UBUNTU_VERSIONS),ubuntu_$(v))
@@ -46,13 +48,14 @@ override FULL_UBUNTU := focal bionic xenial trusty
 override FULL_CENTOS := 8 7
 override FULL_FEDORA := 34 33
 
-override DEFAULT_ELIXIR := 1.12_22.3.4.9-1
+override ELIXIR_OTP := 22.3.4.9-1
+override DEFAULT_ELIXIR := 12.2_$(ELIXIR_OTP)
 
 .PHONY: custom
 custom: $(ERLANG_BUILDS) $(ELIXIR_BUILDS)
 
 ERLANG_VERSIONS = $(ERLANG_MAINTS)
-ELIXIR_VERSIONS = $(DEFAULT_ELIXIR)
+ELIXIR_VERSIONS = $(ELIXIR_LATEST)
 DEBIAN_VERSIONS = $(LATEST_DEBIAN)
 UBUNTU_VERSIONS = $(LATEST_UBUNTU)
 CENTOS_VERSIONS = $(LATEST_CENTOS)
