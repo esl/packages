@@ -1,5 +1,13 @@
 SHELL = /bin/sh
 
+ifeq (, $(shell which jq))
+$(error "jq not found!")
+endif
+
+ifeq (, $(shell which nproc))
+$(error "nproc not found!")
+endif
+
 # Override these if you like
 ERLANG_VERSIONS :=
 ERLANG_ITERATION := 1
