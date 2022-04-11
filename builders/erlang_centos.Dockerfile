@@ -117,6 +117,16 @@ RUN fpm -s dir -t rpm \
     --provides "erlang-inets = ${erlang_version}-${erlang_iteration}" \
     .
 
+# Test install
+FROM ${image} as install
+
+WORKDIR /tmp/output
+COPY --from=builder /tmp/output .
+ADD yumdnf /usr/local/bin/
+
+RUN yumdnf install -y ./*.rpm
+RUN erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().'  -noshell
+
 # Export it
 FROM scratch
-COPY --from=builder /tmp/output /
+COPY --from=install /tmp/output /

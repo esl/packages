@@ -87,6 +87,16 @@ RUN fpm -s dir -t rpm \
     --depends "esl-erlang >= ${erlang_version}" \
     .
 
+# Test install
+FROM ${image} as install
+
+WORKDIR /tmp/output
+COPY --from=builder /tmp/output .
+ADD yumdnf /usr/local/bin/
+
+RUN yumdnf install -y ./*.rpm
+RUN elixir -v
+
 # Export it
 FROM scratch
-COPY --from=builder /tmp/output /
+COPY --from=install /tmp/output /

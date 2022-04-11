@@ -13,7 +13,7 @@ ERLANG_VERSIONS :=
 ERLANG_ITERATION := 1
 ELIXIR_VERSIONS :=
 ELIXIR_ITERATION := 1
-PLATFORMS := linux/amd64 linux/arm64/v8
+PLATFORMS := linux/amd64 linux/arm64
 DEBIAN_VERSIONS :=
 UBUNTU_VERSIONS :=
 CENTOS_VERSIONS :=
@@ -104,8 +104,9 @@ erlang_%: JOBS = $(shell nproc)
 
 .PHONY: erlang_%
 erlang_%:
-	@echo "Building erlang $(ERLANG_VERSION) for $(OS) $(OS_VERSION) $(PLATFORM)"
+	@echo "Building erlang $(ERLANG_VERSION) for $(OS) $(OS_VERSION) $(PLATFORM) with dockerfile builder/erlang_$(OS).Dockerfile"
 	@docker buildx create --name "$(BUILDER)" --platform "$(PLATFORM)" >/dev/null 2>&1 || true
+	@echo "Builder created"
 	@date +%s > $@.start
 	@docker buildx build \
 	--platform "$(PLATFORM)" \
@@ -119,7 +120,7 @@ erlang_%:
 	--cache-from="$(CACHE_FROM)" \
 	--cache-to="$(CACHE_TO)" \
 	--output "$(OUTPUT)" \
-	--file "Dockerfile_erlang_$(OS)" \
+	--file "builders/erlang_$(OS).Dockerfile" \
 	. 2>&1 | tee $@.log
 	@date +%s > $@.end
 
@@ -146,7 +147,7 @@ elixir_%:
 	--build-arg erlang_version="$(ERLANG_VERSION)" \
 	--build-arg elixir_version="$(ELIXIR_VERSION)" \
 	--build-arg elixir_iteration="$(ELIXIR_ITERATION)" \
-	--file "Dockerfile_elixir_$(OS)" \
+	--file "builders/elixir_$(OS).Dockerfile" \
 	--cache-from="$(CACHE_FROM)" \
 	--cache-to="$(CACHE_TO)" \
 	--output "$(OUTPUT)" \
