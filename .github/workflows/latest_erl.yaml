@@ -1,0 +1,63 @@
+name: Build and Sync latest erlang
+
+on:
+  schedule:
+    - cron: "0 0 * * 0"
+
+jobs:
+  build-sync:
+    strategy:
+      matrix:
+        cfg:
+          - { DISTRO_LATEST: "rockylinux_8", PLATFORM: "linux-amd64" }
+          - { DISTRO_LATEST: "rockylinux_8", PLATFORM: "linux-arm64" }
+          - { DISTRO_LATEST: "ubuntu_focal", PLATFORM: "linux-amd64" }
+          - { DISTRO_LATEST: "ubuntu_focal", PLATFORM: "linux-arm64" }
+          - { DISTRO_LATEST: "ubuntu_focal", PLATFORM: "linux-ppc64le" }
+          - { DISTRO_LATEST: "ubuntu_focal", PLATFORM: "linux-s390x" }
+          - { DISTRO_LATEST: "ubuntu_focal", PLATFORM: "linux-arm-v7" }
+          - { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-amd64" }
+          - { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-arm64" }
+          - { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-ppc64le" }
+          - { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-s390x" }
+          - { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-386" }
+          - { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-mips64le" }
+          - { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-arm-v7" }
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build the package
+        run: |
+          echo "Building ..."
+          echo "Distro latest ${{ matrix.cfg.DISTRO_LATEST }}"
+          echo "Platform ${{ matrix.cfg.PLATFORM }}"
+          make "erlang_latest_${{matrix.cfg.DISTRO_LATEST}}_${{matrix.cfg.PLATFORM}}"
+
+      - name: Set AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+
+      - id: install-aws-cli
+        uses: unfor19/install-aws-cli-action@v1.0.2
+        with:
+          version: 2 # default
+          verbose: false # default
+          arch: amd64
+
+      - id: upload-something-s3
+        run: |
+          mkdir -p build/rockylinux/8
+          cd build
+          aws s3 sync . s3://esl-erlang --storage-class ONEZONE_IA --acl public-read
