@@ -94,7 +94,7 @@ single: $(ERLANG_BUILDS)
 
 override FIX_IMAGE = $(subst rockylinux,rockylinux/rockylinux,$(OS):$(OS_VERSION))
 
-erlang_%: ERLANG_VERSION = $(word 2,$(subst _, ,$@))
+erlang_%: ERLANG_VERSION = $(strip $(subst latest, $(word 1,$(ERLANG_MAINTS)), $(word 2,$(subst _, ,$@))))
 erlang_%: OS = $(word 3,$(subst _, ,$@))
 erlang_%: OS_VERSION = $(word 4,$(subst _, ,$@))
 erlang_%: IMAGE = $(FIX_IMAGE)
@@ -121,24 +121,26 @@ erlang_%:
 	--cache-to="$(CACHE_TO)" \
 	--output "$(OUTPUT)" \
 	--file "builders/erlang_$(OS).Dockerfile" \
-	. 2>&1 | tee $@.log
+	.
 	@date +%s > $@.end
 
-elixir_%: ELIXIR_VERSION = $(word 2,$(subst _, ,$@))
-elixir_%: ERLANG_VERSION = $(word 3,$(subst _, ,$@))
+elixir_%: ELIXIR_VERSION = $(subst latest, $(ELIXIR_LATEST), $(word 2,$(subst _, ,$@)))
+elixir_%: ERLANG_VERSION = $(strip $(subst latest, $(word 1, $(ERLANG_MAINTS)), $(word 3,$(subst _, ,$@))))
 elixir_%: OS = $(word 4,$(subst _, ,$@))
 elixir_%: OS_VERSION = $(word 5,$(subst _, ,$@))
+elixir_%: PLATFORM = $(subst -,/,$(word 6,$(subst _, ,$@)))
 elixir_%: IMAGE = $(FIX_IMAGE)
 elixir_%: BUILDER = esl-buildx-elixir
 elixir_%: JOBS = $(shell nproc)
 
 .PHONY: elixir_%
 elixir_%:
-	@echo "Building elixir $(ELIXIR_VERSION) against erlang $(ERLANG_VERSION) for $(OS) $(OS_VERSION)"
+	@echo "Building elixir $(ELIXIR_VERSION) against erlang $(ERLANG_VERSION) for $(OS) $(OS_VERSION) $(PLATFORM) with dockerfile builder/elixir_$(OS).Dockerfile"
 	@docker buildx create --name "$(BUILDER)" >/dev/null 2>&1 || true
+	@echo "Builder created"
 	@date +%s > $@.start
 	@docker buildx build \
-	--platform="linux/amd64" \
+	--platform "$(PLATFORM)" \
 	--builder "$(BUILDER)" \
 	--build-arg jobs="$(JOBS)" \
 	--build-arg image="$(IMAGE)" \
@@ -151,7 +153,7 @@ elixir_%:
 	--cache-from="$(CACHE_FROM)" \
 	--cache-to="$(CACHE_TO)" \
 	--output "$(OUTPUT)" \
-	. 2>&1 | tee $@.log
+	.
 	@date +%s > $@.end
 
 .PHONY: clean

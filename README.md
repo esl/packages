@@ -144,7 +144,10 @@ published indirectly via CloudFront as it is today.
 
 ## TODO
 
-- validate versions
-- scheduled task to build latest
+- scheduled task to build latest elixir
 - signing packages
 - createrepo
+- reusable action for sync
+- why { DISTRO_LATEST: "ubuntu_focal", PLATFORM: "linux-arm-v7" } errrores due to flex?
+- why { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-386" } ncurses not found?
+- why { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-arm-v7" } errores due to flex?
