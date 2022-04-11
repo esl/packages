@@ -121,7 +121,7 @@ erlang_%:
 	--cache-to="$(CACHE_TO)" \
 	--output "$(OUTPUT)" \
 	--file "builders/erlang_$(OS).Dockerfile" \
-	. 2>&1 | tee $@.log
+	.
 	@date +%s > $@.end
 
 elixir_%: ELIXIR_VERSION = $(subst latest, $(ELIXIR_LATEST), $(word 2,$(subst _, ,$@)))
@@ -153,7 +153,7 @@ elixir_%:
 	--cache-from="$(CACHE_FROM)" \
 	--cache-to="$(CACHE_TO)" \
 	--output "$(OUTPUT)" \
-	. 2>&1 | tee $@.log
+	.
 	@date +%s > $@.end
 
 .PHONY: clean
