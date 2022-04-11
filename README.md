@@ -1,11 +1,15 @@
 # Packages2
 
-
 This repository contains a new approach to Erlang/Elixir package
 creation and publishing.
 
 The packaging repo consists of three distinct pieces: building from
 source, packaging and publishing.
+
+## Requirements
+
+- nproc (coreutils)
+- jq
 
 ## Building Erlang / Elixir
 
@@ -57,6 +61,17 @@ The build scripts (`Dockerfile_*`) use
 packages. This change radically simplifies the process of package
 generation.
 
+### Single erlang package example
+
+If you check the [makefile](./Makefile#L97) you will see the different
+parameters used in making a single erlang package. Let us say that
+you would like to build Erlang 24.2.2 for rockylinux 8 targeting
+`linux/am64`.
+
+```bash
+make  erlang_24.2.2_rockylinux_8_rockylinux_linux-amd64
+```
+
 ## Publishing
 
 For CentOS releases it is still the best approach to continue using
@@ -88,8 +103,7 @@ always be successfully verified.
 Secondly, the `Release` file contains the checksums of the `Packages*`
 files, so a client that sees a new `Release` file but a cached
 `Packages` file can also conclude that our repository is corrupt. This
-is addressed by the [Acquire-By-Hash](
-https://wiki.debian.org/DebianRepository/Format#Acquire-By-Hash)
+is addressed by the [Acquire-By-Hash](https://wiki.debian.org/DebianRepository/Format#Acquire-By-Hash)
 feature, in much the same way as `createrepo` does for
 CentOS.
 
@@ -124,34 +138,13 @@ This script shows how to publish the Aptly repositories to an S3
 volume using the `Acquire-By-Hash` feature. The S3 volume can be be
 published indirectly via CloudFront as it is today.
 
-
 # Deploying to Production
 
-A temporary EC2 instance (of type `c5.xlarge` or better) is needed to run
-the build process itself. I include two files (`main.tf` and
-`cloud-init.yaml`) which automate the creation and configuration of
-the instance, ensuring it is capable of Docker multi-arch builds.
+- s3 sync with legacy packages and gpg sign.
 
-This instance should be equipped with two EBS volumes that survive the
-termination of the instance. I recommend a `gpt` partition table and
-the `ext4` filesystem on all these volumes.
+## TODO
 
-The first EBS volume (designated `cache`) will hold the docker cache
-files, which can improve the speed of future builds. The `CACHE_FROM`
-and `CACHE_TO` parameters to the makefile must be set to its
-mountpoint.
-
-The second EBS volume (designated `builds`) will hold the build
-artifacts themselves (`.deb` and `.rpm`) files as well as the Aptly
-metadata. The `OUTPUT` parameter to the makefile must be set to its
-mountpoint.
-
-If you like, you could use a single EBS volume here, but remember to
-put the cache and the builds in separate subdirectories.
-
-Finally, an S3 bucket is needed, which Aptly will publish the Debian
-and Ubuntu repository updates to. I have looked at how we build the
-CentOS repositories and am satisfied that the standard `createrepo`
-tool is still the right approach, so we should import that work from
-packages-pipeline as we do the integration.
-
+- validate versions
+- scheduled task to build latest
+- signing packages
+- createrepo
