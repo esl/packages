@@ -8,15 +8,23 @@ on:
 jobs:
   build-sync:
     strategy:
+      fail-fast: false
       matrix:
         cfg:
           - { DISTRO_LATEST: "rockylinux_8", PLATFORM: "linux-amd64" }
+          - { DISTRO_LATEST: "rockylinux_8", PLATFORM: "linux-arm64" }
           - { DISTRO_LATEST: "ubuntu_focal", PLATFORM: "linux-amd64" }
+          - { DISTRO_LATEST: "ubuntu_focal", PLATFORM: "linux-arm64" }
           - { DISTRO_LATEST: "ubuntu_focal", PLATFORM: "linux-ppc64le" }
           - { DISTRO_LATEST: "ubuntu_focal", PLATFORM: "linux-s390x" }
+          - { DISTRO_LATEST: "ubuntu_focal", PLATFORM: "linux-arm-v7" }
           - { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-amd64" }
+          - { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-arm64" }
+          - { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-ppc64le" }
           - { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-s390x" }
+          - { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-386" }
           - { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-mips64le" }
+          - { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-arm-v7" }
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
