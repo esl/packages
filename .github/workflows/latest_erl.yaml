@@ -11,16 +11,12 @@ jobs:
       matrix:
         cfg:
           - { DISTRO_LATEST: "rockylinux_8", PLATFORM: "linux-amd64" }
-          - { DISTRO_LATEST: "rockylinux_8", PLATFORM: "linux-arm64" }
           - { DISTRO_LATEST: "ubuntu_focal", PLATFORM: "linux-amd64" }
-          - { DISTRO_LATEST: "ubuntu_focal", PLATFORM: "linux-arm64" }
           - { DISTRO_LATEST: "ubuntu_focal", PLATFORM: "linux-ppc64le" }
           - { DISTRO_LATEST: "ubuntu_focal", PLATFORM: "linux-s390x" }
           - { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-amd64" }
-          - { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-ppc64le" }
           - { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-s390x" }
           - { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-mips64le" }
-          # - { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-arm64" }
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -56,6 +52,5 @@ jobs:
 
       - id: upload-something-s3
         run: |
-          mkdir -p build/rockylinux/8
           cd build
           aws s3 sync . s3://esl-erlang --storage-class ONEZONE_IA --acl public-read
