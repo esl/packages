@@ -6,6 +6,15 @@ ARG os
 ARG os_version
 ADD yumdnf /usr/local/bin/
 
+# Fix centos 8 mirrors
+RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=private \
+    --mount=type=cache,id=${os}_${os_version},target=/var/cache/yum,sharing=private \
+    if [ "${os}:${os_version}" = "centos:8" ]; then \
+    cd /etc/yum.repos.d/; \
+    sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* ; \
+    sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*; \
+    fi
+
 # Setup EPEL
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=private \
     --mount=type=cache,id=${os}_${os_version},target=/var/cache/yum,sharing=private \
@@ -41,19 +50,38 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=private \
     --mount=type=cache,id=${os}_${os_version},target=/var/cache/yum,sharing=private \
     yumdnf install -y \
-    ruby-devel \
     gcc \
     make \
     rpm-build \
-    libffi-devel
+    libffi-devel && \
+    yum remove -y ruby ruby-devel
 
 # Install FPM
 RUN if [ "${os}:${os_version}" = "centos:7" -o "${os}:${os_version}" = "amazonlinux:2" ]; then \
+    # fpm 1.12 requires ruby 2.3.8
+    wget https://cache.ruby-lang.org/pub/ruby/2.3/ruby-2.3.8.tar.gz; \
+    tar xvfvz ruby-2.3.8.tar.gz; \
+    cd ruby-2.3.8; \
+    ./configure; \
+    make; \
+    make install; \
+    gem update --system; \
+    gem install bundler; \
     gem install git --no-document --version 1.7.0; \
     gem install fpm --no-document --version 1.12.0; \
     else \
+    # fpm 1.13 requires ruby 2.6.
+    wget https://cache.ruby-lang.org/pub/ruby/2.6/ruby-2.6.6.tar.gz; \
+    tar xvfvz ruby-2.6.6.tar.gz; \
+    cd ruby-2.6.6; \
+    ./configure; \
+    make; \
+    make install; \
+    gem update --system; \
+    gem install bundler; \
     gem install fpm --no-document --version 1.13.0; \
     fi
+
 
 # Build it
 WORKDIR /tmp/build
@@ -123,6 +151,16 @@ FROM ${image} as install
 WORKDIR /tmp/output
 COPY --from=builder /tmp/output .
 ADD yumdnf /usr/local/bin/
+
+# Fix centos 8 mirrors
+RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=private \
+    --mount=type=cache,id=${os}_${os_version},target=/var/cache/yum,sharing=private \
+    if [ "${os}:${os_version}" = "centos:8" ]; then \
+    cd /etc/yum.repos.d/; \
+    sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* ; \
+    sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*; \
+    yumdnf install -y epel-release; \
+    fi
 
 RUN yumdnf install -y ./*.rpm
 RUN erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().'  -noshell

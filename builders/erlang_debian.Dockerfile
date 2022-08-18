@@ -39,14 +39,28 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
     wx3.0-headers/stretch-backports; \
     fi
 
+# Install crossbuild if no debian:buster and not already installed
+RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
+    --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
+    if [ "${os}:${os_version}" != "debian:buster" ]; then \
+      apt-cache show "crossbuild-essential-$(darch $TARGETPLATFORM)" > /dev/null 2>&1; \
+      if [ $? -eq 0 ]; then \
+        apt-get --quiet update && \
+        apt-get --quiet --yes --no-install-recommends install \
+        "crossbuild-essential-$(darch $TARGETPLATFORM)"; \
+      fi\
+    fi
+
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
     --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
     apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
     autoconf \
     build-essential \
-    $(apt-cache show "crossbuild-essential-$(darch $TARGETPLATFORM)" > /dev/null 2>&1; \
+    $(apt-cache show libwxgtk3.0-gtk3-dev >/dev/null 2>&1; \
     if [ $? -eq 0 ]; then \
-      echo "crossbuild-essential-$(darch $TARGETPLATFORM)"; \
+    echo "libwxgtk3.0-gtk3-dev:$(darch $TARGETPLATFORM) libwxgtk-webview3.0-gtk3-dev:$(darch $TARGETPLATFORM)"; \
+    else \
+    echo "libwxgtk3.0-dev:$(darch $TARGETPLATFORM) libwxgtk-webview3.0-dev:$(darch $TARGETPLATFORM)"; \
     fi) \
     ca-certificates \
     $(apt-cache show default-jdk-headless >/dev/null 2>&1; \
@@ -57,13 +71,6 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
     fi) \
     devscripts \
     flex \
-    git \
-    $(apt-cache show libwxgtk3.0-gtk3-dev >/dev/null 2>&1; \
-    if [ $? -eq 0 ]; then \
-    echo "libwxgtk3.0-gtk3-dev:$(darch $TARGETPLATFORM) libwxgtk-webview3.0-gtk3-dev:$(darch $TARGETPLATFORM)"; \
-    else \
-    echo "libwxgtk3.0-dev:$(darch $TARGETPLATFORM)"; \
-    fi) \
     libncurses-dev:$(darch $TARGETPLATFORM) \
     libsctp-dev:$(darch $TARGETPLATFORM) \
     libssl-dev:$(darch $TARGETPLATFORM) \
@@ -77,16 +84,37 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
     --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
     apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
-    ruby \
-    ruby-dev
+    zlib1g-dev
 
 # Install FPM
-RUN if [ "${os}:${os_version}" = "ubuntu:trusty" ]; then \
+RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
+    --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
+    if [ "${os}:${os_version}" = "ubuntu:trusty" ]; then \
+    wget https://cache.ruby-lang.org/pub/ruby/2.3/ruby-2.3.8.tar.gz; \
+    tar xvfvz ruby-2.3.8.tar.gz; \
+    cd ruby-2.3.8; \
+    ./configure; \
+    make; \
+    make install; \
+    gem update --system; \
+    gem install bundler; \
+    gem install git --no-document --version 1.7.0; \
     gem install json --no-rdoc --no-ri --version 2.2.0; \
     gem install ffi --no-rdoc --no-ri --version 1.9.25; \
     gem install fpm --no-rdoc --no-ri --version 1.11.0; \
     else \
-    gem install fpm --no-document --version 1.13.0; \
+      if [ "${os}:${os_version}" = "ubuntu:jammy" ]; then \
+      apt-get --quiet update && \
+      apt-get --quiet --yes --no-install-recommends install ruby=1:3.0~exp1;\
+      gem install fpm --no-document --version 1.13.0; \
+      else \
+      wget https://cache.ruby-lang.org/pub/ruby/2.6/ruby-2.6.6.tar.gz; \
+      tar xvfvz ruby-2.6.6.tar.gz; \
+      cd ruby-2.6.6; \
+      ./configure; \
+      make; \
+      make install; \
+      fi \
     fi
 
 # Build it

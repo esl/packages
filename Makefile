@@ -92,7 +92,8 @@ FEDORA_VERSIONS = $(LATEST_FEDORA)
 .PHONY: single
 single: $(ERLANG_BUILDS)
 
-erlang_%: ERLANG_VERSION = $(strip $(subst latest, $(word 1,$(ERLANG_MAINTS)), $(word 2,$(subst _, ,$@))))
+# erlang_%: ERLANG_VERSION = $(strip $(subst latest, $(word 1,$(ERLANG_MAINTS)), $(word 2,$(subst _, ,$@))))
+erlang_%: ERLANG_VERSION = $(strip $(subst latest, 25.0.3, $(word 2,$(subst _, ,$@))))
 erlang_%: OS = $(word 3,$(subst _, ,$@))
 erlang_%: OS_VERSION = $(word 4,$(subst _, ,$@))
 erlang_%: IMAGE = $(OS):$(OS_VERSION)
@@ -112,6 +113,7 @@ erlang_%:
 	--build-arg jobs="$(JOBS)" \
 	--build-arg image="$(IMAGE)" \
 	--build-arg os="$(OS)" \
+	--build-arg TARGETPLATFORM="$(PLATFORM)" \
 	--build-arg os_version="$(OS_VERSION)" \
 	--build-arg erlang_version="$(ERLANG_VERSION)" \
 	--build-arg erlang_iteration="$(ERLANG_ITERATION)" \
