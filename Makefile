@@ -92,19 +92,17 @@ FEDORA_VERSIONS = $(LATEST_FEDORA)
 .PHONY: single
 single: $(ERLANG_BUILDS)
 
-override FIX_IMAGE = $(subst rockylinux,rockylinux/rockylinux,$(OS):$(OS_VERSION))
-
 erlang_%: ERLANG_VERSION = $(strip $(subst latest, $(word 1,$(ERLANG_MAINTS)), $(word 2,$(subst _, ,$@))))
 erlang_%: OS = $(word 3,$(subst _, ,$@))
 erlang_%: OS_VERSION = $(word 4,$(subst _, ,$@))
-erlang_%: IMAGE = $(FIX_IMAGE)
+erlang_%: IMAGE = $(OS):$(OS_VERSION)
 erlang_%: PLATFORM = $(subst -,/,$(word 5,$(subst _, ,$@)))
 erlang_%: BUILDER = esl-buildx-erlang
 erlang_%: JOBS = $(shell nproc)
 
 .PHONY: erlang_%
 erlang_%:
-	@echo "Building erlang $(ERLANG_VERSION) for $(OS) $(OS_VERSION) $(PLATFORM) with dockerfile builder/erlang_$(OS).Dockerfile"
+	@echo "Building erlang $(ERLANG_VERSION) for $(OS) $(OS_VERSION) $(PLATFORM) with dockerfile builder/erlang_$(OS).Dockerfile and image $(IMAGE)"
 	@docker buildx create --name "$(BUILDER)" --platform "$(PLATFORM)" >/dev/null 2>&1 || true
 	@echo "Builder created"
 	@date +%s > $@.start
