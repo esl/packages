@@ -129,7 +129,7 @@ RUN make --jobs=${jobs} DESTDIR=/tmp/install install-docs DOC_TARGETS="chunks ma
 WORKDIR /tmp/output
 ARG erlang_iteration
 ADD determine-license /usr/local/bin
-RUN . ~/.bashrc \
+RUN . ~/.bashrc; \
     fpm -s dir -t rpm \
     --chdir /tmp/install \
     --name esl-erlang \
@@ -164,6 +164,12 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
     cd /etc/yum.repos.d/; \
     sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* ; \
     sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*; \
+    fi
+
+# Setup EPEL
+RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=private \
+    --mount=type=cache,id=${os}_${os_version},target=/var/cache/yum,sharing=private \
+    if [ "${os}" = "centos" -o "${os}" = "almalinux" -o "${os}" = "rockylinux" ]; then \
     yumdnf install -y epel-release; \
     fi
 
