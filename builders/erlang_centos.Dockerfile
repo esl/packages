@@ -43,8 +43,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
     openssl-devel \
     unixODBC-devel \
     wget \
-    wxGTK3-devel \
-    zlib-devel
+    wxGTK3-devel
 
 # Install FPM dependences
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=private \
@@ -53,31 +52,34 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
     gcc \
     make \
     rpm-build \
-    libffi-devel && \
+    libffi-devel \
+    curl \
+    git \
+    readline-devel \
+    zlib-devel && \
     yum remove -y ruby ruby-devel
 
 # Install FPM
-RUN if [ "${os}:${os_version}" = "centos:7" -o "${os}:${os_version}" = "amazonlinux:2" ]; then \
+ENV PATH /root/.rbenv/bin:$PATH
+RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
+    --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
+    git clone https://github.com/sstephenson/rbenv.git /root/.rbenv; \
+    git clone https://github.com/sstephenson/ruby-build.git /root/.rbenv/plugins/ruby-build; \
+    /root/.rbenv/plugins/ruby-build/install.sh; \
+    echo 'eval "$(rbenv init -)"' >> ~/.bashrc; \
+    echo 'gem: --no-rdoc --no-ri' >> ~/.gemrc; \
+    . ~/.bashrc; \
+    if [ "${os}:${os_version}" = "centos:7" -o "${os}:${os_version}" = "amazonlinux:2" ]; then \
     # fpm 1.12 requires ruby 2.3.8
-    wget https://cache.ruby-lang.org/pub/ruby/2.3/ruby-2.3.8.tar.gz; \
-    tar xvfvz ruby-2.3.8.tar.gz; \
-    cd ruby-2.3.8; \
-    ./configure; \
-    make; \
-    make install; \
-    gem update --system; \
+    rbenv install 2.3.8; \
+    rbenv global 2.3.8; \
     gem install bundler; \
     gem install git --no-document --version 1.7.0; \
     gem install fpm --no-document --version 1.12.0; \
     else \
     # fpm 1.13 requires ruby 2.6.
-    wget https://cache.ruby-lang.org/pub/ruby/2.6/ruby-2.6.6.tar.gz; \
-    tar xvfvz ruby-2.6.6.tar.gz; \
-    cd ruby-2.6.6; \
-    ./configure; \
-    make; \
-    make install; \
-    gem update --system; \
+    rbenv install 2.6.6; \
+    rbenv global 2.6.6; \
     gem install bundler; \
     gem install fpm --no-document --version 1.13.0; \
     fi
@@ -127,7 +129,8 @@ RUN make --jobs=${jobs} DESTDIR=/tmp/install install-docs DOC_TARGETS="chunks ma
 WORKDIR /tmp/output
 ARG erlang_iteration
 ADD determine-license /usr/local/bin
-RUN fpm -s dir -t rpm \
+RUN . ~/.bashrc \
+    fpm -s dir -t rpm \
     --chdir /tmp/install \
     --name esl-erlang \
     --version ${erlang_version} \
@@ -147,6 +150,8 @@ RUN fpm -s dir -t rpm \
 
 # Test install
 FROM ${image} as install
+ARG os
+ARG os_version
 
 WORKDIR /tmp/output
 COPY --from=builder /tmp/output .

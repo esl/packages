@@ -12,21 +12,21 @@ jobs:
       matrix:
         cfg:
           - { DISTRO_LATEST: "rockylinux_8", PLATFORM: "linux-amd64" }
-          # - { DISTRO_LATEST: "rockylinux_8", PLATFORM: "linux-arm64" }
+          - { DISTRO_LATEST: "rockylinux_8", PLATFORM: "linux-arm64" }
           - { DISTRO_LATEST: "ubuntu_xenial", PLATFORM: "linux-amd64" }
-          - { DISTRO_LATEST: "ubuntu_xenial", PLATFORM: "linux-arm64" }
+          # - { DISTRO_LATEST: "ubuntu_xenial", PLATFORM: "linux-arm64" }
           - { DISTRO_LATEST: "ubuntu_bionic", PLATFORM: "linux-amd64" }
           # - { DISTRO_LATEST: "ubuntu_bionic", PLATFORM: "linux-arm64" }
           - { DISTRO_LATEST: "ubuntu_focal", PLATFORM: "linux-amd64" }
           # - { DISTRO_LATEST: "ubuntu_focal", PLATFORM: "linux-arm64" }
           - { DISTRO_LATEST: "ubuntu_jammy", PLATFORM: "linux-amd64" }
-          # - { DISTRO_LATEST: "ubuntu_jammy", PLATFORM: "linux-arm64" }
+          - { DISTRO_LATEST: "ubuntu_jammy", PLATFORM: "linux-arm64" }
           - { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-amd64" }
-          - { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-arm64" }
+          # - { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-arm64" }
           - { DISTRO_LATEST: "debian_buster", PLATFORM: "linux-amd64" }
-          - { DISTRO_LATEST: "debian_buster", PLATFORM: "linux-arm64" }
+          # - { DISTRO_LATEST: "debian_buster", PLATFORM: "linux-arm64" }
           - { DISTRO_LATEST: "debian_stretch", PLATFORM: "linux-amd64" }
-          - { DISTRO_LATEST: "debian_stretch", PLATFORM: "linux-arm64" }
+          # - { DISTRO_LATEST: "debian_stretch", PLATFORM: "linux-arm64" }
           - { DISTRO_LATEST: "centos_7", PLATFORM: "linux-amd64" }
           - { DISTRO_LATEST: "centos_7", PLATFORM: "linux-arm64" }
           - { DISTRO_LATEST: "centos_8", PLATFORM: "linux-amd64" }
