@@ -48,6 +48,12 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
     if [ $? -eq 0 ]; then \
       echo "crossbuild-essential-$(darch $TARGETPLATFORM)"; \
     fi) \
+    $(apt-cache show libwxgtk3.0-gtk3-dev >/dev/null 2>&1; \
+    if [ $? -eq 0 ]; then \
+    echo "libwxgtk3.0-gtk3-dev:$(darch $TARGETPLATFORM) libwxgtk-webview3.0-gtk3-dev:$(darch $TARGETPLATFORM)"; \
+    else \
+    echo "libwxgtk3.0-dev:$(darch $TARGETPLATFORM)"; \
+    fi) \
     ca-certificates \
     $(apt-cache show default-jdk-headless >/dev/null 2>&1; \
     if [ $? -eq 0 ]; then \
@@ -57,36 +63,50 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
     fi) \
     devscripts \
     flex \
-    git \
-    $(apt-cache show libwxgtk3.0-gtk3-dev >/dev/null 2>&1; \
-    if [ $? -eq 0 ]; then \
-    echo "libwxgtk3.0-gtk3-dev:$(darch $TARGETPLATFORM) libwxgtk-webview3.0-gtk3-dev:$(darch $TARGETPLATFORM)"; \
-    else \
-    echo "libwxgtk3.0-dev:$(darch $TARGETPLATFORM)"; \
-    fi) \
     libncurses-dev:$(darch $TARGETPLATFORM) \
     libsctp-dev:$(darch $TARGETPLATFORM) \
     libssl-dev:$(darch $TARGETPLATFORM) \
-    openssl \
+    openssl:$(darch $TARGETPLATFORM) \
     procps \
     unixodbc-dev:$(darch $TARGETPLATFORM) \
     wget \
-    xsltproc
+    xsltproc \
+    curl \
+    git \
+    libreadline-dev \
+    zlib1g-dev
 
-# Install FPM dependencies
+
+# Ruby version and fpm
+ENV PATH /root/.rbenv/bin:$PATH
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
     --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
-    apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
-    ruby \
-    ruby-dev
-
-# Install FPM
-RUN if [ "${os}:${os_version}" = "ubuntu:trusty" ]; then \
+    git clone https://github.com/sstephenson/rbenv.git /root/.rbenv; \
+    git clone https://github.com/sstephenson/ruby-build.git /root/.rbenv/plugins/ruby-build; \
+    /root/.rbenv/plugins/ruby-build/install.sh; \
+    echo 'eval "$(rbenv init -)"' >> ~/.bashrc; \
+    echo 'gem: --no-rdoc --no-ri' >> ~/.gemrc; \
+    . ~/.bashrc; \
+    if [ "${os}:${os_version}" = "ubuntu:trusty" ]; then \
+    rbenv install 2.3.8; \
+    rbenv global 2.3.8; \
+    gem install bundler; \
+    gem install git --no-document --version 1.7.0; \
     gem install json --no-rdoc --no-ri --version 2.2.0; \
     gem install ffi --no-rdoc --no-ri --version 1.9.25; \
     gem install fpm --no-rdoc --no-ri --version 1.11.0; \
     else \
-    gem install fpm --no-document --version 1.13.0; \
+      if [ "${os}:${os_version}" = "ubuntu:jammy" ]; then \
+      rbenv install 3.0.1; \
+      rbenv global 3.0.1; \
+      gem install bundler; \
+      gem install fpm --no-document --version 1.13.0; \
+      else \
+      rbenv install 2.6.6; \
+      rbenv global 2.6.6; \
+      gem install bundler; \
+      gem install fpm --no-document --version 1.13.0; \
+      fi \
     fi
 
 # Build it
@@ -147,7 +167,8 @@ RUN make --jobs=${jobs} DESTDIR=/tmp/install install-docs DOC_TARGETS="chunks ma
 WORKDIR /tmp/output
 ARG erlang_iteration
 ADD determine-license /usr/local/bin
-RUN fpm -s dir -t deb \
+RUN . ~/.bashrc; \
+    fpm -s dir -t deb \
     --chdir /tmp/install \
     --name esl-erlang \
     --version ${erlang_version} \
