@@ -2,3 +2,6 @@
 !yumdnf
 !darch
 !determine-license
+!*GPG-KEY-PRIV-pmanager
+!*GPG-KEY-pmanager
+!.rpmmacros
