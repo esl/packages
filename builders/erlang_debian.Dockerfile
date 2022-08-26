@@ -193,6 +193,8 @@ RUN . ~/.bashrc; \
     echo "--provides $pkg"; \
     done)
 
+# TODO sign it
+
 # Prove it is installable
 FROM --platform=${TARGETPLATFORM} ${image} as testing
 WORKDIR /tmp/output

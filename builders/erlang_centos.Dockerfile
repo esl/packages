@@ -61,8 +61,8 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
 
 # Install FPM
 ENV PATH /root/.rbenv/bin:$PATH
-RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
-    --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
+RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=private \
+    --mount=type=cache,id=${os}_${os_version},target=/var/cache/yum,sharing=private \
     git clone https://github.com/sstephenson/rbenv.git /root/.rbenv; \
     git clone https://github.com/sstephenson/ruby-build.git /root/.rbenv/plugins/ruby-build; \
     /root/.rbenv/plugins/ruby-build/install.sh; \

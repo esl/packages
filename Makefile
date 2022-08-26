@@ -111,6 +111,7 @@ erlang_%:
 	--platform "$(PLATFORM)" \
 	--builder "$(BUILDER)" \
 	--build-arg jobs="$(JOBS)" \
+	--build-arg gpg_pass="$(GPG_PASS)" \
 	--build-arg image="$(IMAGE)" \
 	--build-arg os="$(OS)" \
 	--build-arg TARGETPLATFORM="$(PLATFORM)" \
