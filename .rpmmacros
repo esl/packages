@@ -1,0 +1,5 @@
+%_gpgbin        /usr/bin/gpg
+%_gpg_path      /root/.gnupg
+%_gpg_name      Package Manager
+%_gpg_pass      %{getenv:GPG_PASS}
+%__gpg_sign_cmd   %{__gpg} gpg --no-verbose --no-armor --batch --pinentry-mode loopback --passphrase "%{_gpg_pass}" --no-secmem-warning -u "%{_gpg_name}" -sbo %{__signature_filename} %{__plaintext_filename}

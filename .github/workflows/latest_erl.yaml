@@ -44,10 +44,13 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Build the package
+        env:
+          GPG_PASS: ${{secrets.GPG_PASS}}
         run: |
           echo "Building ..."
           echo "Distro latest ${{ matrix.cfg.DISTRO_LATEST }}"
           echo "Platform ${{ matrix.cfg.PLATFORM }}"
+          export GPG_P_KEY="echo ${{secrets.GPG_P_KEY}} | tr ';' '\n'"
           make "erlang_latest_${{matrix.cfg.DISTRO_LATEST}}_${{matrix.cfg.PLATFORM}}"
 
       - name: Set AWS credentials
