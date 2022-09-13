@@ -82,9 +82,14 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=private \
     --mount=type=cache,id=${os}_${os_version},target=/var/cache/yum,sharing=private \
     if [ "${os}:${os_version}" = "centos:8" -o "${os}" = "rockylinux"]; then \
-    yumdnf install -y glibc-locale-source && \
+    yumdnf install -y \
+    glibc-locale-source \
+    glibc-all-langpacks \
+    langpacks-en && \
     localedef -i en_US -f UTF-8 en_US.UTF-8; \
     fi
+
+# TODO rockylinux
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
@@ -96,38 +101,61 @@ RUN wget --quiet https://github.com/elixir-lang/elixir/archive/v${elixir_version
 RUN tar xf v${elixir_version}.tar.gz
 WORKDIR /tmp/build/elixir-${elixir_version}
 RUN make
-# RUN make test
-# RUN make install PREFIX=/usr DESTDIR=/tmp/install
+RUN make test
+RUN make install PREFIX=/usr DESTDIR=/tmp/install
 
 # # Package it
-# WORKDIR /tmp/output
-# ARG elixir_iteration
-# RUN . ~/.bashrc; \
-#     fpm -s dir -t rpm \
-#     --chdir /tmp/install \
-#     --name elixir \
-#     --version ${elixir_version} \
-#     --package-name-suffix ${os_version} \
-#     --epoch 1 \
-#     --iteration ${elixir_iteration} \
-#     --package elixir_VERSION_ITERATION_ARCH.rpm \
-#     --maintainer "Erlang Solutions Ltd <support@erlang-solutions.com>" \
-#     --description "Elixir functional meta-programming language" \
-#     --url "https://erlang-solutions.com" \
-#     --architecture "all" \
-#     --depends "esl-erlang >= ${erlang_version}" \
-#     .
+WORKDIR /tmp/output
+ARG elixir_iteration
+RUN . ~/.bashrc; \
+    fpm -s dir -t rpm \
+    --chdir /tmp/install \
+    --name elixir \
+    --version ${elixir_version} \
+    --package-name-suffix ${os_version} \
+    --epoch 1 \
+    --iteration ${elixir_iteration} \
+    --package elixir_VERSION_ITERATION_ARCH.rpm \
+    --maintainer "Erlang Solutions Ltd <support@erlang-solutions.com>" \
+    --description "Elixir functional meta-programming language" \
+    --url "https://erlang-solutions.com" \
+    --architecture "all" \
+    .
 
-# # Test install
-# FROM ${image} as install
+    # --depends "esl-erlang >= ${erlang_version}" \
 
-# WORKDIR /tmp/output
-# COPY --from=builder /tmp/output .
-# ADD yumdnf /usr/local/bin/
+# Test install
+FROM ${image} as install
+ARG os
+ARG os_version
+ARG erlang_version
 
-# RUN yumdnf install -y ./*.rpm
-# RUN elixir -v
+WORKDIR /tmp/output
+COPY --from=builder /tmp/output .
+ADD yumdnf /usr/local/bin/
+
+# Fix centos 8 mirrors
+RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=private \
+    --mount=type=cache,id=${os}_${os_version},target=/var/cache/yum,sharing=private \
+    if [ "${os}:${os_version}" = "centos:8" ]; then \
+    cd /etc/yum.repos.d/; \
+    sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* ; \
+    sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*; \
+    fi
+
+# Setup EPEL
+RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=private \
+    --mount=type=cache,id=${os}_${os_version},target=/var/cache/yum,sharing=private \
+    if [ "${os}" = "centos" -o "${os}" = "almalinux" -o "${os}" = "rockylinux" ]; then \
+    yumdnf install -y epel-release wget; \
+    fi
+
+# TODO this needs to be handled by --depends
+RUN wget https://esl-erlang.s3.eu-west-2.amazonaws.com/${os}/${os_version}/esl-erlang_${erlang_version}_1~${os}~${os_version}_x86_64.rpm && \
+    yumdnf install -y esl-erlang_${erlang_version}_1~${os}~${os_version}_x86_64.rpm
+RUN yumdnf install -y ./*.rpm
+RUN elixir -v
 
 # # Export it
-# FROM scratch
-# COPY --from=install /tmp/output /
+FROM scratch
+COPY --from=install /tmp/output /
