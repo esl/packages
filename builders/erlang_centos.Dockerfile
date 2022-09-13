@@ -2,6 +2,8 @@
 # syntax = docker/dockerfile:1.2
 ARG image
 FROM ${image} as builder
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
 ARG os
 ARG os_version
 ADD yumdnf /usr/local/bin/

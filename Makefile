@@ -31,7 +31,8 @@ override ERLANG_MAINTS = \
 	grep "$$(git ls-remote --heads https://github.com/erlang/otp 'maint-[2-9][0-9]*' | awk '{print $$1}')" | \
 	grep -Eo '[0-9]+\.[0-9.]+')
 override ELIXIR_LATEST = \
-	$(shell curl --fail https://api.github.com/repos/elixir-lang/elixir/releases?per_page=1 | jq -r '.[] | .tag_name')_$(ELIXIR_OTP)
+	$(shell curl --fail https://api.github.com/repos/elixir-lang/elixir/releases?per_page=1 | jq -r '.[] | .tag_name')
+	# $(shell curl --fail https://api.github.com/repos/elixir-lang/elixir/releases?per_page=1 | jq -r '.[] | .tag_name')_$(ELIXIR_OTP)
 
 override DEBIANS = $(foreach v,$(DEBIAN_VERSIONS),debian_$(v))
 override UBUNTUS = $(foreach v,$(UBUNTU_VERSIONS),ubuntu_$(v))
@@ -92,8 +93,8 @@ FEDORA_VERSIONS = $(LATEST_FEDORA)
 .PHONY: single
 single: $(ERLANG_BUILDS)
 
-# erlang_%: ERLANG_VERSION = $(strip $(subst latest, $(word 1,$(ERLANG_MAINTS)), $(word 2,$(subst _, ,$@))))
-erlang_%: ERLANG_VERSION = $(strip $(subst latest, 25.0.3, $(word 2,$(subst _, ,$@))))
+erlang_%: ERLANG_VERSION = $(strip $(subst latest, $(word 1,$(ERLANG_MAINTS)), $(word 2,$(subst _, ,$@))))
+# erlang_%: ERLANG_VERSION = $(strip $(subst latest, 25.0.3, $(word 2,$(subst _, ,$@))))
 erlang_%: OS = $(word 3,$(subst _, ,$@))
 erlang_%: OS_VERSION = $(word 4,$(subst _, ,$@))
 erlang_%: IMAGE = $(OS):$(OS_VERSION)
@@ -125,12 +126,12 @@ erlang_%:
 	.
 	@date +%s > $@.end
 
-elixir_%: ELIXIR_VERSION = $(subst latest, $(ELIXIR_LATEST), $(word 2,$(subst _, ,$@)))
+elixir_%: ELIXIR_VERSION = $(strip $(subst v, ,$(subst latest, $(ELIXIR_LATEST), $(word 2,$(subst _, ,$@)))))
 elixir_%: ERLANG_VERSION = $(strip $(subst latest, $(word 1, $(ERLANG_MAINTS)), $(word 3,$(subst _, ,$@))))
 elixir_%: OS = $(word 4,$(subst _, ,$@))
 elixir_%: OS_VERSION = $(word 5,$(subst _, ,$@))
 elixir_%: PLATFORM = $(subst -,/,$(word 6,$(subst _, ,$@)))
-elixir_%: IMAGE = $(FIX_IMAGE)
+elixir_%: IMAGE = $(OS):$(OS_VERSION)
 elixir_%: BUILDER = esl-buildx-elixir
 elixir_%: JOBS = $(shell nproc)
 
