@@ -13,6 +13,8 @@ ERLANG_VERSIONS :=
 ERLANG_ITERATION := 1
 ELIXIR_VERSIONS :=
 ELIXIR_ITERATION := 1
+MONGOOSEIM_VERSIONS :=
+MONGOOSEIM_ITERATION := 1
 PLATFORMS := linux/amd64 linux/arm64
 DEBIAN_VERSIONS :=
 UBUNTU_VERSIONS :=
@@ -32,7 +34,8 @@ override ERLANG_MAINTS = \
 	grep -Eo '[0-9]+\.[0-9.]+')
 override ELIXIR_LATEST = \
 	$(shell curl --fail https://api.github.com/repos/elixir-lang/elixir/releases?per_page=1 | jq -r '.[] | .tag_name')
-	# $(shell curl --fail https://api.github.com/repos/elixir-lang/elixir/releases?per_page=1 | jq -r '.[] | .tag_name')_$(ELIXIR_OTP)
+override MONGOOSEIM_LATEST = \
+	$(shell curl --fail https://api.github.com/repos/esl/MongooseIM/releases?per_page=1 | jq -r '.[] | .tag_name')
 
 override DEBIANS = $(foreach v,$(DEBIAN_VERSIONS),debian_$(v))
 override UBUNTUS = $(foreach v,$(UBUNTU_VERSIONS),ubuntu_$(v))
@@ -152,6 +155,38 @@ elixir_%:
 	--build-arg elixir_version="$(ELIXIR_VERSION)" \
 	--build-arg elixir_iteration="$(ELIXIR_ITERATION)" \
 	--file "builders/elixir_$(OS).Dockerfile" \
+	--cache-from="$(CACHE_FROM)" \
+	--cache-to="$(CACHE_TO)" \
+	--output "$(OUTPUT)" \
+	.
+	@date +%s > $@.end
+
+mongooseim_%: MONGOOSEIM_VERSION = $(strip $(subst v, ,$(subst latest, $(MONGOOSEIM_LATEST), $(word 2,$(subst _, ,$@)))))
+mongooseim_%: ERLANG_VERSION = $(strip $(subst latest, $(word 1, $(ERLANG_MAINTS)), $(word 3,$(subst _, ,$@))))
+mongooseim_%: OS = $(word 4,$(subst _, ,$@))
+mongooseim_%: OS_VERSION = $(word 5,$(subst _, ,$@))
+mongooseim_%: PLATFORM = $(subst -,/,$(word 6,$(subst _, ,$@)))
+mongooseim_%: IMAGE = $(OS):$(OS_VERSION)
+mongooseim_%: BUILDER = esl-buildx-elixir
+mongooseim_%: JOBS = $(shell nproc)
+
+.PHONY: mongooseim_%
+mongooseim_%:
+	@echo "Building elixir $(MONGOOSEIM_VERSION) against erlang $(ERLANG_VERSION) for $(OS) $(OS_VERSION) $(PLATFORM) with dockerfile builder/mongooseim_$(OS).Dockerfile"
+	@docker buildx create --name "$(BUILDER)" >/dev/null 2>&1 || true
+	@echo "Builder created"
+	@date +%s > $@.start
+	@docker buildx build \
+	--platform "$(PLATFORM)" \
+	--builder "$(BUILDER)" \
+	--build-arg jobs="$(JOBS)" \
+	--build-arg image="$(IMAGE)" \
+	--build-arg os="$(OS)" \
+	--build-arg os_version="$(OS_VERSION)" \
+	--build-arg erlang_version="$(ERLANG_VERSION)" \
+	--build-arg mongooseim_version="$(MONGOOSEIM_VERSION)" \
+	--build-arg mongooseim_iteration="$(MONGOOSEIM_ITERATION)" \
+	--file "builders/mongooseim_$(OS).Dockerfile" \
 	--cache-from="$(CACHE_FROM)" \
 	--cache-to="$(CACHE_TO)" \
 	--output "$(OUTPUT)" \
