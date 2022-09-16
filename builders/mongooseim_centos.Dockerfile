@@ -95,17 +95,35 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
 # Build it
 WORKDIR /tmp/build
 ARG mongooseim_version
+
 RUN wget --quiet https://github.com/esl/MongooseIM/archive/${mongooseim_version}.tar.gz
 RUN tar xf ${mongooseim_version}.tar.gz
+
 WORKDIR /tmp/build/MongooseIM-${mongooseim_version}
-RUN ./tools/configure with-all prefix=/tmp/install system=yes && \
+
+RUN ./tools/configure with-all prefix=/tmp/install user=root system=yes && \
     cat configure.out rel/configure.vars.config
 RUN make
 RUN make test
 RUN make install
 
-# Bring smoke tests
-RUN ./tools/pkg/scripts/smoke_test.sh
+# TODO document this magic
+
+RUN mkdir /TESTS \
+    && cp ./tools/pkg/scripts/smoke_test.sh /TESTS/ \
+    && cp ./tools/pkg/scripts/smoke_templates.escript /TESTS/ \
+    && cp ./tools/wait-for-it.sh /TESTS/
+
+# TODO document this magic
+
+WORKDIR /tmp/install
+
+RUN sed -i -e 's/tmp\/install\///g' ./etc/mongooseim/app.config
+RUN sed -i -e 's/tmp\/install\///g' ./usr/bin/mongooseimctl
+RUN sed -i -e 's/tmp\/install\///g' ./usr/lib/mongooseim/erts-13.0.3/bin/nodetool
+RUN sed -i -e 's/tmp\/install\///g' ./usr/lib/mongooseim/etc/app.config.example
+RUN sed -i -e 's/tmp\/install\///g' ./usr/lib/mongooseim/bin/mongooseim
+RUN sed -i -e 's/tmp\/install\///g' ./usr/lib/mongooseim/bin/mongooseimctl
 
 # Package it
 WORKDIR /tmp/output
@@ -125,9 +143,7 @@ RUN . ~/.bashrc; \
     --iteration ${mongooseim_iteration} \
     --package-name-suffix ${os_version} \
     .
-
-#     # --depends "esl-erlang >= ${erlang_version}" \
-
+#    --depends "esl-erlang >= ${erlang_version}" \
 
 # Test install
 FROM ${image} as install
@@ -157,11 +173,17 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
 COPY --from=builder /tmp/output .
 
 # TODO this needs to be handled by --depends
+
 RUN wget https://esl-erlang.s3.eu-west-2.amazonaws.com/${os}/${os_version}/esl-erlang_${erlang_version}_1~${os}~${os_version}_x86_64.rpm && \
     yumdnf install -y esl-erlang_${erlang_version}_1~${os}~${os_version}_x86_64.rpm
 RUN yumdnf install -y ./*.rpm
 RUN rm -rf ./esl-erlang*.rpm
+RUN mongooseimctl print_install_dir
 
-# Export it
+COPY --from=builder /TESTS /TESTS
+WORKDIR /TESTS
+RUN ./smoke_test.sh
+
+# # Export it
 FROM scratch
 COPY --from=install /tmp/output /
