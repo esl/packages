@@ -142,6 +142,24 @@ RUN . ~/.bashrc; \
   .
 #    --depends "esl-erlang >= ${erlang_version}" \
 
+# Sign it
+RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=private \
+  --mount=type=cache,id=${os}_${os_version},target=/var/cache/yum,sharing=private \
+  yumdnf install -y pinentry
+
+ARG gpg_pass
+ARG gpg_p_key
+ENV GPG_PASS gpg_pass
+
+COPY GPG-KEY-pmanager GPG-KEY-pmanager
+COPY .rpmmacros /root/.rpmmacros
+
+RUN echo ${gpg_p_key} | tr ';' '\n' > GPG-KEY-PRIV-pmanager; \
+  gpg --import --batch --passphrase ${GPG_PASS} GPG-KEY-PRIV-pmanager; \
+  rpm --import GPG-KEY-pmanager; \
+  rpm --addsign *.rpm; \
+  rpm -K *.rpm
+
 # Test install
 FROM ${image} as install
 ARG os

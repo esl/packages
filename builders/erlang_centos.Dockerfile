@@ -168,6 +168,8 @@ RUN echo ${gpg_p_key} | tr ';' '\n' > GPG-KEY-PRIV-pmanager; \
   rpm --addsign *.rpm; \
   rpm -K *.rpm
 
+# rpm -K validates package signature...
+
 # Test install
 FROM ${image} as install
 ARG os
@@ -193,6 +195,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
   yumdnf install -y epel-release; \
   fi
 
+# Install and test
 RUN yumdnf install -y ./*.rpm
 RUN erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().'  -noshell
 
