@@ -129,7 +129,7 @@ RUN . ~/.bashrc; \
   --url "https://erlang-solutions.com" \
   --architecture "all" \
   --name mongooseim \
-  --package mongooseim_VERSION_ITERATION_ARCH.deb \
+  --package mongooseim_VERSION_ITERATION_otp_${erlang_version}~${os}~${os_version}_ARCH.rpm \
   --version ${mongooseim_version} \
   --epoch 1 \
   --iteration ${mongooseim_iteration} \
@@ -171,4 +171,4 @@ RUN ./smoke_test.sh
 
 # Export it
 FROM scratch
-COPY --from=install /tmp/output /
+COPY --from=install /tmp/output/mongooseim*.deb /

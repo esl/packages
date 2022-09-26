@@ -15,6 +15,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
   apt-get --quiet --yes --no-install-recommends install \
   build-essential \
   ca-certificates \
+  libncurses5 \
   libsctp1 \
   git \
   gnupg \
@@ -33,7 +34,12 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
   apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
   gcc \
   make \
-  libffi6 \
+  $(apt-cache show libffi7 >/dev/null 2>&1; \
+  if [ $? -eq 0 ]; then \
+  echo "libffi7"; \
+  else \
+  echo "libffi6"; \
+  fi) \
   curl \
   libssl-dev\
   openssl\
@@ -94,7 +100,7 @@ RUN . ~/.bashrc; \
   --version ${elixir_version} \
   --package-name-suffix ${os_version} \
   --epoch 1 \
-  --package elixir_VERSION-ITERATION~${os}~${os_version}_ARCH.deb \
+  --package elixir_VERSION_ITERATION_otp_${erlang_version}~${os}~${os_version}_ARCH.rpm \
   --maintainer "Erlang Solutions Ltd <support@erlang-solutions.com>" \
   --description "Elixir functional meta-programming language" \
   --url "https://erlang-solutions.com" \
@@ -119,6 +125,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
   --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
   apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
   libsctp1 \
+  libncurses5 \
   libssl-dev
 
 COPY --from=builder /esl-erlang_${erlang_version}-1~${os}~${os_version}_amd64.deb .
@@ -130,4 +137,5 @@ RUN elixir -e "IO.puts 'Elixir is cool'"
 
 # Export it
 FROM scratch
-COPY --from=builder /tmp/output /
+
+COPY --from=testing /tmp/output/elixir*.deb /

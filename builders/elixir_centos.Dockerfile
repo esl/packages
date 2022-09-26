@@ -112,7 +112,7 @@ RUN . ~/.bashrc; \
   --package-name-suffix ${os_version} \
   --epoch 1 \
   --iteration ${elixir_iteration} \
-  --package elixir_VERSION_ITERATION_ARCH.rpm \
+  --package elixir_VERSION_ITERATION_otp_${erlang_version}~${os}~${os_version}_ARCH.rpm \
   --maintainer "Erlang Solutions Ltd <support@erlang-solutions.com>" \
   --description "Elixir functional meta-programming language" \
   --url "https://erlang-solutions.com" \
@@ -155,4 +155,4 @@ RUN elixir -v
 
 # # Export it
 FROM scratch
-COPY --from=install /tmp/output /
+COPY --from=install /tmp/output/elixir*.rpm /
