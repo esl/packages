@@ -117,8 +117,8 @@ erlang_%:
 	--build-arg jobs="$(JOBS)" \
 	--build-arg gpg_pass="$(GPG_PASS)" \
 	--build-arg image="$(IMAGE)" \
-	--build-arg os="$(OS)" \
 	--build-arg TARGETPLATFORM="$(PLATFORM)" \
+	--build-arg os="$(OS)" \
 	--build-arg os_version="$(OS_VERSION)" \
 	--build-arg erlang_version="$(ERLANG_VERSION)" \
 	--build-arg erlang_iteration="$(ERLANG_ITERATION)" \
@@ -151,6 +151,8 @@ elixir_%:
 	--build-arg image="$(IMAGE)" \
 	--build-arg os="$(OS)" \
 	--build-arg os_version="$(OS_VERSION)" \
+	--build-arg gpg_pass="$(GPG_PASS)" \
+	--build-arg TARGETPLATFORM="$(PLATFORM)" \
 	--build-arg erlang_version="$(ERLANG_VERSION)" \
 	--build-arg elixir_version="$(ELIXIR_VERSION)" \
 	--build-arg elixir_iteration="$(ELIXIR_ITERATION)" \
@@ -172,7 +174,7 @@ mongooseim_%: JOBS = $(shell nproc)
 
 .PHONY: mongooseim_%
 mongooseim_%:
-	@echo "Building elixir $(MONGOOSEIM_VERSION) against erlang $(ERLANG_VERSION) for $(OS) $(OS_VERSION) $(PLATFORM) with dockerfile builder/mongooseim_$(OS).Dockerfile"
+	@echo "Building mongooseim $(MONGOOSEIM_VERSION) against erlang $(ERLANG_VERSION) for $(OS) $(OS_VERSION) $(PLATFORM) with dockerfile builder/mongooseim_$(OS).Dockerfile"
 	@docker buildx create --name "$(BUILDER)" >/dev/null 2>&1 || true
 	@echo "Builder created"
 	@date +%s > $@.start
@@ -183,6 +185,8 @@ mongooseim_%:
 	--build-arg image="$(IMAGE)" \
 	--build-arg os="$(OS)" \
 	--build-arg os_version="$(OS_VERSION)" \
+	--build-arg gpg_pass="$(GPG_PASS)" \
+	--build-arg TARGETPLATFORM="$(PLATFORM)" \
 	--build-arg erlang_version="$(ERLANG_VERSION)" \
 	--build-arg mongooseim_version="$(MONGOOSEIM_VERSION)" \
 	--build-arg mongooseim_iteration="$(MONGOOSEIM_ITERATION)" \

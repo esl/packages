@@ -51,7 +51,7 @@ jobs:
           echo "Distro latest ${{ matrix.cfg.DISTRO_LATEST }}"
           echo "Platform ${{ matrix.cfg.PLATFORM }}"
           export GPG_P_KEY="echo ${{secrets.GPG_P_KEY}} | tr ';' '\n'"
-          make "erlang_latest_${{matrix.cfg.DISTRO_LATEST}}_${{matrix.cfg.PLATFORM}}"
+          make "mongooseim_latest_latest_${{matrix.cfg.DISTRO_LATEST}}_${{matrix.cfg.PLATFORM}}"
           find ./ -type f -name "GPG-KEY*" -delete
 
       - name: Set AWS credentials

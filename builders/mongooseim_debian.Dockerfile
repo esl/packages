@@ -15,10 +15,17 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
   apt-get --quiet --yes --no-install-recommends install \
   build-essential \
   ca-certificates \
-  libncurses5 \
   libsctp1 \
   git \
   gnupg \
+  $(apt-cache show "procps" > /dev/null 2>&1; \
+  if [ $? -eq 0 ]; then \
+  echo "procps"; \
+  fi) \
+  $(apt-cache show "libncurses5" > /dev/null 2>&1; \
+  if [ $? -eq 0 ]; then \
+  echo "libncurses5"; \
+  fi) \
   wget
 
 # Install Erlang/OTP
@@ -28,21 +35,20 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
   wget https://esl-erlang.s3.eu-west-2.amazonaws.com/${os}/${os_version}/esl-erlang_${erlang_version}-1~${os}~${os_version}_amd64.deb && \
   dpkg -i esl-erlang_${erlang_version}-1~${os}~${os_version}_amd64.deb
 
-# Install FPM dependencies
+# Install FPM and mongooseim dependencies
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
   --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
   apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
   gcc \
   make \
-  $(apt-cache show libffi7 >/dev/null 2>&1; \
+  $(apt-cache show "libffi6" > /dev/null 2>&1; \
   if [ $? -eq 0 ]; then \
-  echo "libffi7"; \
-  else \
   echo "libffi6"; \
   fi) \
   curl \
   libssl-dev\
   openssl\
+  unixodbc-dev\
   libreadline-dev \
   zlib1g-dev
 
@@ -78,46 +84,67 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
   fi \
   fi
 
-ENV LANG=C.UTF-8
-
-# Build and test it
+# Build it
 WORKDIR /tmp/build
-ARG elixir_version
-RUN wget --quiet https://github.com/elixir-lang/elixir/archive/v${elixir_version}.tar.gz
-RUN tar xf v${elixir_version}.tar.gz
-WORKDIR /tmp/build/elixir-${elixir_version}
+ARG mongooseim_version
+
+RUN wget --quiet https://github.com/esl/MongooseIM/archive/${mongooseim_version}.tar.gz
+RUN tar xf ${mongooseim_version}.tar.gz
+
+WORKDIR /tmp/build/MongooseIM-${mongooseim_version}
+
+RUN ./tools/configure with-all prefix=/tmp/install user=root system=yes && \
+  cat configure.out rel/configure.vars.config
 RUN make
 RUN make test
-RUN make install PREFIX=/usr DESTDIR=/tmp/install
+RUN make install
 
-# # Package it
+# TODO document this magic
+
+RUN mkdir /TESTS \
+  && cp ./tools/pkg/scripts/smoke_test.sh /TESTS/ \
+  && cp ./tools/pkg/scripts/smoke_templates.escript /TESTS/ \
+  && cp ./tools/wait-for-it.sh /TESTS/
+
+# TODO document this magic
+
+WORKDIR /tmp/install
+
+RUN sed -i -e 's/tmp\/install\///g' ./etc/mongooseim/app.config
+RUN sed -i -e 's/tmp\/install\///g' ./usr/bin/mongooseimctl
+RUN sed -i -e 's/tmp\/install\///g' ./usr/lib/mongooseim/erts-*/bin/nodetool
+RUN sed -i -e 's/tmp\/install\///g' ./usr/lib/mongooseim/etc/app.config.example
+RUN sed -i -e 's/tmp\/install\///g' ./usr/lib/mongooseim/bin/mongooseim
+RUN sed -i -e 's/tmp\/install\///g' ./usr/lib/mongooseim/bin/mongooseimctl
+
+# Package it
 WORKDIR /tmp/output
-ARG elixir_iteration
+
+ARG mongooseim_iteration
 RUN . ~/.bashrc; \
   fpm -s dir -t deb \
   --chdir /tmp/install \
-  --name elixir \
-  --version ${elixir_version} \
-  --package-name-suffix ${os_version} \
-  --epoch 1 \
-  --iteration ${elixir_iteration} \
-  --package elixir_VERSION_ITERATION_otp_${erlang_version}~${os}~${os_version}_ARCH.deb \
   --maintainer "Erlang Solutions Ltd <support@erlang-solutions.com>" \
   --description "Elixir functional meta-programming language" \
   --url "https://erlang-solutions.com" \
   --architecture "all" \
+  --name mongooseim \
+  --package mongooseim_VERSION_ITERATION_otp_${erlang_version}~${os}~${os_version}_ARCH.rpm \
+  --version ${mongooseim_version} \
+  --epoch 1 \
+  --iteration ${mongooseim_iteration} \
+  --package-name-suffix ${os_version} \
   .
+#    --depends "esl-erlang >= ${erlang_version}" \
 
-# --iteration ${elixir_iteration} \
-# --depends "esl-erlang >= ${erlang_version}" \
-
-# Prove it is installable
-FROM --platform=${TARGETPLATFORM} ${image} as testing
-ARG erlang_version
+# Test install
+FROM ${image} as install
 ARG os
 ARG os_version
+ARG erlang_version
 
 WORKDIR /tmp/output
+
 COPY --from=builder /tmp/output .
 
 # TODO this needs to be handled by --depends
@@ -127,15 +154,21 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
   apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
   libsctp1 \
   libncurses5 \
-  libssl-dev
+  procps
 
 COPY --from=builder /esl-erlang_${erlang_version}-1~${os}~${os_version}_amd64.deb .
 RUN dpkg -i esl-erlang_${erlang_version}-1~${os}~${os_version}_amd64.deb
-
 RUN dpkg -i *.deb || true
+
 RUN apt-get --quiet update && apt-get --quiet --yes --fix-broken install
-RUN elixir -e "IO.puts 'Elixir is cool'"
+RUN rm -rf ./esl-erlang*.deb
+
+RUN mongooseimctl print_install_dir
+
+COPY --from=builder /TESTS /TESTS
+WORKDIR /TESTS
+RUN ./smoke_test.sh
 
 # Export it
 FROM scratch
-COPY --from=testing /tmp/output/elixir*.deb /
+COPY --from=install /tmp/output/mongooseim*.deb /

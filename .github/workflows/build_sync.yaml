@@ -3,13 +3,14 @@ name: Build and Sync
 on:
   workflow_dispatch:
     inputs:
-      LANGUAGE:
+      WHAT:
         type: choice
-        description: Elixir / Erlang
+        description: Elixir / Erlang / Mongooseim
         options:
           - erlang
           - elixir
-      LANG_VERSION:
+          - mongooseim
+      VERSION:
         required: true
         type: integer
       DISTRO:
@@ -17,25 +18,28 @@ on:
         description: linux distribution
         options:
           - rockylinux
+          - centos
           - debian
           - ubuntu
+          - fedora
+          - almalinux
+          - amazonlinux
       OS_VERSION:
         required: true
-        type: integer
       PLATFORM:
         type: choice
         description: target architecture
         options:
           - linux-amd64
           - linux-arm64
-          - linux-riscv64
-          - linux-ppc64le
-          - linux-s390x
-          - linux-386
-          - linux-mips64le
-          - linux-mips64
-          - linux-arm-v7
-          - linux-arm-v6
+          # - linux-riscv64
+          # - linux-ppc64le
+          # - linux-s390x
+          # - linux-386
+          # - linux-mips64le
+          # - linux-mips64
+          # - linux-arm-v7
+          # - linux-arm-v6
 
 jobs:
   build-sync:
