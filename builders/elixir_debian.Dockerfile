@@ -17,6 +17,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
   ca-certificates \
   libncurses5 \
   libsctp1 \
+  procps \
   git \
   gnupg \
   wget
@@ -127,6 +128,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
   apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
   libsctp1 \
   libncurses5 \
+  procps \
   libssl-dev
 
 COPY --from=builder /esl-erlang_${erlang_version}-1~${os}~${os_version}_amd64.deb .
