@@ -205,4 +205,4 @@ RUN erl -eval "ssl:start(), wx:new(), erlang:halt()."
 
 # Export it
 FROM scratch
-COPY --from=testing /tmp/output /
+COPY --from=testing /tmp/output/*.deb /

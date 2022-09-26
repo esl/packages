@@ -100,7 +100,8 @@ RUN . ~/.bashrc; \
   --version ${elixir_version} \
   --package-name-suffix ${os_version} \
   --epoch 1 \
-  --package elixir_VERSION_ITERATION_otp_${erlang_version}~${os}~${os_version}_ARCH.rpm \
+  --iteration ${elixir_iteration} \
+  --package elixir_VERSION_ITERATION_otp_${erlang_version}~${os}~${os_version}_ARCH.deb \
   --maintainer "Erlang Solutions Ltd <support@erlang-solutions.com>" \
   --description "Elixir functional meta-programming language" \
   --url "https://erlang-solutions.com" \
@@ -137,5 +138,4 @@ RUN elixir -e "IO.puts 'Elixir is cool'"
 
 # Export it
 FROM scratch
-
 COPY --from=testing /tmp/output/elixir*.deb /
