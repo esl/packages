@@ -1,4 +1,4 @@
-name: Build and Sync latest erlang
+name: Build and Sync latest mongooseim
 
 on:
   schedule:
