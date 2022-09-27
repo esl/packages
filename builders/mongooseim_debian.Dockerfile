@@ -125,11 +125,11 @@ RUN . ~/.bashrc; \
   fpm -s dir -t deb \
   --chdir /tmp/install \
   --maintainer "Erlang Solutions Ltd <support@erlang-solutions.com>" \
-  --description "Elixir functional meta-programming language" \
+  --description "MongooseIM is Erlang Solutions' robust, scalable and efficient XMPP server" \
   --url "https://erlang-solutions.com" \
   --architecture "all" \
   --name mongooseim \
-  --package mongooseim_VERSION_ITERATION_otp_${erlang_version}~${os}~${os_version}_ARCH.rpm \
+  --package mongooseim_VERSION_ITERATION_otp_${erlang_version}~${os}~${os_version}_ARCH.deb \
   --version ${mongooseim_version} \
   --epoch 1 \
   --iteration ${mongooseim_iteration} \
@@ -142,6 +142,7 @@ FROM ${image} as install
 ARG os
 ARG os_version
 ARG erlang_version
+ARG mongooseim_version
 
 WORKDIR /tmp/output
 
@@ -159,7 +160,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
 
 COPY --from=builder /esl-erlang_${erlang_version}-1~${os}~${os_version}_amd64.deb .
 RUN dpkg -i esl-erlang_${erlang_version}-1~${os}~${os_version}_amd64.deb
-RUN dpkg -i *.deb || true
+RUN dpkg -i mongooseim_${mongooseim_version}_1_otp_${erlang_version}~${os}~${os_version}_all.deb
 
 RUN apt-get --quiet update && apt-get --quiet --yes --fix-broken install
 RUN rm -rf ./esl-erlang*.deb

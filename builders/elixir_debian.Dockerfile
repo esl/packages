@@ -134,7 +134,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
 COPY --from=builder /esl-erlang_${erlang_version}-1~${os}~${os_version}_amd64.deb .
 RUN dpkg -i esl-erlang_${erlang_version}-1~${os}~${os_version}_amd64.deb
 
-RUN dpkg -i *.deb || true
+RUN dpkg -i elixir_${elixir_version}_1_otp_${erlang_version}~${os}~${os_version}_all.deb
 RUN apt-get --quiet update && apt-get --quiet --yes --fix-broken install
 RUN elixir -e "IO.puts 'Elixir is cool'"
 
