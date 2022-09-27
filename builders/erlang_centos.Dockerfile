@@ -35,6 +35,9 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
   gcc \
   gcc-c++ \
   git \
+  $(if [ "${os}" = "rockylinux" ]; then \
+  echo "perl"; \
+  fi) \
   java-11-openjdk-devel \
   libxslt-devel \
   libxslt \
@@ -43,7 +46,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
   ncurses-devel \
   openssl \
   openssl-devel \
-  unixODBC-devel \
+  unixODBC \
   wget \
   wxGTK3-devel
 

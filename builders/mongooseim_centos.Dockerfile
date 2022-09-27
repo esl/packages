@@ -130,7 +130,7 @@ RUN . ~/.bashrc; \
   fpm -s dir -t rpm \
   --chdir /tmp/install \
   --maintainer "Erlang Solutions Ltd <support@erlang-solutions.com>" \
-  --description "Elixir functional meta-programming language" \
+  --description "MongooseIM is Erlang Solutions' robust, scalable and efficient XMPP server" \
   --url "https://erlang-solutions.com" \
   --architecture "all" \
   --name mongooseim \
