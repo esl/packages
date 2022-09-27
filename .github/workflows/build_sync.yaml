@@ -12,7 +12,6 @@ on:
           - mongooseim
       VERSION:
         required: true
-        type: integer
       DISTRO:
         type: choice
         description: linux distribution
@@ -69,21 +68,21 @@ jobs:
             build
           key: ${{ env.LANGUAGE }}-${{ env.LANG_VERSION }}-${{ env.DISTRO }}-${{ env.OS_VERSION }}-${{ env.PLATFORM }}
           restore-keys: |
-            ${{ env.LANGUAGE }}-${{ env.LANG_VERSION }}-${{ env.DISTRO }}-${{ env.OS_VERSION }}-${{ env.PLATFORM }}
-            ${{ env.LANGUAGE }}-${{ env.LANG_VERSION }}-${{ env.DISTRO }}-${{ env.OS_VERSION }}-
-            ${{ env.LANGUAGE }}-${{ env.LANG_VERSION }}-${{ env.DISTRO }}-
-            ${{ env.LANGUAGE }}-${{ env.LANG_VERSION }}-
-            ${{ env.LANGUAGE }}-
+            ${{ env.WHAT }}-${{ env.LANG_VERSION }}-${{ env.DISTRO }}-${{ env.OS_VERSION }}-${{ env.PLATFORM }}
+            ${{ env.WHAT }}-${{ env.LANG_VERSION }}-${{ env.DISTRO }}-${{ env.OS_VERSION }}-
+            ${{ env.WHAT }}-${{ env.LANG_VERSION }}-${{ env.DISTRO }}-
+            ${{ env.WHAT }}-${{ env.LANG_VERSION }}-
+            ${{ env.WHAT }}-
 
       - name: Build the package
         run: |
           echo "Building ..."
-          echo "Language ${{ env.LANGUAGE }}"
+          echo "Language ${{ env.WHAT }}"
           echo "Version ${{ env.LANG_VERSION }}"
           echo "Distro ${{ env.DISTRO }}"
           echo "Os ver ${{ env.OS_VERSION }}"
           echo "Platform ${{ env.PLATFORM }}"
-          make "${{env.LANGUAGE}}_${{env.LANG_VERSION}}_${{env.DISTRO}}_${{env.OS_VERSION}}_${{env.PLATFORM}}"
+          make "${{env.WHAT}}_${{env.LANG_VERSION}}_${{env.DISTRO}}_${{env.OS_VERSION}}_${{env.PLATFORM}}"
 
       - name: Set AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
