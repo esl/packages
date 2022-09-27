@@ -117,6 +117,7 @@ FROM --platform=${TARGETPLATFORM} ${image} as testing
 ARG erlang_version
 ARG os
 ARG os_version
+ARG elixir_version
 
 WORKDIR /tmp/output
 COPY --from=builder /tmp/output .

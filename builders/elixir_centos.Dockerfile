@@ -78,11 +78,10 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
 # Ensure UTF-8 locale
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=private \
   --mount=type=cache,id=${os}_${os_version},target=/var/cache/yum,sharing=private \
-  if [ "${os}:${os_version}" = "centos:8" -o "${os}" = "rockylinux"]; then \
+  if [ "${os}:${os_version}" = "centos:8"  -o "${os}" = "rockylinux" ]; then \
   yumdnf install -y \
-  glibc-locale-source \
-  glibc-all-langpacks \
-  langpacks-en && \
+  glibc-langpack-en \
+  glibc-locale-source && \
   localedef -i en_US -f UTF-8 en_US.UTF-8; \
   fi
 
@@ -111,7 +110,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
 RUN make test
 RUN make install PREFIX=/usr DESTDIR=/tmp/install
 
-# # Package it
+# Package it
 WORKDIR /tmp/output
 ARG elixir_iteration
 RUN . ~/.bashrc; \

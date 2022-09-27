@@ -11,8 +11,8 @@ jobs:
       fail-fast: false
       matrix:
         cfg:
-          # - { DISTRO_LATEST: "rockylinux_8", PLATFORM: "linux-amd64" }
-          # - { DISTRO_LATEST: "rockylinux_8", PLATFORM: "linux-arm64" }
+          - { DISTRO_LATEST: "rockylinux_9", PLATFORM: "linux-amd64" }
+          # - { DISTRO_LATEST: "rockylinux_9", PLATFORM: "linux-arm64" }
           - { DISTRO_LATEST: "ubuntu_xenial", PLATFORM: "linux-amd64" }
           # - { DISTRO_LATEST: "ubuntu_xenial", PLATFORM: "linux-arm64" }
           - { DISTRO_LATEST: "ubuntu_bionic", PLATFORM: "linux-amd64" }
