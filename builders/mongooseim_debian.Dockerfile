@@ -154,7 +154,8 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
   apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
   libsctp1 \
   libncurses5 \
-  procps
+  libssl-dev \
+  procps 
 
 COPY --from=builder /esl-erlang_${erlang_version}-1~${os}~${os_version}_amd64.deb .
 RUN dpkg -i esl-erlang_${erlang_version}-1~${os}~${os_version}_amd64.deb
