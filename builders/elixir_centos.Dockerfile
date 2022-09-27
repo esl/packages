@@ -101,7 +101,7 @@ RUN make
 
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=private \
   --mount=type=cache,id=${os}_${os_version},target=/var/cache/yum,sharing=private \
-  if [ "${os}" = "centos" ]; then \
+  if [ "${os}:${os_version}" = "centos:7" ]; then \
   sed -i '0,/Mix.Tasks.Deps.Get.run/s//#/' lib/mix/test/mix/rebar_test.exs && \
   sed -i 's/assert Mix.Dep.load_on_environment/#/' lib/mix/test/mix/rebar_test.exs && \
   sed -i 's/\[\:git_repo, \:git_rebar/#/' lib/mix/test/mix/rebar_test.exs && \
