@@ -8,3 +8,4 @@ build/
 .terraform
 .terraform.lock.hcl
 terraform.*
+GPG-KEY-pmanager

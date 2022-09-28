@@ -1,17 +1,19 @@
-name: Build and Sync
+name: Build and Sync Elixir / Mongooseim
 
 on:
   workflow_dispatch:
     inputs:
       WHAT:
         type: choice
-        description: Elixir / Erlang / Mongooseim
+        description: Elixir / Mongooseim
         options:
-          - erlang
           - elixir
           - mongooseim
+      ERLANG_VERSION:
+        description: Erlang VSN
+        required: true
       WHAT_VERSION:
-        description: Elixir VSN / Erlang VSN / Mongooseim VSN
+        description: Elixir VSN / Mongooseim VSN
         required: true
       DISTRO:
         type: choice
@@ -67,11 +69,11 @@ jobs:
           path: |
             cache
             build
-          key: ${{ env.LANGUAGE }}-${{ env.LANG_VERSION }}-${{ env.DISTRO }}-${{ env.OS_VERSION }}-${{ env.PLATFORM }}
+          key: ${{ env.WHAT }}-${{ env.WHAT_VERSION }}-${{ env.ERLANG_VERSION }}-${{ env.DISTRO }}-${{ env.OS_VERSION }}-${{ env.PLATFORM }}
           restore-keys: |
-            ${{ env.WHAT }}-${{ env.WHAT_VERSION }}-${{ env.DISTRO }}-${{ env.OS_VERSION }}-${{ env.PLATFORM }}
-            ${{ env.WHAT }}-${{ env.WHAT_VERSION }}-${{ env.DISTRO }}-${{ env.OS_VERSION }}-
-            ${{ env.WHAT }}-${{ env.WHAT_VERSION }}-${{ env.DISTRO }}-
+            ${{ env.WHAT }}-${{ env.WHAT_VERSION }}-${{ env.ERLANG_VERSION }}-${{ env.DISTRO }}-${{ env.OS_VERSION }}-${{ env.PLATFORM }}
+            ${{ env.WHAT }}-${{ env.WHAT_VERSION }}-${{ env.ERLANG_VERSION }}-${{ env.DISTRO }}-${{ env.OS_VERSION }}-
+            ${{ env.WHAT }}-${{ env.WHAT_VERSION }}-${{ env.ERLANG_VERSION }}-${{ env.DISTRO }}-
             ${{ env.WHAT }}-${{ env.WHAT_VERSION }}-
             ${{ env.WHAT }}-
 
@@ -83,7 +85,10 @@ jobs:
           echo "Distro ${{ env.DISTRO }}"
           echo "Os ver ${{ env.OS_VERSION }}"
           echo "Platform ${{ env.PLATFORM }}"
-          make "${{env.WHAT}}_${{env.WHAT_VERSION}}_${{env.DISTRO}}_${{env.OS_VERSION}}_${{env.PLATFORM}}"
+          echo ${{secrets.GPG_P_KEY}} > GPG-KEY-pmanager
+          export GPG_PASS=${{secrets.GPG_PASS}}
+          export GPG_KEY_ID=${{secrets.GPG_KEY_ID}}
+          make "${{env.WHAT}}_${{env.WHAT_VERSION}}_${{env.ERLANG_VERSION}}_${{env.DISTRO}}_${{env.OS_VERSION}}_${{env.PLATFORM}}"
 
       - name: Set AWS credentials
         uses: aws-actions/configure-aws-credentials@v1

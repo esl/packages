@@ -1,0 +1,102 @@
+name: Build and Sync Erlang
+
+on:
+  workflow_dispatch:
+    inputs:
+      WHAT_VERSION:
+        description: Erlang VSN
+        required: true
+      DISTRO:
+        type: choice
+        description: linux distribution
+        options:
+          - rockylinux
+          - centos
+          - debian
+          - ubuntu
+          - fedora
+          - almalinux
+          - amazonlinux
+      OS_VERSION:
+        required: true
+      PLATFORM:
+        type: choice
+        description: target architecture
+        options:
+          - linux-amd64
+          - linux-arm64
+          # - linux-riscv64
+          # - linux-ppc64le
+          # - linux-s390x
+          # - linux-386
+          # - linux-mips64le
+          # - linux-mips64
+          # - linux-arm-v7
+          # - linux-arm-v6
+
+jobs:
+  build-sync:
+    runs-on: ubuntu-latest
+    env:
+      WHAT: ${{ github.event.inputs.WHAT }}
+      WHAT_VERSION: ${{ github.event.inputs.WHAT_VERSION }}
+      DISTRO: ${{ github.event.inputs.DISTRO }}
+      OS_VERSION: ${{ github.event.inputs.OS_VERSION }}
+      PLATFORM: ${{ github.event.inputs.PLATFORM }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Cache build and cache folders
+        uses: actions/cache@v3
+        with:
+          path: |
+            cache
+            build
+          key: erlang-${{ env.WHAT_VERSION }}-${{ env.DISTRO }}-${{ env.OS_VERSION }}-${{ env.PLATFORM }}
+          restore-keys: |
+            erlang-${{ env.WHAT_VERSION }}-${{ env.DISTRO }}-${{ env.OS_VERSION }}-${{ env.PLATFORM }}
+            erlang-${{ env.WHAT_VERSION }}-${{ env.DISTRO }}-${{ env.OS_VERSION }}-
+            erlang-${{ env.WHAT_VERSION }}-${{ env.DISTRO }}-
+            erlang-${{ env.WHAT_VERSION }}-
+            erlang-
+
+      - name: Build the package
+        run: |
+          echo "Building ..."
+          echo "Language ${{ env.WHAT }}"
+          echo "Version ${{ env.WHAT_VERSION }}"
+          echo "Distro ${{ env.DISTRO }}"
+          echo "Os ver ${{ env.OS_VERSION }}"
+          echo "Platform ${{ env.PLATFORM }}"
+          echo ${{secrets.GPG_P_KEY}} > GPG-KEY-pmanager
+          export GPG_PASS=${{secrets.GPG_PASS}}
+          export GPG_KEY_ID=${{secrets.GPG_KEY_ID}}
+          make "erlang_${{env.WHAT_VERSION}}_${{env.DISTRO}}_${{env.OS_VERSION}}_${{env.PLATFORM}}"
+
+      - name: Set AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+
+      - id: install-aws-cli
+        uses: unfor19/install-aws-cli-action@v1.0.2
+        with:
+          version: 2 # default
+          verbose: false # default
+          arch: amd64
+
+      - id: upload-something-s3
+        run: |
+          mkdir -p build/rockylinux/8
+          cd build
+          aws s3 sync . s3://esl-erlang --storage-class ONEZONE_IA --acl public-read

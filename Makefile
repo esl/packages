@@ -116,6 +116,7 @@ erlang_%:
 	--builder "$(BUILDER)" \
 	--build-arg jobs="$(JOBS)" \
 	--build-arg gpg_pass="$(GPG_PASS)" \
+	--build-arg gpg_key_id="$(GPG_KEY_ID)" \
 	--build-arg image="$(IMAGE)" \
 	--build-arg TARGETPLATFORM="$(PLATFORM)" \
 	--build-arg os="$(OS)" \
@@ -151,6 +152,7 @@ elixir_%:
 	--build-arg image="$(IMAGE)" \
 	--build-arg os="$(OS)" \
 	--build-arg os_version="$(OS_VERSION)" \
+	--build-arg gpg_key_id="$(GPG_KEY_ID)" \
 	--build-arg gpg_pass="$(GPG_PASS)" \
 	--build-arg TARGETPLATFORM="$(PLATFORM)" \
 	--build-arg erlang_version="$(ERLANG_VERSION)" \
@@ -185,6 +187,7 @@ mongooseim_%:
 	--build-arg image="$(IMAGE)" \
 	--build-arg os="$(OS)" \
 	--build-arg os_version="$(OS_VERSION)" \
+	--build-arg gpg_key_id="$(GPG_KEY_ID)" \
 	--build-arg gpg_pass="$(GPG_PASS)" \
 	--build-arg TARGETPLATFORM="$(PLATFORM)" \
 	--build-arg erlang_version="$(ERLANG_VERSION)" \
