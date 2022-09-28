@@ -194,6 +194,10 @@ RUN . ~/.bashrc; \
   done)
 
 # Sign it
+RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=private \
+  --mount=type=cache,id=${os}_${os_version},target=/var/cache/yum,sharing=private \
+  apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
+  dpkg-sig
 
 ARG gpg_pass
 ARG gpg_key_id
