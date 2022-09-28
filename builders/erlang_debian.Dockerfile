@@ -202,10 +202,20 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
 ARG gpg_pass
 ARG gpg_key_id
 
+# TODO fix signing for
+# # build-sync (ubuntu_bionic, linux-amd64)
+# # build-sync (ubuntu_focal, linux-amd64)
+# # build-sync (ubuntu_jammy, linux-amd64)
+# # build-sync (debian_bullseye, linux-amd64)
+# # build-sync (debian_buster, linux-amd64)
+# # build-sync (debian_stretch, linux-amd64)
+
 COPY GPG-KEY-pmanager GPG-KEY-pmanager
-RUN gpg --import --batch --passphrase ${gpg_pass} GPG-KEY-pmanager; \
+RUN if [ "${os}:${os_version}" = "ubuntu:xenial" ]; then \
+  gpg --import --batch --passphrase ${gpg_pass} GPG-KEY-pmanager; \
   dpkg-sig -g "--no-tty --passphrase ${gpg_pass}" -k ${gpg_key_id} --sign builder *.deb; \
-  dpkg-sig --verify *.deb
+  dpkg-sig --verify *.deb; \
+  fi
 
 # Prove it is installable
 FROM --platform=${TARGETPLATFORM} ${image} as testing
