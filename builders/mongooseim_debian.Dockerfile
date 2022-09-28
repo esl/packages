@@ -137,6 +137,20 @@ RUN . ~/.bashrc; \
   .
 #    --depends "esl-erlang >= ${erlang_version}" \
 
+# Sign it
+RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=private \
+  --mount=type=cache,id=${os}_${os_version},target=/var/cache/yum,sharing=private \
+  apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
+  dpkg-sig
+
+ARG gpg_pass
+ARG gpg_key_id
+
+COPY GPG-KEY-pmanager GPG-KEY-pmanager
+RUN gpg --import --batch --passphrase ${gpg_pass} GPG-KEY-pmanager; \
+  dpkg-sig -g "--no-tty --passphrase ${gpg_pass}" -k ${gpg_key_id} --sign builder *.deb; \
+  dpkg-sig --verify *.deb
+
 # Test install
 FROM ${image} as install
 ARG os
