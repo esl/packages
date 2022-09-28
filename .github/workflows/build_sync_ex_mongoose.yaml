@@ -49,6 +49,7 @@ jobs:
     env:
       WHAT: ${{ github.event.inputs.WHAT }}
       WHAT_VERSION: ${{ github.event.inputs.WHAT_VERSION }}
+      ERLANG_VERSION: ${{ github.event.inputs.ERLANG_VERSION }}
       DISTRO: ${{ github.event.inputs.DISTRO }}
       OS_VERSION: ${{ github.event.inputs.OS_VERSION }}
       PLATFORM: ${{ github.event.inputs.PLATFORM }}
