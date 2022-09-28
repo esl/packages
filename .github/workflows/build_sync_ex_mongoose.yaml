@@ -86,7 +86,7 @@ jobs:
           echo "Distro ${{ env.DISTRO }}"
           echo "Os ver ${{ env.OS_VERSION }}"
           echo "Platform ${{ env.PLATFORM }}"
-          echo ${{secrets.GPG_P_KEY}} > GPG-KEY-pmanager
+          echo "${{secrets.GPG_P_KEY}}" | tr ';' '\n' > GPG-KEY-pmanager
           export GPG_PASS=${{secrets.GPG_PASS}}
           export GPG_KEY_ID=${{secrets.GPG_KEY_ID}}
           make "${{env.WHAT}}_${{env.WHAT_VERSION}}_${{env.ERLANG_VERSION}}_${{env.DISTRO}}_${{env.OS_VERSION}}_${{env.PLATFORM}}"
