@@ -9,11 +9,11 @@ on:
         options:
           - elixir
           - mongooseim
-      ERLANG_VERSION:
-        description: Erlang VSN
-        required: true
       WHAT_VERSION:
         description: Elixir VSN / Mongooseim VSN
+        required: true
+      ERLANG_VERSION:
+        description: Erlang VSN
         required: true
       DISTRO:
         type: choice
@@ -82,6 +82,7 @@ jobs:
           echo "Building ..."
           echo "Language ${{ env.WHAT }}"
           echo "Version ${{ env.WHAT_VERSION }}"
+          echo "Erlang version ${{ env.ERLANG_VERSION }}"
           echo "Distro ${{ env.DISTRO }}"
           echo "Os ver ${{ env.OS_VERSION }}"
           echo "Platform ${{ env.PLATFORM }}"
