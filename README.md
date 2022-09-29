@@ -26,19 +26,12 @@ enhancements. Docker is configured for multi-arch support. The
 `main.tf` and `cloud-init.yaml` file instantiates an appropriate AWS
 instance, installs Docker, and configures it for multi-arch builds.
 
-The production version of this should attach an `EBS` volume to the
-instance and adjust the `CACHE-FROM`, `CACHE-TO` and `OUTPUT`
-arguments to the makefile to point to this volume. The volume should be
-preserved beyond the termination of the instance, and re-attached to a
-future instance, when new Erlang or Elixir versions are released by
-upstream.
-
 The `Dockerfile_*` files perform the entire build process, from
-installing the build dependencies, testing and finally outputting a
-package. These files have some conditional elements to account for
-differences across the currently supported range of _versions_ of
-Debian/Ubuntu/CentOS in a way that is hopefully a guide for any
-additional future nuances.
+installing the build dependencies, testing, signing and finally
+outputting a package. These files have some conditional
+elements to account for differences across the currently supported range
+of _versions_ of Debian/Ubuntu/CentOS in a way that is hopefully a guide
+for any additional future nuances.
 
 In order to improve build times, especially if a previous build has
 been run (or partially run), the docker scripts use the `buildx`
@@ -52,7 +45,7 @@ docker cache can be leveraged when building multiple erlang versions
 for the same operating system targets.
 
 Finally, the OTP smoke test must run successfully for an artifact to
-be produced.
+be produced. Same pattern is applied for mongooseim and elixir.
 
 ## Package Generation
 
@@ -71,6 +64,28 @@ you would like to build Erlang 24.2.2 for rockylinux 8 targeting
 ```bash
 make  erlang_24.2.2_rockylinux_8_rockylinux_linux-amd64
 ```
+
+## Implementing a new builder
+
+There is no need to implement a new builder according to the current packages
+that are listed in the ESL website. The builders folder contains two main
+Dockerfiles per package to build that behave as the entry point for both main
+distros, centos and debian. Like so:
+
+ .
+├──  elixir_debian.Dockerfile
+├──  elixir_fedora.Dockerfile ⇒ elixir_centos.Dockerfile
+...
+├──  erlang_centos.Dockerfile
+├──  erlang_rockylinux.Dockerfile ⇒ erlang_centos.Dockerfile
+...
+├──  mongooseim_debian.Dockerfile
+└──  mongooseim_ubuntu.Dockerfile ⇒ mongooseim_debian.Dockerfile
+...
+
+The others are just symbolic links. Meaning that if we want to implement a new
+builder a first good step would be to copy the main centos or debian Dockerfiles
+and rename them accordingly.
 
 ## Publishing
 
@@ -140,14 +155,6 @@ published indirectly via CloudFront as it is today.
 
 # Deploying to Production
 
-- s3 sync with legacy packages and gpg sign.
-
-## TODO
-
-- scheduled task to build latest elixir
-- signing packages
-- createrepo
-- reusable action for sync
-- why { DISTRO_LATEST: "ubuntu_focal", PLATFORM: "linux-arm-v7" } errrores due to flex?
-- why { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-386" } ncurses not found?
-- why { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-arm-v7" } errores due to flex?
+- Turn s3 into repos
+- Fix package depends once repos are in place
+- Fix missing signing for debian/ubuntu
