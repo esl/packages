@@ -1,0 +1,41 @@
+name: aptly publish workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  aptly-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Install Aptly
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y aptly
+
+      - name: Download package files from S3
+        run: |
+          mkdir -p packages
+          aws s3 sync s3://esl-erlang packages
+
+      - name: Create Aptly repository
+        run: |
+          aptly repo create esl-erlang
+          aptly repo add esl-erlang packages/*.deb
+          aptly publish repo esl-erlang s3:my-s3-bucket:esl-arlang
+
+      - name: Cleanup
+        run: |
+          rm -rf packages
