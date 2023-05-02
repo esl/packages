@@ -11,7 +11,7 @@ env:
   ERLANG_VERSIONS: "21 22 23 24 25"
   AWS_REGION: "us-west-2"
   AWS_SOURCE_BUCKET: "esl-erlang"
-  AWS_DESTINATION_BUCKET: ""
+  AWS_DESTINATION_BUCKET: "binaries2.erlang-solutions.com"
 
 jobs:
   update-repo:
