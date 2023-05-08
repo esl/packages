@@ -25,7 +25,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y aptly awscli
+          sudo apt-get install -y aptly awscli reprepro
           
       # Configure Credentials for AWS    
       - name: Set AWS credentials
