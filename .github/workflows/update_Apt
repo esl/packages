@@ -1,0 +1,93 @@
+name: Update Apt repository
+
+on:
+  schedule:
+    - cron: "0 0 * * 0"
+  workflow_dispatch:
+
+env:
+  DEBIAN_RELEASES: "stretch buster bullseye"
+  UBUNTU_RELEASES: "jammy trusty xenial bionic focal groovy hirsute"
+  ERLANG_VERSIONS: "21 22 23 24 25"
+  AWS_REGION: "us-west-2"
+  AWS_SOURCE_BUCKET: "esl-erlang"
+  AWS_DESTINATION_BUCKET: "esl-bucket"
+
+jobs:
+  update-repo:
+    runs-on: ubuntu-latest
+
+    steps
+      - name: Checkout
+        uses: actions/checkout@v2
+        
+      # Install dependencies required by the scripts
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y aptly awscli
+          
+      # Configure Credentials for AWS    
+      - name: Set AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+
+      - id: install-aws-cli
+        uses: unfor19/install-aws-cli-action@v1.0.2
+        with:
+          version: 2 # default
+          verbose: false # default
+          arch: amd64
+          
+      # Run the script to create the repositories
+      - name: Create Repositories
+        run: |
+          for distro in $DEBIAN_RELEASES $UBUNTU_RELEASES
+          do
+            for erlang in $ERLANG_VERSIONS
+            do
+              aptly repo create "$distro/erlang-$erlang"
+            done
+          done
+
+      # Download .deb files from S3
+      - name: Download deb files
+        run: |
+          aws s3 sync s3://$AWS_SOURCE_BUCKET incoming
+          mkdir Packages
+          for file in $(find incoming -name '*.deb')
+          do
+            reprepro includedeb stretch "$file"
+          done
+
+      # Run the script to add the packages to the repositories
+      - name: Add Packages to Repositories
+        run: |
+          for file in $(find Packages -name '*.deb')
+          do
+            if [[ "$file" =~ esl-erlang_([0-9]+)([0-9.]+)-[0-9]+~(debian|ubuntu)~([a-z]+)_[a-z0-9]+\.deb$ ]]; then
+              aptly repo add --remove-files "${BASH_REMATCH[4]}/erlang-${BASH_REMATCH[1]}" "$file"
+            fi
+          done
+
+      # Publish the repositories to S3
+      - name: Publish Repositories
+        run: |
+          for distro in $DEBIAN_RELEASES
+          do
+            for erlang in $ERLANG_VERSIONS
+            do
+              aptly publish repo -acquire-by-hash -component="contrib" -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_REGION:$AWS_DESTINATION_BUCKET:$distro/erlang-$erlang
+            done
+          done
+          
+          for distro in $UBUNTU_RELEASES
+          do
+            for erlang in $ERLANG_VERSIONS
+            do
+              aptly publish repo -acquire-by-hash -component="contrib" -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_REGION:$AWS_DESTINATION_BUCKET:$distro/erlang-$erlang
+            done
+          done
