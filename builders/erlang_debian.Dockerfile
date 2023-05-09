@@ -28,7 +28,7 @@ RUN if [ "${os}" = "ubuntu" -a "${BUILDPLATFORM}" != "${TARGETPLATFORM}" ]; then
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
   --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
   if [ "${os}:${os_version}" = "debian:stretch" ]; then \
-  echo "deb http://deb.debian.org/debian stretch-backports main" > /etc/apt/sources.list.d/stretch-backports.list; \
+  echo "deb http://archive.debian.org/debian stretch-backports main" > /etc/apt/sources.list.d/stretch-backports.list; \
   apt-get --quiet update; \
   apt-get --quiet --yes --no-install-recommends install \
   libwxbase3.0-0v5:$(darch $TARGETPLATFORM)/stretch-backports \
@@ -202,21 +202,39 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
 ARG gpg_pass
 ARG gpg_key_id
 
-# TODO fix signing for
-# # build-sync (ubuntu_bionic, linux-amd64)
-# # build-sync (ubuntu_focal, linux-amd64)
-# # build-sync (ubuntu_jammy, linux-amd64)
-# # build-sync (debian_bullseye, linux-amd64)
-# # build-sync (debian_buster, linux-amd64)
-# # build-sync (debian_stretch, linux-amd64)
-
 COPY GPG-KEY-pmanager GPG-KEY-pmanager
 RUN if [ "${os}:${os_version}" = "ubuntu:xenial" ]; then \
   gpg --import --batch --passphrase ${gpg_pass} GPG-KEY-pmanager; \
   dpkg-sig -g "--no-tty --passphrase ${gpg_pass}" -k ${gpg_key_id} --sign builder *.deb; \
   dpkg-sig --verify *.deb; \
   fi
-
+RUN if [ "${os}:${os_version}" = "ubuntu:focal" ]; then \
+  gpg --import --batch --passphrase ${gpg_pass} GPG-KEY-pmanager; \
+  dpkg-sig -g "--no-tty --passphrase ${gpg_pass}" -k ${gpg_key_id} --sign builder *.deb; \
+  dpkg-sig --verify *.deb; \
+  fi
+RUN if [ "${os}:${os_version}" = "ubuntu:jammy" ]; then \
+  gpg --import --batch --passphrase ${gpg_pass} GPG-KEY-pmanager; \
+  dpkg-sig -g "--no-tty --passphrase ${gpg_pass}" -k ${gpg_key_id} --sign builder *.deb; \
+  dpkg-sig --verify *.deb; \
+  fi
+  
+RUN if [ "${os}:${os_version}" = "debian:bullseye" ]; then \
+  gpg --import --batch --passphrase ${gpg_pass} GPG-KEY-pmanager; \
+  dpkg-sig -g "--no-tty --passphrase ${gpg_pass}" -k ${gpg_key_id} --sign builder *.deb; \
+  dpkg-sig --verify *.deb; \
+  fi
+RUN if [ "${os}:${os_version}" = "debian:buster" ]; then \
+  gpg --import --batch --passphrase ${gpg_pass} GPG-KEY-pmanager; \
+  dpkg-sig -g "--no-tty --passphrase ${gpg_pass}" -k ${gpg_key_id} --sign builder *.deb; \
+  dpkg-sig --verify *.deb; \
+  fi
+RUN if [ "${os}:${os_version}" = "debian:stretch" ]; then \
+  gpg --import --batch --passphrase ${gpg_pass} GPG-KEY-pmanager; \
+  dpkg-sig -g "--no-tty --passphrase ${gpg_pass}" -k ${gpg_key_id} --sign builder *.deb; \
+  dpkg-sig --verify *.deb; \
+  fi
+  
 # Prove it is installable
 FROM --platform=${TARGETPLATFORM} ${image} as testing
 WORKDIR /tmp/output
