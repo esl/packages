@@ -53,16 +53,6 @@ jobs:
             done
           done
 
-      # Download .deb files from S3
-      - name: Download deb files
-        run: |
-          aws s3 sync s3://$AWS_SOURCE_BUCKET incoming
-          mkdir Packages
-          for file in $(find incoming -name '*.deb')
-          do
-            reprepro includedeb stretch "$file"
-          done
-
       # Run the script to add the packages to the repositories
       - name: Add Packages to Repositories
         run: |
