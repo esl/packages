@@ -25,7 +25,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y aptly awscli reprepro
+          sudo apt-get install -y aptly awscli
           
       # Configure Credentials for AWS    
       - name: Set AWS credentials
@@ -58,10 +58,6 @@ jobs:
         run: |
           aws s3 sync s3://$AWS_SOURCE_BUCKET incoming
           mkdir Packages
-          for file in $(find incoming -name '*.deb')
-          do
-            reprepro includedeb stretch "$file"
-          done
 
       # Run the script to add the packages to the repositories
       - name: Add Packages to Repositories
