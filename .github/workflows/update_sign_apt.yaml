@@ -77,12 +77,12 @@ jobs:
       # Import GPG private key
       - name: Import GPG Private Key
         run: |
-          echo "$GPG_P_KEY" | base64 --decode | gpg --import
+          echo "${{ secrets.GPG_P_KEY }}" | base64 --decode | gpg --import
           
       # Set GPG key ID
       - name: Set GPG Key ID
         run: |
-          export GPG_KEY_ID=$GPG_KEY_ID    
+          export GPG_KEY_ID=${{ secrets.GPG_KEY_ID }}   
           
       # Publish the repositories to S3
       - name: Publish Repositories
@@ -91,7 +91,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" -gpg-key="$GPG_KEY_ID" -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_REGION:$AWS_DESTINATION_BUCKET:$distro/erlang-$erlang
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" -gpg-key="${{ secrets.GPG_KEY_ID }} " -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_REGION:$AWS_DESTINATION_BUCKET:$distro/erlang-$erlang
             done
           done
           
@@ -99,6 +99,6 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" -gpg-key="$GPG_KEY_ID" -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_REGION:$AWS_DESTINATION_BUCKET:$distro/erlang-$erlang
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" -gpg-key="${{ secrets.GPG_KEY_ID }} " -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_REGION:$AWS_DESTINATION_BUCKET:$distro/erlang-$erlang
             done
           done
