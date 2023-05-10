@@ -43,25 +43,6 @@ jobs:
           verbose: false # default
           arch: amd64
           
-      # Import GPG Private Key
-      - name: Import GPG Private Key
-        run: |
-          echo "$GPG_P_KEY" | gpg --import
-          echo "$GPG_PASS" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --output ./gpg-key --export-secret-key --armor $GPG_KEY_ID
-      
-      # Create aptly.conf
-      - name: Create aptly.conf
-        run: |
-          echo "[defaults]" >> ./aptly.conf
-          echo "S3PublishEndpoint = s3-$AWS_REGION.amazonaws.com" >> ./aptly.conf
-          echo "S3PublishBucket = $AWS_DESTINATION_BUCKET" >> ./aptly.conf
-          echo "S3PublishRegion = $AWS_REGION" >> ./aptly.conf
-          echo "S3PublishACL = public-read" >> ./aptly.conf
-          echo "S3PublishPrefix = " >> ./aptly.conf
-          echo "S3PublishStorageClass = STANDARD" >> ./aptly.conf
-          echo "S3PublishForcePathStyle = true" >> ./aptly.conf
-          echo "gpg2 = true" >> ./aptly.conf
-          echo "gpgKeyPath = ./gpg-key" >> ./aptly.conf
       # Run the script to create the repositories
       - name: Create Repositories
         run: |
@@ -92,18 +73,25 @@ jobs:
               aptly repo add --remove-files "${BASH_REMATCH[4]}/erlang-${BASH_REMATCH[1]}-${BASH_REMATCH[5]}" "$file"
             fi
           done
+          
+      # Import GPG private key
+      - name: Import GPG Private Key
+        run: |
+          echo "$GPG_P_KEY" | base64 --decode | gpg --import
+          
+      # Set GPG key ID
+      - name: Set GPG Key ID
+        run: |
+          export GPG_KEY_ID=$GPG_KEY_ID    
+          
       # Publish the repositories to S3
       - name: Publish Repositories
         run: |
-          export GNUPGHOME="${HOME}/.gnupg"
-          mkdir -p "${GNUPGHOME}"
-          cp ./gpg-key "${GNUPGHOME}/secring.gpg"
-          
           for distro in $DEBIAN_RELEASES
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -config="./aptly.conf" -acquire-by-hash -component="contrib"  -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_REGION:$AWS_DESTINATION_BUCKET:$distro/erlang-$erlang
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" -gpg-key="$GPG_KEY_ID" -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_REGION:$AWS_DESTINATION_BUCKET:$distro/erlang-$erlang
             done
           done
           
@@ -111,6 +99,6 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -config="./aptly.conf" -acquire-by-hash -component="contrib"  -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_REGION:$AWS_DESTINATION_BUCKET:$distro/erlang-$erlang
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" -gpg-key="$GPG_KEY_ID" -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_REGION:$AWS_DESTINATION_BUCKET:$distro/erlang-$erlang
             done
           done
