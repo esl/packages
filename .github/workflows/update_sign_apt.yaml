@@ -9,9 +9,9 @@ env:
   DEBIAN_RELEASES: "stretch buster bullseye"
   UBUNTU_RELEASES: "jammy trusty xenial bionic focal groovy hirsute"
   ERLANG_VERSIONS: "21 22 23 24 25"
-  AWS_REGION: "us-west-2"
+  AWS_REGION: "eu-west-2"
   AWS_SOURCE_BUCKET: "esl-erlang"
-  AWS_DESTINATION_BUCKET: "esl-bucket"
+  AWS_DESTINATION_BUCKET: "esl-packages"
   ARCHITECTURE: "amd64 arm64"
 
 jobs:
@@ -34,7 +34,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-2
+          aws-region: us-east-2
 
       - id: install-aws-cli
         uses: unfor19/install-aws-cli-action@v1.0.2
@@ -43,6 +43,25 @@ jobs:
           verbose: false # default
           arch: amd64
           
+      # Import GPG Private Key
+      - name: Import GPG Private Key
+        run: |
+          echo "$GPG_P_KEY" | gpg --import
+          echo "$GPG_PASS" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --output ./gpg-key --export-secret-key --armor $GPG_KEY_ID
+      
+      # Create aptly.conf
+      - name: Create aptly.conf
+        run: |
+          echo "[defaults]" >> ./aptly.conf
+          echo "S3PublishEndpoint = s3-$AWS_REGION.amazonaws.com" >> ./aptly.conf
+          echo "S3PublishBucket = $AWS_DESTINATION_BUCKET" >> ./aptly.conf
+          echo "S3PublishRegion = $AWS_REGION" >> ./aptly.conf
+          echo "S3PublishACL = public-read" >> ./aptly.conf
+          echo "S3PublishPrefix = " >> ./aptly.conf
+          echo "S3PublishStorageClass = STANDARD" >> ./aptly.conf
+          echo "S3PublishForcePathStyle = true" >> ./aptly.conf
+          echo "gpg2 = true" >> ./aptly.conf
+          echo "gpgKeyPath = ./gpg-key" >> ./aptly.conf
       # Run the script to create the repositories
       - name: Create Repositories
         run: |
@@ -76,11 +95,15 @@ jobs:
       # Publish the repositories to S3
       - name: Publish Repositories
         run: |
+          export GNUPGHOME="${HOME}/.gnupg"
+          mkdir -p "${GNUPGHOME}"
+          cp ./gpg-key "${GNUPGHOME}/secring.gpg"
+          
           for distro in $DEBIAN_RELEASES
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="amd64,arm64" -acquire-by-hash -component="contrib" -gpg-key="$GPG_KEY_ID" -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_REGION:$AWS_DESTINATION_BUCKET:$distro/erlang-$erlang
+              aptly publish repo -architectures="$ARCHITECTURE" -config="./aptly.conf" -acquire-by-hash -component="contrib"  -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_REGION:$AWS_DESTINATION_BUCKET:$distro/erlang-$erlang
             done
           done
           
@@ -88,6 +111,6 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="amd64,arm64" -acquire-by-hash -component="contrib" -gpg-key="$GPG_KEY_ID" -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_REGION:$AWS_DESTINATION_BUCKET:$distro/erlang-$erlang
+              aptly publish repo -architectures="$ARCHITECTURE" -config="./aptly.conf" -acquire-by-hash -component="contrib"  -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_REGION:$AWS_DESTINATION_BUCKET:$distro/erlang-$erlang
             done
           done
