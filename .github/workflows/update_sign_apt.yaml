@@ -73,7 +73,13 @@ jobs:
               aptly repo add --remove-files "${BASH_REMATCH[4]}/erlang-${BASH_REMATCH[1]}-${BASH_REMATCH[5]}" "$file"
             fi
           done
-          
+     # Save Aptly S3 Connection
+      - name: Configure AWS credentials
+        run: |
+          echo "[default]" >> $HOME/.aws/credentials
+          echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> $HOME/.aws/credentials
+          echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> $HOME/.aws/credentials
+          aws configure set default.region $AWS_REGION 
           
       # Publish the repositories to S3
       - name: Publish Repositories
