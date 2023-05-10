@@ -157,27 +157,7 @@ RUN if [ "${os}:${os_version}" = "ubuntu:focal" ]; then \
   dpkg-sig -g "--no-tty --passphrase ${gpg_pass}" -k ${gpg_key_id} --sign builder *.deb; \
   dpkg-sig --verify *.deb; \
   fi
-RUN if [ "${os}:${os_version}" = "ubuntu:jammy" ]; then \
-  gpg --import --batch --passphrase ${gpg_pass} GPG-KEY-pmanager; \
-  dpkg-sig -g "--no-tty --passphrase ${gpg_pass}" -k ${gpg_key_id} --sign builder *.deb; \
-  dpkg-sig --verify *.deb; \
-  fi
-  
-RUN if [ "${os}:${os_version}" = "debian:bullseye" ]; then \
-  gpg --import --batch --passphrase ${gpg_pass} GPG-KEY-pmanager; \
-  dpkg-sig -g "--no-tty --passphrase ${gpg_pass}" -k ${gpg_key_id} --sign builder *.deb; \
-  dpkg-sig --verify *.deb; \
-  fi
-RUN if [ "${os}:${os_version}" = "debian:buster" ]; then \
-  gpg --import --batch --passphrase ${gpg_pass} GPG-KEY-pmanager; \
-  dpkg-sig -g "--no-tty --passphrase ${gpg_pass}" -k ${gpg_key_id} --sign builder *.deb; \
-  dpkg-sig --verify *.deb; \
-  fi
-RUN if [ "${os}:${os_version}" = "debian:stretch" ]; then \
-  gpg --import --batch --passphrase ${gpg_pass} GPG-KEY-pmanager; \
-  dpkg-sig -g "--no-tty --passphrase ${gpg_pass}" -k ${gpg_key_id} --sign builder *.deb; \
-  dpkg-sig --verify *.deb; \
-  fi
+
 # Test install
 FROM ${image} as install
 ARG os
