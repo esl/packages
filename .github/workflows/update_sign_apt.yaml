@@ -85,7 +85,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_REGION:$AWS_DESTINATION_BUCKET:$distro/erlang-$erlang
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:$distro/erlang-$erlang
             done
           done
           
@@ -93,7 +93,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_REGION:$AWS_DESTINATION_BUCKET:$distro/erlang-$erlang
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:$distro/erlang-$erlang
             done
           done
           
