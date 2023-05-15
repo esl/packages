@@ -155,6 +155,4 @@ published indirectly via CloudFront as it is today.
 
 # Deploying to Production
 
-- Turn s3 into repos
-- Fix package depends once repos are in place
 - Update Download Section in ESL Homepage
