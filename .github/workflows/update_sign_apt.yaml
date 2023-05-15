@@ -72,7 +72,7 @@ jobs:
         run: |
           for distro in $DEBIAN_RELEASES $UBUNTU_RELEASES
           do
-            for mongoose in $MONGOOSEIM_VERSIONS
+            for mongooseim in $MONGOOSEIM_VERSIONS
             do
               aptly repo create "$distro/mongooseim-$mongooseim"
             done
