@@ -144,7 +144,7 @@ jobs:
           do
             for elixir in $ELIXIR_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -force-overwrite -distribution="$distro/elixir-$elixir" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:debian/$distro/elixir-$elixir
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -force-overwrite -distribution="$distro-elixir-$elixir" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:debian/$distro/elixir-$elixir
             done
           done
           
@@ -163,13 +163,13 @@ jobs:
           do
             for mongooseim in $MONGOOSEIM_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -force-overwrite -distribution="$distro/mongoose-$mongoose" "$distro/mongoose-$mongoose" s3:$AWS_DESTINATION_BUCKET:debian/$distro/mongoose-$mongoose
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -force-overwrite -distribution="$distro-mongoose-$mongoose" "$distro/mongoose-$mongoose" s3:$AWS_DESTINATION_BUCKET:debian/$distro/mongoose-$mongoose
             done
           done
           for distro in $UBUNTU_RELEASES
           do
             for mongooseim in $MONGOOSEIM_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -force-overwrite -distribution="$distro/mongoose-$mongoose" "$distro/mongoose-$mongoose" s3:$AWS_DESTINATION_BUCKET:debian/$distro/mongoose-$mongoose
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -force-overwrite -distribution="$distro-mongoose-$mongoose" "$distro/mongoose-$mongoose" s3:$AWS_DESTINATION_BUCKET:debian/$distro/mongoose-$mongoose
             done
           done
