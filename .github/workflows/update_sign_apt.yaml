@@ -93,7 +93,6 @@ jobs:
             }
           }' > aptly.conf
           
-          sudo mv aptly.conf /etc/aptly.conf
           sudo mv aptly.conf ~/.aptly.conf
       # Publish the repositories to S3 Destination
       - name: Publish Repositories
