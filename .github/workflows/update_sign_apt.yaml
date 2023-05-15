@@ -78,6 +78,20 @@ jobs:
         run: |
           aws s3 sync s3://$AWS_SOURCE_BUCKET s3://$AWS_DESTINATION_BUCKET
           
+      # Configure aptly.conf
+      - name: Configure aptly.conf
+        run: |
+          echo '{
+            "S3PublishEndpoints": {
+              "s3-us-west-1": {
+                "region": "us-west-1",
+                "bucket": "$AWS_DESTINATION_BUCKET",
+                "awsAccessKeyID": "${{ secrets.AWS_ACCESS_KEY_ID }}",
+                "awsSecretAccessKey": "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+              }
+            }
+          }' > aptly.conf
+          sudo mv aptly.conf /etc/aptly.conf    
       # Publish the repositories to S3 Destination
       - name: Publish Repositories
         run: |
