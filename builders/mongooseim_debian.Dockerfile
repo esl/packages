@@ -152,11 +152,6 @@ RUN if [ "${os}:${os_version}" = "ubuntu:xenial" ]; then \
   dpkg-sig -g "--no-tty --passphrase ${gpg_pass}" -k ${gpg_key_id} --sign builder *.deb; \
   dpkg-sig --verify *.deb; \
   fi
-RUN if [ "${os}:${os_version}" = "ubuntu:focal" ]; then \
-  gpg --import --batch --passphrase ${gpg_pass} GPG-KEY-pmanager; \
-  dpkg-sig -g "--no-tty --passphrase ${gpg_pass}" -k ${gpg_key_id} --sign builder *.deb; \
-  dpkg-sig --verify *.deb; \
-  fi
 
 # Test install
 FROM ${image} as install
