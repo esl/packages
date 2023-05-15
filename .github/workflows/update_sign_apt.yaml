@@ -45,7 +45,7 @@ jobs:
           verbose: false # default
           arch: amd64
           
-      # Run the script to create the repositories
+      # Run the script to create the repositories for ESL-erlang
       - name: Create Repositories
         run: |
           for distro in $DEBIAN_RELEASES $UBUNTU_RELEASES
@@ -55,7 +55,28 @@ jobs:
               aptly repo create "$distro/erlang-$erlang"
             done
           done
+          
+      # Run the script to create the repositories for Elixir
+      - name: Create Elixir Repositories
+        run: |
+          for distro in $DEBIAN_RELEASES $UBUNTU_RELEASES
+          do
+            for elixir in $ELIXIR_VERSIONS
+            do
+              aptly repo create "$distro/elixir-$elixir"
+            done
+          done
 
+      # Run the script to create the repositories for MongooseIM
+      - name: Create Mongoose Repositories
+        run: |
+          for distro in $DEBIAN_RELEASES $UBUNTU_RELEASES
+          do
+            for mongoose in $MONGOOSEIM_VERSIONS
+            do
+              aptly repo create "$distro/mongooseim-$mongooseim"
+            done
+          done
       # Download .deb files from S3
       - name: Download deb files
         run: |
