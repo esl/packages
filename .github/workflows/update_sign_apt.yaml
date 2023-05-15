@@ -7,8 +7,8 @@ on:
 
 env:
   DEBIAN_RELEASES: "stretch buster bullseye"
-  UBUNTU_RELEASES: "jammy trusty xenial bionic focal groovy hirsute"
-  ERLANG_VERSIONS: "21 22 23 24 25"
+  UBUNTU_RELEASES: "jammy trusty xenial bionic focal"
+  ERLANG_VERSIONS: "24 25"
   AWS_REGION: "eu-west-2"
   AWS_SOURCE_BUCKET: "esl-erlang"
   AWS_DESTINATION_BUCKET: "esl-packages"
@@ -74,9 +74,9 @@ jobs:
             fi
           done
       # Sync S3 Buckets     
-      - name: Sync S3 Buckets
-        run: |
-          aws s3 sync s3://$AWS_SOURCE_BUCKET s3://$AWS_DESTINATION_BUCKET
+     # - name: Sync S3 Buckets
+     #   run: |
+      #    aws s3 sync s3://$AWS_SOURCE_BUCKET s3://$AWS_DESTINATION_BUCKET
           
       # Configure aptly.conf
       - name: Configure aptly.conf
@@ -102,7 +102,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -force-overwrite -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:$distro/erlang-$erlang
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -force-overwrite -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:debian/$distro/erlang-$erlang
             done
           done
           
@@ -110,7 +110,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -force-overwrite -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:$distro/erlang-$erlang
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -force-overwrite -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/erlang-$erlang
             done
           done
           
