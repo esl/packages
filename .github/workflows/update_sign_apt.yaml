@@ -84,7 +84,7 @@ jobs:
           echo '{
             "S3PublishEndpoints": {
               "esl-packages": {
-                "region": "us-west-1",
+                "region": "eu-west-2",
                 "bucket": "esl-packages",
                 "awsAccessKeyID": "${{ secrets.AWS_ACCESS_KEY_ID }}",
                 "awsSecretAccessKey": "${{ secrets.AWS_SECRET_ACCESS_KEY }}",
