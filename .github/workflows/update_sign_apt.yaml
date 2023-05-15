@@ -85,7 +85,7 @@ jobs:
             "S3PublishEndpoints": {
               "s3-us-west-1": {
                 "region": "us-west-1",
-                "bucket": "$AWS_DESTINATION_BUCKET",
+                "bucket": "esl-packages",
                 "awsAccessKeyID": "${{ secrets.AWS_ACCESS_KEY_ID }}",
                 "awsSecretAccessKey": "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
               }
