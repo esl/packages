@@ -152,12 +152,12 @@ jobs:
           do
             for elixir in $ELIXIR_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -force-overwrite -distribution="$distro/elixir-$elixir" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:debian/$distro/elixir-$elixir
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -force-overwrite -distribution="$distro-elixir-$elixir" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:debian/$distro/elixir-$elixir
             done
           done
           
-      # Publish the repositories for Mongoose to S3 Destination
-      - name: Publish Mongoose Repositories
+      # Publish the repositories for MongooseIM to S3 Destination
+      - name: Publish MongooseIM Repositories
         run: |
           for distro in $DEBIAN_RELEASES
           do
