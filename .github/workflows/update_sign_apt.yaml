@@ -82,8 +82,8 @@ jobs:
       - name: Configure aptly.conf
         run: |
           echo '{
-            "esl-packages": {
-              "s3-us-west-1": {
+            "S3PublishEndpoints": {
+              "esl-packages": {
                 "region": "us-west-1",
                 "bucket": "esl-packages",
                 "awsAccessKeyID": "${{ secrets.AWS_ACCESS_KEY_ID }}",
@@ -92,7 +92,7 @@ jobs:
             }
           }' > aptly.conf
           sudo mv aptly.conf /etc/aptly.conf
-          sudo mv aptly.conf 
+          sudo mv aptly.conf /
       # Publish the repositories to S3 Destination
       - name: Publish Repositories
         run: |
