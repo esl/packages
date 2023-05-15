@@ -76,7 +76,7 @@ jobs:
       # Sync S3 Buckets     
       - name: Sync S3 Buckets
         run: |
-          aws s3 sync s3://${{ env.SOURCE_BUCKET }} s3://${{ env.DESTINATION_BUCKET }}
+          aws s3 sync s3://$AWS_SOURCE_BUCKET s3://AWS_DESTINATION_BUCKET
           
       # Publish the repositories to S3 Destination
       - name: Publish Repositories
