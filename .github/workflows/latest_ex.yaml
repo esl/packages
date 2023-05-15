@@ -25,8 +25,8 @@ jobs:
           - { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-arm64" }
           - { DISTRO_LATEST: "debian_buster", PLATFORM: "linux-amd64" }
           - { DISTRO_LATEST: "debian_buster", PLATFORM: "linux-arm64" }
-          - { DISTRO_LATEST: "debian_stretch", PLATFORM: "linux-amd64" }
-          - { DISTRO_LATEST: "debian_stretch", PLATFORM: "linux-arm64" }
+        #  - { DISTRO_LATEST: "debian_stretch", PLATFORM: "linux-amd64" }
+        #  - { DISTRO_LATEST: "debian_stretch", PLATFORM: "linux-arm64" }
           - { DISTRO_LATEST: "centos_7", PLATFORM: "linux-amd64" }
           - { DISTRO_LATEST: "centos_7", PLATFORM: "linux-arm64" }
           - { DISTRO_LATEST: "centos_8", PLATFORM: "linux-amd64" }
