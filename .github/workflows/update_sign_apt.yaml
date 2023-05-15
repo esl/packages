@@ -9,6 +9,8 @@ env:
   DEBIAN_RELEASES: "stretch buster bullseye"
   UBUNTU_RELEASES: "jammy trusty xenial bionic focal"
   ERLANG_VERSIONS: "24 25"
+  ELIXIR_VERSIONS: "1.14 1.13 1.12"
+  MONGOOSEIM_VERSIONS: "5 6"
   AWS_REGION: "eu-west-2"
   AWS_SOURCE_BUCKET: "esl-erlang"
   AWS_DESTINATION_BUCKET: "esl-packages"
@@ -65,18 +67,18 @@ jobs:
         run: |
           for file in $(find Packages -name '*.deb')
           do
-            if [[ "$file" =~ esl-erlang_([0-9]+)([0-9.]+)-[0-9]+~(debian|ubuntu)~([a-z]+)_(amd64|arm64)\.deb$ ]]; then
+            if [[ "$file" =~ (esl-erlang|elixir|mongooseim)_([0-9]+)([0-9.]+)(_[0-9]+)?(_otp_[0-9.]+)?~(debian|ubuntu)~([a-z]+)_(amd64|arm64|all)\.deb$ ]]; then
               if ! dpkg-sig --verify "$file" >/dev/null 2>&1; then
                 echo "File $file is not signed. Signing with key $GPG_KEY_ID."
                 dpkg-sig -g "--no-tty --passphrase $GPG_PASS" -k $GPG_KEY_ID "$file"
               fi
-              aptly repo add --remove-files "${BASH_REMATCH[4]}/erlang-${BASH_REMATCH[1]}-${BASH_REMATCH[5]}" "$file"
+              aptly repo add --remove-files "${BASH_REMATCH[7]}/${BASH_REMATCH[1]}-${BASH_REMATCH[2]}${BASH_REMATCH[3]}${BASH_REMATCH[4]}${BASH_REMATCH[5]}" "$file"
             fi
           done
       # Sync S3 Buckets     
-     # - name: Sync S3 Buckets
-     #   run: |
-      #    aws s3 sync s3://$AWS_SOURCE_BUCKET s3://$AWS_DESTINATION_BUCKET
+      - name: Sync S3 Buckets
+        run: |
+         aws s3 sync s3://$AWS_SOURCE_BUCKET s3://$AWS_DESTINATION_BUCKET
           
       # Configure aptly.conf
       - name: Configure aptly.conf
@@ -95,7 +97,7 @@ jobs:
           }' > aptly.conf
           
           sudo mv aptly.conf ~/.aptly.conf
-      # Publish the repositories to S3 Destination
+      # Publish the repositories for ESL-Erlang to S3 Destination
       - name: Publish Repositories
         run: |
           for distro in $DEBIAN_RELEASES
@@ -114,4 +116,39 @@ jobs:
             done
           done
           
-
+      # Publish the repositories for Elixir to S3 Destination
+      - name: Publish Elixir Repositories
+        run: |
+          for distro in $DEBIAN_RELEASES
+          do
+            for elixir in $ELIXIR_VERSIONS
+            do
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -force-overwrite -distribution="$distro/elixir-$elixir" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:debian/$distro/elixir-$elixir
+            done
+          done
+          
+          for distro in $UBUNTU_RELEASES
+          do
+            for elixir in $ELIXIR_VERSIONS
+            do
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -force-overwrite -distribution="$distro/elixir-$elixir" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:debian/$distro/elixir-$elixir
+            done
+          done
+          
+      # Publish the repositories for Mongoose to S3 Destination
+      - name: Publish Mongoose Repositories
+        run: |
+          for distro in $DEBIAN_RELEASES
+          do
+            for mongooseim in $MONGOOSEIM_VERSIONS
+            do
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -force-overwrite -distribution="$distro/mongoose-$mongoose" "$distro/mongoose-$mongoose" s3:$AWS_DESTINATION_BUCKET:debian/$distro/mongoose-$mongoose
+            done
+          done
+          for distro in $UBUNTU_RELEASES
+          do
+            for mongooseim in $MONGOOSEIM_VERSIONS
+            do
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -force-overwrite -distribution="$distro/mongoose-$mongoose" "$distro/mongoose-$mongoose" s3:$AWS_DESTINATION_BUCKET:debian/$distro/mongoose-$mongoose
+            done
+          done
