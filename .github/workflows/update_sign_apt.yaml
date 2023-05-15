@@ -88,10 +88,13 @@ jobs:
                 "bucket": "esl-packages",
                 "awsAccessKeyID": "${{ secrets.AWS_ACCESS_KEY_ID }}",
                 "awsSecretAccessKey": "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+                "acl": "public-read"
               }
             }
           }' > aptly.conf
+          
           sudo mv aptly.conf /etc/aptly.conf
+          sudo mv aptly.conf ~/.aptly.conf
       # Publish the repositories to S3 Destination
       - name: Publish Repositories
         run: |
@@ -99,7 +102,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:$distro/erlang-$erlang
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -force-overwrite -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:$distro/erlang-$erlang
             done
           done
           
@@ -107,7 +110,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:$distro/erlang-$erlang
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -force-overwrite -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:$distro/erlang-$erlang
             done
           done
           
