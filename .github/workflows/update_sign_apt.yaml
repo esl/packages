@@ -88,7 +88,7 @@ jobs:
                 "bucket": "esl-packages",
                 "awsAccessKeyID": "${{ secrets.AWS_ACCESS_KEY_ID }}",
                 "awsSecretAccessKey": "${{ secrets.AWS_SECRET_ACCESS_KEY }}",
-                "awsRegion": "${{ secrets.AWS_REGION }}",
+                "awsRegion": "eu-west-2",
                 "acl": "public-read"
               }
             }
