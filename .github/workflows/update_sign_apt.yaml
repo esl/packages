@@ -8,13 +8,13 @@ on:
 env:
   DEBIAN_RELEASES: "stretch buster bullseye"
   UBUNTU_RELEASES: "jammy trusty xenial bionic focal"
-  ERLANG_VERSIONS: "24 25"
+  ERLANG_VERSIONS: "24 25 26"
   ELIXIR_VERSIONS: "1.14 1.13 1.12"
   MONGOOSEIM_VERSIONS: "5 6"
   AWS_REGION: "eu-west-2"
   AWS_SOURCE_BUCKET: "esl-erlang"
   AWS_DESTINATION_BUCKET: "esl-packages"
-  ARCHITECTURE: "amd64 arm64"
+  ARCHITECTURE: "amd64, arm64"
 
 jobs:
   update-repo:
@@ -119,40 +119,44 @@ jobs:
           
           sudo mv aptly.conf ~/.aptly.conf
       # Publish the repositories for ESL-Erlang to S3 Destination
-      - name: Publish Repositories
+      - name: Publish esl-erlang repositories
         run: |
           for distro in $DEBIAN_RELEASES
           do
             for erlang in $ERLANG_VERSIONS
             do
               aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:debian/$distro/erlang-$erlang
+              aptly publish filesystem -architectures="$ARCHITECTURE" -root-dir="/var/aptly/public/debian/$distro/erlang-$erlang" -component="contrib" -distribution="$distro-erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:debian/$distro/erlang-$erlang
             done
           done
-          
+
           for distro in $UBUNTU_RELEASES
           do
             for erlang in $ERLANG_VERSIONS
             do
               aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/erlang-$erlang
+              aptly publish filesystem -architectures="$ARCHITECTURE" -root-dir="/var/aptly/public/ubuntu/$distro/erlang-$erlang" -component="contrib" -distribution="$distro-erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/erlang-$erlang
             done
           done
-          
+
       # Publish the repositories for Elixir to S3 Destination
-      - name: Publish Elixir Repositories
+      - name: Publish elixir repositories
         run: |
           for distro in $DEBIAN_RELEASES
           do
-            for elixir in $ELIXIR_VERSIONS
+            for erlang in $ERLANG_VERSIONS
             do
               aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -distribution="$distro-elixir-$elixir" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:debian/$distro/elixir-$elixir
+              aptly publish filesystem -architectures="$ARCHITECTURE" -root-dir="/var/aptly/public/debian/$distro/elixir-$elixir" -component="contrib" -distribution="$distro-elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:debian/$distro/elixir-$elixir
             done
           done
-          
+
           for distro in $UBUNTU_RELEASES
           do
-            for elixir in $ELIXIR_VERSIONS
+            for erlang in $ERLANG_VERSIONS
             do
               aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -distribution="$distro-elixir-$elixir" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/elixir-$elixir
+              aptly publish filesystem -architectures="$ARCHITECTURE" -root-dir="/var/aptly/public/ubuntu/$distro/elixir-$elixir" -component="contrib" -distribution="$distro-elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/elixir-$elixir
             done
           done
           
@@ -161,15 +165,18 @@ jobs:
         run: |
           for distro in $DEBIAN_RELEASES
           do
-            for mongooseim in $MONGOOSEIM_VERSIONS
+            for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing  -distribution="$distro-mongooseim-$mongooseim" "$distro/mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:debian/$distro/mongooseim-$mongooseim
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -distribution="$distro-mongooseim-$mongooseim" "$distro/mongooseim-$mongooseim s3:$AWS_DESTINATION_BUCKET:debian/$distro/mongooseim-$mongooseim
+              aptly publish filesystem -architectures="$ARCHITECTURE" -root-dir="/var/aptly/public/debian/$distro/erlang-$erlang" -component="contrib" -distribution="$distro-mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:debian/$distro/mongooseim-$mongooseim
             done
           done
+
           for distro in $UBUNTU_RELEASES
           do
-            for mongooseim in $MONGOOSEIM_VERSIONS
+            for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing  -distribution="$distro-mongooseim-$mongooseim" "$distro/mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/mongooseim-$mongooseim
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -distribution="$distro-mongooseim-$mongooseim" "$distro/mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/mongooseim-$mongooseim
+              aptly publish filesystem -architectures="$ARCHITECTURE" -root-dir="/var/aptly/public/ubuntu/$distro/erlang-$erlang" -component="contrib" -distribution="$distro-mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/mongooseim-$mongooseim
             done
           done
