@@ -105,13 +105,6 @@ jobs:
       - name: Configure aptly.conf
         run: |
           echo '{
-            "FileSystemPublishEndpoints": {
-              "test": {
-               "rootDir": "~/.aptly/public",
-               "linkMethod": "copy",
-               "verifyMethod": "md5"
-               }
-             },
             "S3PublishEndpoints": {
               "esl-packages": {
                 "region": "eu-west-2",
@@ -132,7 +125,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -acquire-by-hash -component="contrib" -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:debian/$distro/erlang-$erlang filesystem:test:debian
+              aptly publish repo -acquire-by-hash -component="contrib" -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:debian/$distro/erlang-$erlang
             done
           done
 
@@ -140,7 +133,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -acquire-by-hash -component="contrib" -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/erlang-$erlang filesystem:test:ubuntu
+              aptly publish repo -acquire-by-hash -component="contrib" -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/erlang-$erlang
             done
           done
 
