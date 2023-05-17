@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - env:
-          MY_CLIENT_SECRET: ${{ secrets.GPG_PASS }}
+          MY_CLIENT_SECRET: ${{ secrets.GPG_P_KEY }}
           MY_OPENSSL_PASSWORD: ${{ secrets.MY_OPENSSL_PASSWORD }}
           MY_OPENSSL_ITER: ${{ secrets.MY_OPENSSL_ITER }}
         run: |
