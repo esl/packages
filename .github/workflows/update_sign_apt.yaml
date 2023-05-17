@@ -120,12 +120,11 @@ jobs:
           
           sudo mv aptly.conf ~/.aptly.conf
     
-     # Retrieve GPG key and passphrase from GitHub Actions secrets          
-     # - name: Import GPG key
-     #   uses: crazy-max/ghaction-import-gpg@v5
-     #   with:
-     #     gpg_private_key: ${{ secrets.GPG_KEY_ID }}
-     #     passphrase: ${{ secrets.GPG_PASS }}
+      # Retrieve GPG key and passphrase from GitHub Actions secrets          
+      - name: Import keys
+        run: |
+          echo "${{secrets.GPG_P_KEY}}" | tr ';' '\n' > GPG-KEY-pmanager
+          gpg --batch --import GPG-KEY-pmanager
           
           
      # Publish the repositories for ESL-Erlang to S3 Destination
@@ -135,7 +134,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -skip-signing -component="contrib" -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:debian/$distro/erlang-$erlang
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:debian/$distro/erlang-$erlang
             done
           done
 
@@ -143,7 +142,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -skip-signing -component="contrib" -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/erlang-$erlang
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/erlang-$erlang
             done
           done
 
@@ -154,7 +153,7 @@ jobs:
           do
             for elixir in $ELIXIR_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -skip-signing -component="contrib" -distribution="$distro-elixir-$elixir" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:debian/$distro/elixir-$elixir
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" -distribution="$distro-elixir-$elixir" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:debian/$distro/elixir-$elixir
             done
           done
 
@@ -162,7 +161,7 @@ jobs:
           do
             for elixir in $ELIXIR_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -skip-signing -component="contrib" -distribution="$distro-elixir-$elixir" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/elixir-$elixir
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" -distribution="$distro-elixir-$elixir" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/elixir-$elixir
             done
           done
           
@@ -173,7 +172,7 @@ jobs:
           do
             for mongooseim in $MONGOOSEIM_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -skip-signing -component="contrib" -distribution="$distro-mongooseim-$mongooseim" "$distro/mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:debian/$distro/mongooseim-$mongooseim
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" -distribution="$distro-mongooseim-$mongooseim" "$distro/mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:debian/$distro/mongooseim-$mongooseim
             done
           done
 
@@ -181,6 +180,6 @@ jobs:
           do
             for mongooseim in $MONGOOSEIM_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -skip-signing -component="contrib" -distribution="$distro-mongooseim-$mongooseim" "$distro/mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/mongooseim-$mongooseim
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" -distribution="$distro-mongooseim-$mongooseim" "$distro/mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/mongooseim-$mongooseim
             done
           done
