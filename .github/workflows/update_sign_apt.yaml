@@ -97,9 +97,9 @@ jobs:
             fi
           done
       # Sync S3 Buckets     
-      - name: Sync S3 Buckets
-        run: |
-         aws s3 sync s3://$AWS_SOURCE_BUCKET s3://$AWS_DESTINATION_BUCKET
+     # - name: Sync S3 Buckets
+      #  run: |
+      #   aws s3 sync s3://$AWS_SOURCE_BUCKET s3://$AWS_DESTINATION_BUCKET
           
       # Configure aptly.conf
       - name: Configure aptly.conf
@@ -107,7 +107,7 @@ jobs:
           echo '{
             "FileSystemPublishEndpoints": {
               "test": {
-               "rootDir": "/opt/aptly-publish",
+               "rootDir": "~/.aptly/public",
                "linkMethod": "copy",
                "verifyMethod": "md5"
                }
@@ -132,7 +132,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -acquire-by-hash -component="contrib" --skip-signing -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:debian/$distro/erlang-$erlang filesystem:test:debian/
+              aptly publish repo -acquire-by-hash -component="contrib" --skip-signing -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:debian/$distro/erlang-$erlang filesystem:test:debian
             done
           done
 
@@ -140,7 +140,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -acquire-by-hash -component="contrib" --skip-signing -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/erlang-$erlang filesystem:test:ubuntu/
+              aptly publish repo -acquire-by-hash -component="contrib" --skip-signing -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/erlang-$erlang filesystem:test:ubuntu
             done
           done
 
@@ -170,7 +170,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -distribution="$distro-mongooseim-$mongooseim" "$distro/mongooseim-$mongooseim s3:$AWS_DESTINATION_BUCKET:debian/$distro/mongooseim-$mongooseim
+              aptly publish repo -acquire-by-hash -component="contrib" --skip-signing -distribution="$distro-mongooseim-$mongooseim" "$distro/mongooseim-$mongooseim s3:$AWS_DESTINATION_BUCKET:debian/$distro/mongooseim-$mongooseim
             done
           done
 
@@ -178,6 +178,6 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -component="contrib" --skip-signing -distribution="$distro-mongooseim-$mongooseim" "$distro/mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/mongooseim-$mongooseim
+              aptly publish repo -acquire-by-hash -component="contrib" --skip-signing -distribution="$distro-mongooseim-$mongooseim" "$distro/mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/mongooseim-$mongooseim
             done
           done
