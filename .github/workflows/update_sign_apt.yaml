@@ -118,7 +118,21 @@ jobs:
           }' > aptly.conf
           
           sudo mv aptly.conf ~/.aptly.conf
-      # Publish the repositories for ESL-Erlang to S3 Destination
+    
+     # Retrieve GPG key and passphrase from GitHub Actions secrets
+      - name: Configure GPG KEY for Aptly Publish
+        run: |
+          GPG_KEY="${{ secrets.GPG_KEY_ID }}"
+          GPG_PASSPHRASE="${{ secrets.GPG_PASS }}"
+
+          # Import GPG key
+          echo "$GPG_KEY" | gpg --batch --import
+
+          # Set up GPG environment variables
+          export GNUPGHOME="$(mktemp -d)"
+          echo "$GPG_PASSPHRASE" | gpg --batch --passphrase-fd 0 --pinentry-mode loopback --import-options import-show --import
+          
+     # Publish the repositories for ESL-Erlang to S3 Destination
       - name: Publish esl-erlang repositories
         run: |
           for distro in $DEBIAN_RELEASES
