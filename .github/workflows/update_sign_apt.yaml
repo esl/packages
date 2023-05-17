@@ -125,7 +125,7 @@ jobs:
         run: |
           echo "${{secrets.GPG_P_KEY}}" | tr ';' '\n' > GPG-KEY-pmanager
           gpg --batch --import GPG-KEY-pmanager
-          
+          gpg --batch --list-keys
           
      # Publish the repositories for ESL-Erlang to S3 Destination
       - name: Publish esl-erlang repositories
@@ -134,7 +134,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-erlang-$erlang" -gpg-key="${{ secrets.GPG_KEY_ID }}" -passphrase="${{ secrets.GPG_PASS }}" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:debian/$distro/erlang-$erlang
+              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-erlang-$erlang" -gpg-key="${{ secrets.GPG_P_KEY }}" -passphrase="${{ secrets.GPG_PASS }}" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:debian/$distro/erlang-$erlang
             done
           done
 
@@ -142,7 +142,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-erlang-$erlang" -gpg-key="${{ secrets.GPG_KEY_ID }}" -passphrase="${{ secrets.GPG_PASS }}" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/erlang-$erlang
+              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-erlang-$erlang" -gpg-key="${{ secrets.GPG_P_KEY }}" -passphrase="${{ secrets.GPG_PASS }}" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/erlang-$erlang
             done
           done
 
@@ -153,7 +153,7 @@ jobs:
           do
             for elixir in $ELIXIR_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-elixir-$elixir" -gpg-key="${{ secrets.GPG_KEY_ID }}" -passphrase="${{ secrets.GPG_PASS }}" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:debian/$distro/elixir-$elixir
+              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-elixir-$elixir" -gpg-key="${{ secrets.GPG_P_KEY }}" -passphrase="${{ secrets.GPG_PASS }}" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:debian/$distro/elixir-$elixir
             done
           done
 
@@ -161,7 +161,7 @@ jobs:
           do
             for elixir in $ELIXIR_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-elixir-$elixir" -gpg-key="${{ secrets.GPG_KEY_ID }}" -passphrase="${{ secrets.GPG_PASS }}" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/elixir-$elixir
+              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-elixir-$elixir" -gpg-key="${{ secrets.GPG_P_KEY }}" -passphrase="${{ secrets.GPG_PASS }}" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/elixir-$elixir
             done
           done
           
@@ -172,7 +172,7 @@ jobs:
           do
             for mongooseim in $MONGOOSEIM_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-mongooseim-$mongooseim" -gpg-key="${{ secrets.GPG_KEY_ID }}" -passphrase="${{ secrets.GPG_PASS }}" "$distro/mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:debian/$distro/mongooseim-$mongooseim
+              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-mongooseim-$mongooseim" -gpg-key="${{ secrets.GPG_P_KEY }}" -passphrase="${{ secrets.GPG_PASS }}" "$distro/mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:debian/$distro/mongooseim-$mongooseim
             done
           done
 
@@ -180,6 +180,6 @@ jobs:
           do
             for mongooseim in $MONGOOSEIM_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-mongooseim-$mongooseim" -gpg-key="${{ secrets.GPG_KEY_ID }}" -passphrase="${{ secrets.GPG_PASS }}" "$distro/mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/mongooseim-$mongooseim
+              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-mongooseim-$mongooseim" -gpg-key="${{ secrets.GPG_P_KEY}}" -passphrase="${{ secrets.GPG_PASS }}" "$distro/mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/mongooseim-$mongooseim
             done
           done
