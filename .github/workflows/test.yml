@@ -16,4 +16,4 @@ jobs:
       - name: List keys
         run: |
           echo "${{secrets.GPG_P_KEY}}" | tr ';' '\n' > GPG-KEY-pmanager
-          gpg --import GPG-KEY-pmanager
+          gpg --batch --import GPG-KEY-pmanager
