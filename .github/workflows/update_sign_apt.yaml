@@ -122,8 +122,8 @@ jobs:
      # Retrieve GPG key and passphrase from GitHub Actions secrets
       - name: Configure GPG KEY for Aptly Publish
         run: |
-          GPG_KEY="${{ secrets.GPG_KEY_ID }}"
-          GPG_PASSPHRASE="${{ secrets.GPG_PASS }}"
+          GPG_KEY=$GPG_KEY_ID
+          GPG_PASSPHRASE=$GPG_PASS
 
           # Import GPG key
           echo "$GPG_KEY" | gpg --batch --import
