@@ -135,7 +135,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architecture="$ARCHITECTURE" -acquire-by-hash -skip-signing -component="contrib" -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:debian/$distro/erlang-$erlang
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -skip-signing -component="contrib" -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:debian/$distro/erlang-$erlang
             done
           done
 
@@ -143,7 +143,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architecture="$ARCHITECTURE" -acquire-by-hash -skip-signing -component="contrib" -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/erlang-$erlang
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -skip-signing -component="contrib" -distribution="$distro-erlang-$erlang" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/erlang-$erlang
             done
           done
 
@@ -154,7 +154,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architecture="$ARCHITECTURE" -acquire-by-hash -skip-signing -component="contrib" -distribution="$distro-elixir-$elixir" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:debian/$distro/elixir-$elixir
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -skip-signing -component="contrib" -distribution="$distro-elixir-$elixir" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:debian/$distro/elixir-$elixir
             done
           done
 
@@ -162,7 +162,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architecture="$ARCHITECTURE" -acquire-by-hash -skip-signing-component="contrib" -distribution="$distro-elixir-$elixir" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/elixir-$elixir
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -skip-signing-component="contrib" -distribution="$distro-elixir-$elixir" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/elixir-$elixir
             done
           done
           
@@ -173,7 +173,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architecture="$ARCHITECTURE" -acquire-by-hash -skip-signing -component="contrib" -distribution="$distro-mongooseim-$mongooseim" "$distro/mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:debian/$distro/mongooseim-$mongooseim
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -skip-signing -component="contrib" -distribution="$distro-mongooseim-$mongooseim" "$distro/mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:debian/$distro/mongooseim-$mongooseim
             done
           done
 
@@ -181,6 +181,6 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architecture="$ARCHITECTURE" -acquire-by-hash -skip-signing -component="contrib" -distribution="$distro-mongooseim-$mongooseim" "$distro/mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/mongooseim-$mongooseim
+              aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -skip-signing -component="contrib" -distribution="$distro-mongooseim-$mongooseim" "$distro/mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/mongooseim-$mongooseim
             done
           done
