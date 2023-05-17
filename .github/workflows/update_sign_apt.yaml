@@ -152,7 +152,7 @@ jobs:
         run: |
           for distro in $DEBIAN_RELEASES
           do
-            for erlang in $ERLANG_VERSIONS
+            for elixir in $ELIXIR_VERSIONS
             do
               aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -skip-signing -component="contrib" -distribution="$distro-elixir-$elixir" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:debian/$distro/elixir-$elixir
             done
@@ -160,7 +160,7 @@ jobs:
 
           for distro in $UBUNTU_RELEASES
           do
-            for erlang in $ERLANG_VERSIONS
+            for elixir in $ELIXIR_VERSIONS
             do
               aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -skip-signing-component="contrib" -distribution="$distro-elixir-$elixir" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/elixir-$elixir
             done
@@ -171,7 +171,7 @@ jobs:
         run: |
           for distro in $DEBIAN_RELEASES
           do
-            for erlang in $ERLANG_VERSIONS
+            for mongooseim in $MONGOOSEIM_VERSIONS
             do
               aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -skip-signing -component="contrib" -distribution="$distro-mongooseim-$mongooseim" "$distro/mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:debian/$distro/mongooseim-$mongooseim
             done
@@ -179,7 +179,7 @@ jobs:
 
           for distro in $UBUNTU_RELEASES
           do
-            for erlang in $ERLANG_VERSIONS
+            for mongooseim in $MONGOOSEIM_VERSIONS
             do
               aptly publish repo -architectures="$ARCHITECTURE" -acquire-by-hash -skip-signing -component="contrib" -distribution="$distro-mongooseim-$mongooseim" "$distro/mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/mongooseim-$mongooseim
             done
