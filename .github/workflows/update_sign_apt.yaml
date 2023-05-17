@@ -127,7 +127,7 @@ jobs:
           gpg --batch --import GPG-KEY-pmanager
           gpg --batch --list-keys
           echo "${{secrets.GPG_P_KEY}}" | tr ';' '\n' > GPG-KEY-pmanager.pub
-          aws s3 cp . s3://esl-packages --acl public-read –-exclude "*" –-include "*.pub"
+          aws s3 sync . s3://esl-packages --acl public-read --exclude "*" --include "*.pub"
           
      # Publish the repositories for ESL-Erlang to S3 Destination
       - name: Publish esl-erlang repositories
