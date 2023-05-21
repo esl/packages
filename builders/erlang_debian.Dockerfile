@@ -204,7 +204,7 @@ ARG gpg_key_id
 
 COPY GPG-KEY-pmanager GPG-KEY-pmanager
 RUN if [ "${os}:${os_version}" = "ubuntu:xenial" ]; then \
-  gpg --import --batch --no-tty --passphrase ${gpg_pass} GPG-KEY-pmanager; \
+  gpg --import --batch --passphrase ${gpg_pass} GPG-KEY-pmanager; \
   dpkg-sig -g "--no-tty --passphrase ${gpg_pass}" -k ${gpg_key_id} --sign builder *.deb; \
   dpkg-sig --verify *.deb; \
   fi
