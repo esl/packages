@@ -29,8 +29,8 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y aptly awscli dpkg-sig gnupg
-          
+          sudo apt-get install -y aptly awscli dpkg-sig gnupg python3-pip
+          pip3 install boto3
       # Configure Credentials for AWS    
       - name: Set AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -106,7 +106,7 @@ jobs:
       # Run the Python script to create the list file
       - name: Run Python Script
         run: |
-          python3 list_file_creator.py 
+          python3 file_list_creator.py 
           
       #Configure Aptly    
       - name: Configure aptly.conf
