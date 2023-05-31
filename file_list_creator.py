@@ -31,7 +31,7 @@ s3_client = boto3.client('s3')
 bucket_name = 'esl-packages'
 
 # Get the list of objects in the bucket
-response = s3_client.list_objects(Bucket=esl-packages)
+response = s3_client.list_objects(Bucket=bucket_name)
 
 # Dictionary to store the final JSON structure for Elixir
 elixir_json_data = {
