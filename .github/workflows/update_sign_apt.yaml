@@ -94,7 +94,13 @@ jobs:
                 echo "File $file is not signed. Signing with key $GPG_KEY_ID."
                 dpkg-sig -g "--no-tty --passphrase $GPG_PASS" -k $GPG_KEY_ID "$file"
               fi
-              aptly repo add "${BASH_REMATCH[7]}/${BASH_REMATCH[1]}-${BASH_REMATCH[2]}${BASH_REMATCH[3]}${BASH_REMATCH[4]}${BASH_REMATCH[5]}" "$file"
+
+              distro="${BASH_REMATCH[7]}"
+              package_name="${BASH_REMATCH[1]}"
+              version="${BASH_REMATCH[2]}${BASH_REMATCH[3]}${BASH_REMATCH[4]}${BASH_REMATCH[5]}"
+
+              repo_name="$distro/$package_name-$version"
+              aptly repo add "$repo_name" "$file"
             fi
           done
           
