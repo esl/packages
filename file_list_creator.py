@@ -104,7 +104,7 @@ for obj in response['Contents']:
                 if existing_flavour:
                     existing_flavour["packages"].append(file_info)
                 else:
-existing_tab["flavours"].append({
+                    existing_tab["flavours"].append({
                         "name": "main",
                         "packages": [file_info],
                         "header": "",
