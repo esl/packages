@@ -14,7 +14,7 @@ env:
   AWS_REGION: "eu-west-2"
   AWS_SOURCE_BUCKET: "esl-erlang"
   AWS_DESTINATION_BUCKET: "esl-packages"
-  ARCHITECTURE: "amd64, arm64"
+  ARCHITECTURE: "amd64,arm64"
 
 
 jobs:
@@ -97,12 +97,18 @@ jobs:
               aptly repo add --remove-files "${BASH_REMATCH[7]}/${BASH_REMATCH[1]}-${BASH_REMATCH[2]}${BASH_REMATCH[3]}${BASH_REMATCH[4]}${BASH_REMATCH[5]}" "$file"
             fi
           done
-      # Sync S3 Buckets     
-     # - name: Sync S3 Buckets
-      #  run: |
-      #   aws s3 sync s3://$AWS_SOURCE_BUCKET s3://$AWS_DESTINATION_BUCKET
           
-      # Configure aptly.conf
+      #Upload signed files to S3
+      - name: Upload signed deb files to S3
+        run: |
+          aws s3 sync Packages s3://$AWS_DESTINATION_BUCKET/Pool --acl public-read
+          
+      # Run the Python script to create the list file
+      - name: Run Python Script
+        run: |
+          python3 list_file_creator.py 
+          
+      #Configure Aptly    
       - name: Configure aptly.conf
         run: |
           echo '{
@@ -127,7 +133,7 @@ jobs:
           gpg --batch --import GPG-KEY-pmanager
           gpg --batch --list-keys
           echo "${{secrets.GPG_P_KEY}}" | tr ';' '\n' > GPG-KEY-pmanager.pub
-          aws s3 sync . s3://esl-packages --acl public-read --exclude "*" --include "*.asc"
+          aws s3 sync . s3://esl-packages --acl public-read --exclude "*" --include "*.asc" --include "*.json"
           
      # Publish the repositories for ESL-Erlang to S3 Destination
       - name: Publish esl-erlang repositories
