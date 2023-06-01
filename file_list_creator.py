@@ -5,7 +5,7 @@ from urllib.parse import quote
 
 def extract_info_from_filename(filename):
     # Example regular expression to extract information from the filename
-    pattern = r'(.+)_([\d.]+)-.+~(.+)~(.+)_(\w+)\.(\w+)'
+    pattern = r'(.+)_([\d.]+)_\d+_otp_\d+\.\d+~(.+)~(.+)_(\w+)\.(\w+)'
     match = re.match(pattern, filename)
     
     if match:
