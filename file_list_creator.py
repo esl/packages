@@ -9,7 +9,7 @@ def extract_info_from_filename(filename):
     match = re.match(pattern, filename)
     
     if match:
-        path = "https://binaries2.erlang-solutions.com/" + quote(filename)
+        path = quote(filename)
         version = match.group(2)
         os = match.group(3).capitalize()
         arch = match.group(5)
@@ -29,7 +29,7 @@ def extract_info_from_filename(filename):
 s3_client = boto3.client('s3')
 
 # S3 bucket name
-bucket_name = 'esl-erlang'
+bucket_name = 'binaries2.erlang-solutions.com'
 
 # Get the list of objects in the bucket
 response = s3_client.list_objects(Bucket=bucket_name)
