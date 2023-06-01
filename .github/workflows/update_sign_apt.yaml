@@ -7,7 +7,7 @@ on:
 
 env:
   DEBIAN_RELEASES: "stretch buster bullseye"
-  UBUNTU_RELEASES: "jammy trusty xenial bionic focal"
+  UBUNTU_RELEASES: "jammy xenial bionic focal"
   ERLANG_VERSIONS: "24 25 26"
   ELIXIR_VERSIONS: "1.14 1.13 1.12"
   MONGOOSEIM_VERSIONS: "5 6"
