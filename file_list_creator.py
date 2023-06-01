@@ -28,7 +28,7 @@ def extract_info_from_filename(filename):
 s3_client = boto3.client('s3')
 
 # S3 bucket name
-bucket_name = 'esl-packages'
+bucket_name = 'esl-erlang'
 
 # Get the list of objects in the bucket
 response = s3_client.list_objects(Bucket=bucket_name)
