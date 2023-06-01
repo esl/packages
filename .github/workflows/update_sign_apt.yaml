@@ -103,7 +103,7 @@ jobs:
                 repo_name="${BASH_REMATCH[8]}/${BASH_REMATCH[1]}-${BASH_REMATCH[2]%.*}"
               fi
 
-              aptly repo add "$repo_name" "$file"
+              aptly repo add --remove-files "$repo_name" "$file"
             fi
           done
           
