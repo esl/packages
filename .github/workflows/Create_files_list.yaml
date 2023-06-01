@@ -1,0 +1,42 @@
+name: Create File List for ESL Homepage
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update-repo:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        
+      # Install dependencies required by the scripts
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y aptly awscli python3-pip
+          pip3 install boto3
+      # Configure Credentials for AWS    
+      - name: Set AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+
+      - id: install-aws-cli
+        uses: unfor19/install-aws-cli-action@v1.0.2
+        with:
+          version: 2 # default
+          verbose: false # default
+          arch: amd64
+          
+       # Run python script for create the JSON Files 
+      - name: Run Python script
+        run: | 
+          python3 file_list_creator.py
+          aws s3 sync . s3://esl-packages --acl public-read --exclude "*" --include "*.json"
+          
+          
+        
