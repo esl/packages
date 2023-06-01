@@ -89,7 +89,7 @@ jobs:
         run: |
           for file in $(find Packages -name '*.deb')
           do
-            if [[ "$file" =~ (esl-erlang|elixir|mongooseim)_([0-9]+)([0-9.]+)(_[0-9]+)?(_otp_[0-9.]+)?~(debian|ubuntu)~([a-z]+)_(amd64|arm64|all)\.deb$ ]]; then
+            if [[ "$file" =~ (esl-erlang|elixir|mongooseim)_([0-9]+(\.[0-9]+)*(-[0-9]+)?)(_[0-9]+)?(_otp_[0-9.]+)?~(debian|ubuntu)~([a-z]+)_(amd64|arm64|all)\.deb$ ]]; then
               if ! dpkg-sig --verify "$file" >/dev/null 2>&1; then
                 echo "File $file is not signed. Signing with key $GPG_KEY_ID."
                 dpkg-sig -g "--no-tty --passphrase $GPG_PASS" -k $GPG_KEY_ID "$file"
