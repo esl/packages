@@ -103,7 +103,7 @@ jobs:
                 repo_name="${BASH_REMATCH[8]}/${BASH_REMATCH[1]}-${BASH_REMATCH[2]%.*}"
               fi
 
-              aptly repo add --force-replace --remove-files "$repo_name" "$file"
+              aptly repo add --force-replace "$repo_name" "$file"
             fi
           done
           
@@ -152,7 +152,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-erlang-$erlang" -passphrase="${{ secrets.GPG_PASS }}" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:debian/$distro/erlang-$erlang
+              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-esl-erlang-$erlang" -passphrase="${{ secrets.GPG_PASS }}" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:debian/$distro/erlang-$erlang
             done
           done
 
@@ -160,7 +160,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-erlang-$erlang" -passphrase="${{ secrets.GPG_PASS }}" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/erlang-$erlang
+              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-esl-erlang-$erlang" -passphrase="${{ secrets.GPG_PASS }}" "$distro/erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:ubuntu/$distro/erlang-$erlang
             done
           done
 
