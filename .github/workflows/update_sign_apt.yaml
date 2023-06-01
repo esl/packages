@@ -114,9 +114,9 @@ jobs:
      #     aws s3 sync Packages s3://esl-packages/pool --acl public-read
           
       # Run the Python script to create the list file
-      - name: Run Python Script
-        run: |
-          python3 file_list_creator.py 
+     # - name: Run Python Script
+     #   run: |
+      #    python3 file_list_creator.py 
           
       #Configure Aptly    
       - name: Configure aptly.conf
