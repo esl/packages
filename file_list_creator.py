@@ -1,6 +1,7 @@
 import boto3
 import re
 import json
+from urllib.parse import quote
 
 def extract_info_from_filename(filename):
     # Example regular expression to extract information from the filename
@@ -8,7 +9,7 @@ def extract_info_from_filename(filename):
     match = re.match(pattern, filename)
     
     if match:
-        path = "https://binaries2.erlang-solutions.com/" + filename
+        path = "https://binaries2.erlang-solutions.com/" + quote(filename)
         version = match.group(2)
         os = match.group(3).capitalize()
         arch = match.group(5)
@@ -56,7 +57,6 @@ mongooseim_json_data = {
         "main": "Standard"
     }
 }
-
 # Iterate over the objects
 for obj in response['Contents']:
     filename = obj['Key']
@@ -67,67 +67,18 @@ for obj in response['Contents']:
     if file_info:
         tab_name, os_name = filename.split("/")[-2:]
         
+        # Find the appropriate JSON data dictionary based on the tab name
+        json_data = None
         if "elixir" in filename:
-            # Check if a tab with the OS name already exists in Elixir JSON data
-            existing_tab = next((tab for tab in elixir_json_data["tabs"] if tab["name"] == os_name), None)
-            if existing_tab:
-                existing_flavour = next((flavour for flavour in existing_tab["flavours"] if flavour["name"] == "main"), None)
-                if existing_flavour:
-                    existing_flavour["packages"].append(file_info)
-                else:
-                    existing_tab["flavours"].append({
-                        "name": "main",
-                        "packages": [file_info],
-                        "header": "",
-                        "footer": ""
-                    })
-            else:
-                elixir_json_data["tabs"].append({
-                    "name": os_name,
-                    "caption": os_name.capitalize(),
-                    "header": "",
-                    "footer": "",
-                    "flavours": [
-                        {
-                            "name": "main",
-                            "packages": [file_info],
-                            "header": "",
-                            "footer": ""
-                        }
-                    ]
-                })
+            json_data = elixir_json_data
         elif "esl-erlang" in filename:
-            # Check if a tab with the OS name already exists in esl-erlang JSON data
-            existing_tab = next((tab for tab in erlang_json_data["tabs"] if tab["name"] == os_name), None)
-            if existing_tab:
-                existing_flavour = next((flavour for flavour in existing_tab["flavours"] if flavour["name"] == "main"), None)
-                if existing_flavour:
-                    existing_flavour["packages"].append(file_info)
-                else:
-                    existing_tab["flavours"].append({
-                        "name": "main",
-                        "packages": [file_info],
-                        "header": "",
-                        "footer": ""
-                    })
-            else:
-                erlang_json_data["tabs"].append({
-                    "name": os_name,
-                    "caption": os_name.capitalize(),
-                    "header": "",
-                    "footer": "",
-                    "flavours": [
-                        {
-                            "name": "main",
-                            "packages": [file_info],
-                            "header": "",
-                            "footer": ""
-                        }
-                    ]
-                })
+            json_data = erlang_json_data
         elif "mongooseim" in filename:
-            # Check if a tab with the OS name already exists in MongooseIM JSON data
-            existing_tab = next((tab for tab in mongooseim_json_data["tabs"] if tab["name"] == os_name), None)
+            json_data = mongooseim_json_data
+        
+        if json_data:
+            # Check if a tab with the OS name already exists
+            existing_tab = next((tab for tab in json_data["tabs"] if tab["name"] == os_name), None)
             if existing_tab:
                 existing_flavour = next((flavour for flavour in existing_tab["flavours"] if flavour["name"] == "main"), None)
                 if existing_flavour:
@@ -140,7 +91,7 @@ for obj in response['Contents']:
                         "footer": ""
                     })
             else:
-                mongooseim_json_data["tabs"].append({
+                json_data["tabs"].append({
                     "name": os_name,
                     "caption": os_name.capitalize(),
                     "header": "",
