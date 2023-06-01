@@ -100,7 +100,7 @@ jobs:
               elif [[ "${BASH_REMATCH[1]}" == "esl-erlang" ]]; then
                 repo_name="${BASH_REMATCH[8]}/${BASH_REMATCH[1]}-${BASH_REMATCH[2]%%.*}"
               elif [[ "${BASH_REMATCH[1]}" == "elixir" ]]; then
-                repo_name="${BASH_REMATCH[7]}${BASH_REMATCH[8]}/${BASH_REMATCH[1]}-${BASH_REMATCH[2]%.*}"
+                repo_name="${BASH_REMATCH[8]}/${BASH_REMATCH[1]}-${BASH_REMATCH[2]%.*}"
               fi
 
               aptly repo add "$repo_name" "$file"
