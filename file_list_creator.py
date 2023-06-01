@@ -9,7 +9,7 @@ def extract_info_from_filename(filename):
     match = re.match(pattern, filename)
     
     if match:
-        path = quote(filename)
+        path = "https://binaries2.erlang-solutions.com/" + quote(filename)
         version = match.group(2)
         os = match.group(3).capitalize()
         arch = match.group(5)
