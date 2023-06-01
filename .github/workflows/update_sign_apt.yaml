@@ -53,7 +53,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly repo create "$distro/erlang-$erlang"
+              aptly repo create "$distro/esl-erlang-$erlang"
             done
           done
           
@@ -95,27 +95,23 @@ jobs:
                 dpkg-sig -g "--no-tty --passphrase $GPG_PASS" -k $GPG_KEY_ID "$file"
               fi
 
-              distro="${BASH_REMATCH[7]}"
-              package_name="${BASH_REMATCH[1]}"
-              version="${BASH_REMATCH[2]}"
-              package_type="${BASH_REMATCH[3]}${BASH_REMATCH[4]}"
-
-              if [[ "$package_name" == "mongooseim" ]]; then
-                package_name="${BASH_REMATCH[1]}-$version"
-              elif [[ "$package_name" == "esl-erlang" ]]; then
-                package_name="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}"
-              elif [[ "$package_name" == "elixir" ]]; then
-                package_name="${BASH_REMATCH[1]}-$version"
+              if [[ "${BASH_REMATCH[1]}" == "mongooseim" ]]; then
+                repo_name="${BASH_REMATCH[8]}/${BASH_REMATCH[1]}-${BASH_REMATCH[2]%%.*}"
+              elif [[ "${BASH_REMATCH[1]}" == "esl-erlang" ]]; then
+                repo_name="${BASH_REMATCH[8]}/${BASH_REMATCH[1]}-${BASH_REMATCH[2]%%.*}"
+              else
+                repo_name="${BASH_REMATCH[8]}/${BASH_REMATCH[1]}-${BASH_REMATCH[2]}"
               fi
-              repo_name="jammy/$package_name"
+
               aptly repo add "$repo_name" "$file"
             fi
           done
           
+          
       #Upload signed files to S3
-      - name: Upload signed deb files to S3
-        run: |
-          aws s3 sync Packages s3://esl-packages/pool --acl public-read
+     # - name: Upload signed deb files to S3
+     #   run: |
+     #     aws s3 sync Packages s3://esl-packages/pool --acl public-read
           
       # Run the Python script to create the list file
       - name: Run Python Script
