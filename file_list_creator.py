@@ -5,13 +5,14 @@ from urllib.parse import quote
 
 def extract_info_from_filename(filename):
     # Example regular expression to extract information from the filename
-    pattern = r'(.+)_([\d.]+)_\d+_otp_\d+\.\d+~(.+)~(.+)_(\w+)\.(\w+)'
-    match = re.match(pattern, filename)
+    pattern1 = r'(.+)_([\d.]+)_\d+_otp_\d+\.\d+~(.+)~(.+)_(\w+)\.(\w+)'
+    pattern2 = '(.+)_([\d.]+)-.+~(.+)~(.+)_(\w+)\.(\w+)'
+    match = re.match(pattern1, filename) or re.match(pattern2, filename)
     
     if match:
         path = "https://binaries2.erlang-solutions.com/" + quote(filename)
         version = match.group(2)
-        os = match.group(3).capitalize()
+        os = match.group(1).split("_")[0]
         arch = match.group(5)
         
         return {
