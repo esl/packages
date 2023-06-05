@@ -36,7 +36,7 @@ jobs:
       - name: Run Python script
         run: | 
           python3 file_list_creator.py
-          aws s3 sync . s3://esl-packages --acl public-read --exclude "*" --include "*.json"
+          aws s3 sync . s3://binaries2.erlang-solutions.com --acl public-read --exclude "*" --include "*.json"
           
           
         
