@@ -9,13 +9,13 @@ def extract_info_from_filename(filename):
     pattern2 = r'(.+)_([\d.-]+)~(.+)~(.+)_(\w+)\.(\w+)'
     pattern3 = r'(.+)_([\d.-]+)~(.+)\.(\w+)'
     match = re.match(pattern1, filename) or re.match(pattern2, filename) or re.match(pattern3, filename)
-    
+
     if match:
         path = "https://binaries2.erlang-solutions.com/" + quote(filename)
         version = match.group(2)
         os = match.group(1).split("_")[0]
         arch = match.group(5)
-        
+
         return {
             "path": path,
             "version": version,
@@ -62,13 +62,19 @@ mongooseim_json_data = {
 # Iterate over the objects
 for obj in response['Contents']:
     filename = obj['Key']
-    
+
     # Extract information from the filename
     file_info = extract_info_from_filename(filename)
-    
+
     if file_info:
-        tab_name, os_name = filename.split("/")[-2:]
-        
+        tab_name, full_os_name = filename.split("/")[-2:]
+
+        # Split the full_os_name into its parts
+        os_parts = full_os_name.split("~")
+
+        # Extract the os_name from os_parts
+        os_name = os_parts[1]
+
         # Find the appropriate JSON data dictionary based on the tab name
         json_data = None
         if "elixir" in filename:
@@ -77,7 +83,7 @@ for obj in response['Contents']:
             json_data = erlang_json_data
         elif "mongooseim" in filename:
             json_data = mongooseim_json_data
-        
+
         if json_data:
             # Check if a tab with the OS name already exists
             existing_tab = next((tab for tab in json_data["tabs"] if tab["name"] == os_name), None)
