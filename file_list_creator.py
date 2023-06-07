@@ -8,7 +8,10 @@ def extract_info_from_filename(filename):
     pattern1 = r'(.+)_([\d.]+)_\d+_otp_\d+\.\d+~(.+)~(.+)_(\w+)\.(\w+)'
     pattern2 = r'(.+)_([\d.-]+)~(.+)~(.+)_(\w+)\.(\w+)'
     pattern3 = r'(.+)_([\d.-]+)~(.+)\.(\w+)'
-    match = re.match(pattern1, filename) or re.match(pattern2, filename) or re.match(pattern3, filename)
+    pattern4 = r'(.+)_([\d.]+)_\d+_otp_\d+\.\d+~(.+)~(.+)\.(\w+)'
+    pattern5 = r'(.+)_([\d.-]+)~(.+)~(.+)\.(\w+)'
+
+    match = re.match(pattern1, filename) or re.match(pattern2, filename) or re.match(pattern3, filename) or re.match(pattern4, filename) or re.match(pattern5, filename)
 
     if match:
         path = "https://binaries2.erlang-solutions.com/" + quote(filename)
