@@ -8,7 +8,7 @@ on:
 env:
   DEBIAN_RELEASES: "stretch buster bullseye"
   UBUNTU_RELEASES: "jammy xenial bionic focal"
-  ERLANG_VERSIONS: "24 25 26"
+  ERLANG_VERSIONS: "25 26"
   ELIXIR_VERSIONS: "1.14 1.13 1.12"
   MONGOOSEIM_VERSIONS: "5 6"
   AWS_REGION: "eu-west-2"
@@ -89,7 +89,7 @@ jobs:
         run: |
           for file in $(find Packages -name '*.deb')
           do
-            if [[ "$file" =~ (esl-erlang|elixir|mongooseim)_([0-9]+(\.[0-9]+)*(-[0-9]+)?)(_[0-9]+)?(_otp_[0-9.]+)?~(debian|ubuntu)~([a-z]+)_(amd64|arm64|all)\.deb$ ]]; then
+            if [[ "$file" =~ ^((esl-erlang|elixir|mongooseim)_([0-9]+(\.[0-9]+)*(-[0-9]+)?)(_[0-9]+)?(_otp_[0-9.]+)?~(debian|ubuntu)~([a-z]+)_(amd64|arm64|all)|mongooseim_[0-9]+\.[0-9]+\.[0-9]+_[0-9]+_[a-z0-9]+~(debian|ubuntu)~[a-z]+(_(amd64|arm64|all))?)\.deb$ ]]; then
               if ! dpkg-sig --verify "$file" >/dev/null 2>&1; then
                 echo "File $file is not signed. Signing with key $GPG_KEY_ID."
                 dpkg-sig -g "--no-tty --passphrase $GPG_PASS" -k $GPG_KEY_ID "$file"
