@@ -135,7 +135,7 @@ This script creates some empty Aptly repositories. Note here that we
 build separate repositories for the last four major Erlang
 releases. The intent is to allow a user or customer to receive patch
 releases to their current erlang install without being exposed to the
-risk of a breaking change (e.g, going from 23 to 24). A simple symlink
+risk of a breaking change (e.g, going from 24 to 26). A simple symlink
 can be established for those that wish to always have the latest (the
 exact same approach that Debian takes with `stable`, `testing` and
 `unstable).
@@ -153,6 +153,14 @@ This script shows how to publish the Aptly repositories to an S3
 volume using the `Acquire-By-Hash` feature. The S3 volume can be be
 published indirectly via CloudFront as it is today.
 
-# Deploying to Production
+### Deploying to Production
 
+Finally the new site is here. As of <Date>, we will be transitioning away from the old packages system, but fear not! The legacy packages will remain accessible at on packages.erlang-solutions.com and archives.erlang-solutions.com for your convenience. And to avoid issues with current pipelines or workflows.
+
+- https://binaries2.erlang-solutions.com
+
+Inside there you will find our asc file, please put it over your Ubuntu and Debian as needed. 
+
+TO DO LIST:
+- Add support for YUM Repos
 - Update Download Section in ESL Homepage
