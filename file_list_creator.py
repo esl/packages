@@ -13,13 +13,14 @@ def extract_info_from_filename(filename):
     if match:
         path = "https://binaries2.erlang-solutions.com/" + quote(filename)
         version = match.group(2)
-        os = match.group(3)
+        os_parts = match.group(3).split("_")
+        os_name = " ".join(os_parts).capitalize()  # Capitalize the OS name
         arch = match.group(5)
 
         return {
             "path": path,
             "version": version,
-            "os": os,
+            "os": os_name,
             "arch": arch,
             "tests": "",
             "checksum": ""
