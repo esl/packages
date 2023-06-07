@@ -13,7 +13,7 @@ def extract_info_from_filename(filename):
     if match:
         path = "https://binaries2.erlang-solutions.com/" + quote(filename)
         version = match.group(2)
-        os = match.group(1).split("_")[0]
+        os = match.group(3)
         arch = match.group(5)
 
         return {
@@ -72,8 +72,9 @@ for obj in response['Contents']:
         # Split the full_os_name into its parts
         os_parts = full_os_name.split("~")
 
-        # Extract the os_name from os_parts
+        # Extract the os_name and version from os_parts
         os_name = os_parts[1].split("_")[0]
+        os_version = os_parts[2]
 
         # Find the appropriate JSON data dictionary based on the tab name
         json_data = None
