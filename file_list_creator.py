@@ -73,7 +73,7 @@ for obj in response['Contents']:
         os_parts = full_os_name.split("~")
 
         # Extract the os_name from os_parts
-        os_name = os_parts[1]
+        os_name = os_parts[1].split("_")[0]
 
         # Find the appropriate JSON data dictionary based on the tab name
         json_data = None
