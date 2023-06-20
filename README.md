@@ -153,6 +153,8 @@ This script shows how to publish the Aptly repositories to an S3
 volume using the `Acquire-By-Hash` feature. The S3 volume can be be
 published indirectly via CloudFront as it is today.
 
+Those scripts were integrated into the Update APT Workflow.
+
 ### Deploying to Production
 
 Finally the new site is here. As of <Date>, we will be transitioning away from the old packages system, but fear not! The legacy packages will remain accessible at on packages.erlang-solutions.com and archives.erlang-solutions.com for your convenience. And to avoid issues with current pipelines or workflows.
@@ -162,9 +164,7 @@ Finally the new site is here. As of <Date>, we will be transitioning away from t
 Inside there you will find our asc file, please put it over your Ubuntu and Debian as needed. 
 
 TO DO LIST:
-- Add support for YUM Repos
-- Update Download Section in ESL Homepage
+- Add support for YUM Repos | Working on it
+- Update Download Section in ESL Homepage | Working on it
 
-Roadmap :
 
-![alt text](https://prnt.sc/zwDQTMQH5udV)
