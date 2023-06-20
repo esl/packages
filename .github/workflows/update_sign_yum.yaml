@@ -18,14 +18,13 @@ env:
 
 jobs:
   update-repo:
-    runs-on: centos-latest
+    runs-on: ubuntu-latest
     steps:
       # Install dependencies required by the scripts
       - name: Install Dependencies
         run: |
-          sudo yum -y update
-          sudo yum -y install awscli dpkg-sig gnupg python3-pip
-          pip3 install boto3
+          sudo apt-get update
+          sudo apt-get install -y awscli dpkg-sig gnupg 
 
       # Configure Credentials for AWS    
       - name: Set AWS credentials
