@@ -63,6 +63,7 @@ mongooseim_json_data = {
         "main": "Standard"
     }
 }
+
 # Iterate over the objects
 for obj in response['Contents']:
     filename = obj['Key']
@@ -128,3 +129,5 @@ with open('erlang_packages.json', 'w') as json_file:
 
 with open('mongooseim_packages.json', 'w') as json_file:
     json_file.write("jsonCallback(" + json.dumps(mongooseim_json_data, indent=4) + ")")
+
+
