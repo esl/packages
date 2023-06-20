@@ -1,28 +1,25 @@
-stepsname: Update Apt Repository
+name: Update Yum Repository
 
 on:
-  schedule:
-    - cron: "0 0 * * 0"
-  workflow_dispatch:
+schedule:
+- cron: "0 0 * * 0"
+workflow_dispatch:
 
 env:
-  DEBIAN_RELEASES: "stretch buster bullseye"
-  UBUNTU_RELEASES: "jammy xenial bionic focal"
-  ERLANG_VERSIONS: "24 25 26"
-  ELIXIR_VERSIONS: "1.14 1.13 1.12"
-  MONGOOSEIM_VERSIONS: "5 6"
-  AWS_REGION: "eu-west-2"
-  AWS_SOURCE_BUCKET: "esl-erlang"
-  AWS_DESTINATION_BUCKET: "esl-packages"
-  ARCHITECTURE: "amd64,arm64"
-
+CENTOS_RELEASES: "7 8 9"
+ROCKY_RELEASES: "8"
+ERLANG_VERSIONS: "24 25 26"
+ELIXIR_VERSIONS: "1.14 1.13 1.12"
+MONGOOSEIM_VERSIONS: "5 6"
+AWS_REGION: "eu-west-2"
+AWS_SOURCE_BUCKET: "esl-erlang"
+AWS_DESTINATION_BUCKET: "esl-packages"
+ARCHITECTURE: "x86_64,noarch"
 
 jobs:
-  update-repo:
-    runs-on: ubuntu-latest
-  - name: Checkout
-    uses: actions/checkout@v2
-
+update-repo:
+  runs-on: centos-latest
+  steps:
   # Install dependencies required by the scripts
   - name: Install Dependencies
     run: |
@@ -83,7 +80,7 @@ jobs:
       for file in $(find Packages -name '*.rpm')
       do
         # Add package to the corresponding repository
-        if [[ "$file" =~ (esl-erlang|elixir|mongooseim)-([0-9]+(\.[0-9]+)*(-[0-9]+)?)(_[0-9]+)?(_otp_[0-9.]+)?~(centos|rocky)~([0-9]+)_(x86_64|aarch64)\.rpm$ ]]; then
+        if [[ "$file" =~ (esl-erlang|elixir|mongooseim)-([0-9]+(\.[0-9]+)*(-[0-9]+)?)(_[0-9]+)?(_otp_[0-9.]+)?~(centos|rocky)~([0-9]+)_(x86_64|noarch)\.rpm$ ]]; then
           if ! rpm -K "$file"; then
             echo "File $file is not signed."
           fi
