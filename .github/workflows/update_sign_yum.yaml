@@ -24,7 +24,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y awscli dpkg-sig gnupg 
+          sudo apt-get install -y awscli dpkg-sig gnupg createrepo
 
       # Configure Credentials for AWS    
       - name: Set AWS credentials
