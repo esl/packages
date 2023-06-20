@@ -163,8 +163,10 @@ Finally the new site is here. As of <Date>, we will be transitioning away from t
 
 Inside there you will find our asc file, please put it over your Ubuntu and Debian as needed. 
 
-TO DO LIST:
+### TO DO LIST:
 - Add support for YUM Repos | Working on it
 - Update Download Section in ESL Homepage | Working on it
 
+## Contributing
 
+Review Contribution Guidelines 
