@@ -1,4 +1,4 @@
-# Packages2
+# Binaries2
 
 This repository contains a new approach to Erlang/Elixir package
 creation and publishing.
