@@ -12,7 +12,7 @@ def extract_info_from_filename(filename):
     if match:
         path = "https://binaries2.erlang-solutions.com/" + quote(filename)
         version = match.group(2)
-        os_name = match.group(3).replace('_', ' ').capitalize()  # Capitalize the OS name
+        os_name = match.group(3).replace('_', ' ').capitalize() + " " + match.group(4)  # Capitalize the OS name
         arch = match.group(5)
 
         return {
@@ -75,8 +75,8 @@ for page in page_iterator:
                 os_parts = full_os_name.split("~")
 
                 # Extract the os_name and version from os_parts
-                os_name = os_parts[1].split("_")[0] + " " + os_parts[2]  # Concatenate OS name and version
-
+                #os_name = os_parts[1].split("_")[0] + " " + os_parts[2]  # Concatenate OS name and version
+                os_name = os_parts[1] 
                 # Find the appropriate JSON data dictionary based on the tab name
                 json_data = None
                 if "elixir" in filename:
