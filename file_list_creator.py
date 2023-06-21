@@ -5,19 +5,14 @@ from urllib.parse import quote
 
 def extract_info_from_filename(filename):
     # Example regular expression to extract information from the filename
-    pattern1 = r'(.+)_([\d.]+)_\d+_otp_\d+\.\d+~(.+)~(.+)_(\w+)\.(\w+)'
-    pattern2 = r'(.+)_([\d.-]+)~(.+)~(.+)_(\w+)\.(\w+)'
-    pattern3 = r'(.+)_([\d.-]+)~(.+)\.(\w+)'
-    pattern4 = r'(.+)_([\d.]+)_\d+_otp_\d+\.\d+~(.+)~(.+)\.(\w+)'
-    pattern5 = r'(.+)_([\d.-]+)~(.+)~(.+)\.(\w+)'
+    pattern = r'(.+?)_([\d.-]+)~(.+?)~(.+?)_(\w+)\.(\w+)'
 
-    match = re.match(pattern1, filename) or re.match(pattern2, filename) or re.match(pattern3, filename) or re.match(pattern4, filename) or re.match(pattern5, filename)
+    match = re.match(pattern, filename)
 
     if match:
         path = "https://binaries2.erlang-solutions.com/" + quote(filename)
         version = match.group(2)
-        os_parts = match.group(3).split("_")
-        os_name = " ".join(os_parts).capitalize()  # Capitalize the OS name
+        os_name = match.group(3).replace('_', ' ').capitalize()  # Capitalize the OS name
         arch = match.group(5)
 
         return {
@@ -80,9 +75,7 @@ for page in page_iterator:
                 os_parts = full_os_name.split("~")
 
                 # Extract the os_name and version from os_parts
-                os_name_file = os_parts[1].split("_")[0]  # Extract the OS name for the file
-                os_version = os_parts[2]  # Extract the OS version
-                os_name_with_version = os_name_file + " " + os_version  # Concatenate OS name and version
+                os_name = os_parts[1].split("_")[0] + " " + os_parts[2]  # Concatenate OS name and version
 
                 # Find the appropriate JSON data dictionary based on the tab name
                 json_data = None
@@ -95,7 +88,7 @@ for page in page_iterator:
 
                 if json_data:
                     # Check if a tab with the OS name already exists
-                    existing_tab = next((tab for tab in json_data["tabs"] if tab["name"] == os_name_with_version), None)
+                    existing_tab = next((tab for tab in json_data["tabs"] if tab["name"] == os_name), None)
                     if existing_tab:
                         existing_flavour = next((flavour for flavour in existing_tab["flavours"] if flavour["name"] == "main"), None)
                         if existing_flavour:
@@ -109,8 +102,8 @@ for page in page_iterator:
                             })
                     else:
                         json_data["tabs"].append({
-                            "name": os_name_with_version,
-                            "caption": os_name_with_version.capitalize(),
+                            "name": os_name,
+                            "caption": os_name.capitalize(),
                             "header": "",
                             "footer": "",
                             "flavours": [
