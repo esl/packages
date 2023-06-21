@@ -118,10 +118,10 @@ for page in page_iterator:
 
 # Write separate JSON files for Elixir, esl-erlang, and MongooseIM
 with open('elixir_packages.json', 'w') as json_file:
-    json_file.write(json.dumps(elixir_json_data, indent=4))
+    json_file.write("jsonCallback(" + json.dumps(elixir_json_data, indent=4) + ")")
 
 with open('erlang_packages.json', 'w') as json_file:
-    json_file.write(json.dumps(erlang_json_data, indent=4))
+    json_file.write("jsonCallback(" + json.dumps(erlang_json_data, indent=4) + ")")
 
 with open('mongooseim_packages.json', 'w') as json_file:
-    json_file.write(json.dumps(mongooseim_json_data, indent=4))
+    json_file.write("jsonCallback(" + json.dumps(mongooseim_json_data, indent=4) + ")")
