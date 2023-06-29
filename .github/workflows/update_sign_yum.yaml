@@ -1,8 +1,6 @@
 name: Update Yum Repository
 
 on:
-  schedule:
-  - cron: "0 0 * * 0"
   workflow_dispatch:
 
 env:
@@ -24,7 +22,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y awscli dpkg-sig gnupg createrepo
+          sudo apt-get install -y awscli dpkg-sig gnupg createrepo-c
 
       # Configure Credentials for AWS    
       - name: Set AWS credentials
