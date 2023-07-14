@@ -38,7 +38,8 @@ jobs:
           for distro in $CENTOS_RELEASES $ROCKY_RELEASES
           do
             for erlang in $ERLANG_VERSIONS
-            do
+            do "$distro/esl-erlang-$erlang"
+              mkdir -p "$distro/esl-erlang-$erlang"
               createrepo_c "$distro/esl-erlang-$erlang"
             done
           done
@@ -50,6 +51,7 @@ jobs:
           do
             for elixir in $ELIXIR_VERSIONS
             do
+              mkdir -p "$distro/elixir-$elixir"
               createrepo_c "$distro/elixir-$elixir"
             done
           done
@@ -61,6 +63,7 @@ jobs:
           do
             for mongooseim in $MONGOOSEIM_VERSIONS
             do
+              mkdir -p "$distro/mongooseim-$mongooseim"
               createrepo_c "$distro/mongooseim-$mongooseim"
             done
           done
