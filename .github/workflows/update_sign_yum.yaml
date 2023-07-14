@@ -38,7 +38,7 @@ jobs:
           for distro in $CENTOS_RELEASES $ROCKY_RELEASES
           do
             for erlang in $ERLANG_VERSIONS
-            do "$distro/esl-erlang-$erlang"
+            do
               mkdir -p "$distro/esl-erlang-$erlang"
               createrepo_c "$distro/esl-erlang-$erlang"
             done
