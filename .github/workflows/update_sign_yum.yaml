@@ -22,7 +22,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y awscli dpkg-sig gnupg createrepo-c
+          sudo apt-get install -y awscli dpkg-sig gnupg createrepo_c
 
       # Configure Credentials for AWS    
       - name: Set AWS credentials
@@ -39,7 +39,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              createrepo "$distro/esl-erlang-$erlang"
+              createrepo_c "$distro/esl-erlang-$erlang"
             done
           done
 
@@ -50,7 +50,7 @@ jobs:
           do
             for elixir in $ELIXIR_VERSIONS
             do
-              createrepo "$distro/elixir-$elixir"
+              createrepo_c "$distro/elixir-$elixir"
             done
           done
 
@@ -61,7 +61,7 @@ jobs:
           do
             for mongooseim in $MONGOOSEIM_VERSIONS
             do
-              createrepo "$distro/mongooseim-$mongooseim"
+              createrepo_c "$distro/mongooseim-$mongooseim"
             done
           done
 
@@ -90,7 +90,7 @@ jobs:
                 repo_name="${BASH_REMATCH[8]}/${BASH_REMATCH[1]}-${BASH_REMATCH[2]%.*}"
               fi
 
-              createrepo --update "$repo_name"
+              createrepo_c --update "$repo_name"
               mv "$file" "$repo_name"
             fi
           done
@@ -144,7 +144,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              createrepo --update "$distro/esl-erlang-$erlang"
+              createrepo_c --update "$distro/esl-erlang-$erlang"
               aws s3 sync "$distro/esl-erlang-$erlang" "s3://$AWS_DESTINATION_BUCKET/centos/$distro/esl-erlang-$erlang" --acl public-read
             done
           done
@@ -153,7 +153,7 @@ jobs:
           do
             for elixir in $ELIXIR_VERSIONS
             do
-              createrepo --update "$distro/elixir-$elixir"
+              createrepo_c --update "$distro/elixir-$elixir"
               aws s3 sync "$distro/elixir-$elixir" "s3://$AWS_DESTINATION_BUCKET/centos/$distro/elixir-$elixir" --acl public-read
             done
           done
@@ -162,7 +162,7 @@ jobs:
           do
             for mongooseim in $MONGOOSEIM_VERSIONS
             do
-              createrepo --update "$distro/mongooseim-$mongooseim"
+              createrepo_c --update "$distro/mongooseim-$mongooseim"
               aws s3 sync "$distro/mongooseim-$mongooseim" "s3://$AWS_DESTINATION_BUCKET/centos/$distro/mongooseim-$mongooseim" --acl public-read
             done
           done
