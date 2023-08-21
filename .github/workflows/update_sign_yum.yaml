@@ -135,9 +135,9 @@ jobs:
       # Import GPG key
       - name: Import keys
         run: |
-          echo "${{ secrets.GPG_P_KEY }}" > RPM-GPG-KEY-pmanager
-          rpm --import RPM-GPG-KEY-pmanager
-          aws s3 sync . s3://esl-packages --acl public-read --exclude "*" --include "*.asc" --include "*.json"
+          echo "${{ secrets.GPG_P_KEY }}" | tr ';' '\n' > RPM-GPG-KEY-pmanager.asc
+          rpm --import RPM-GPG-KEY-pmanager.asc
+          aws s3 sync . s3://esl-packages --acl public-read --exclude "*" --include "*.asc"
 
       # Publish repositories to S3 Destination
       - name: Publish repositories
