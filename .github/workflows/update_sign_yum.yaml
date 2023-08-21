@@ -106,7 +106,7 @@ jobs:
       # Configure Yum Repository
       - name: Configure yum repository
         run: |
-          cat > /etc/yum.repos.d/esl.repo << EOF
+          cat > esl.repo << EOF
           [esl]
           name=ESL Erlang Repository
           baseurl=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/centos
@@ -114,8 +114,7 @@ jobs:
           gpgkey=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/centos/RPM-GPG-KEY-pmanager
           enabled=1
           EOF
-
-          cat > /etc/yum.repos.d/elixir.repo << EOF
+          cat > elixir.repo << EOF
           [elixir]
           name=Elixir Repository
           baseurl=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/centos
@@ -123,8 +122,7 @@ jobs:
           gpgkey=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/centos/RPM-GPG-KEY-pmanager
           enabled=1
           EOF
-
-          cat > /etc/yum.repos.d/mongooseim.repo << EOF
+          cat > mongooseim.repo << EOF
           [mongooseim]
           name=MongooseIM Repository
           baseurl=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/centos
@@ -132,6 +130,7 @@ jobs:
           gpgkey=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/centos/RPM-GPG-KEY-pmanager
           enabled=1
           EOF
+
 
       # Import GPG key
       - name: Import keys
