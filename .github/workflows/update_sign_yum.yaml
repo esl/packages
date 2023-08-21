@@ -75,7 +75,7 @@ jobs:
           aws s3 sync s3://$AWS_SOURCE_BUCKET Packages --exclude "*" --include "*.rpm"
           
      # Run the script to add the packages to the repositories and check sign
-      - name: Add Packages to Repositories
+      - name: Add RPM Packages to Repositories
         run: |
           for file in $(find Packages -name '*.rpm')
           do
@@ -101,7 +101,7 @@ jobs:
       # Upload RPM files to S3
       - name: Upload rpm files to S3
         run: |
-          aws s3 sync . s3://$AWS_DESTINATION_BUCKET --acl public-read
+          aws s3 sync . s3://$AWS_DESTINATION_BUCKET --acl public-read 
 
       # Configure Yum Repository
       - name: Configure yum repository
@@ -111,7 +111,7 @@ jobs:
           name=ESL Erlang Repository
           baseurl=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/centos
           gpgcheck=1
-          gpgkey=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/centos/RPM-GPG-KEY-pmanager
+          gpgkey=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/centos/RPM-GPG-KEY-pmanager.pub
           enabled=1
           EOF
           cat > elixir.repo << EOF
@@ -119,7 +119,7 @@ jobs:
           name=Elixir Repository
           baseurl=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/centos
           gpgcheck=1
-          gpgkey=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/centos/RPM-GPG-KEY-pmanager
+          gpgkey=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/centos/RPM-GPG-KEY-pmanager.pub
           enabled=1
           EOF
           cat > mongooseim.repo << EOF
@@ -127,7 +127,7 @@ jobs:
           name=MongooseIM Repository
           baseurl=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/centos
           gpgcheck=1
-          gpgkey=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/centos/RPM-GPG-KEY-pmanager
+          gpgkey=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/centos/RPM-GPG-KEY-pmanager.pub
           enabled=1
           EOF
 
@@ -135,9 +135,12 @@ jobs:
       # Import GPG key
       - name: Import keys
         run: |
-          echo "${{ secrets.GPG_P_KEY }}" | tr ';' '\n' > RPM-GPG-KEY-pmanager.asc
-          rpm --import RPM-GPG-KEY-pmanager.asc
-          aws s3 sync . s3://esl-packages --acl public-read --exclude "*" --include "*.asc"
+          echo "${{ secrets.GPG_P_KEY }}" | tr ';' '\n' > RPM-GPG-KEY-pmanager
+          gpg --batch --import RPM-GPG-KEY-pmanager
+          gpg --batch --list-keys
+          gpg --batch --output RPM-GPG-KEY-pmanager.pub --armor --export ${{secrets.GPG_KEY_ID}}
+          rpm --import RPM-GPG-KEY-pmanager.pub
+          aws s3 sync . s3://esl-packages --acl public-read --exclude "*" --include "*.pub"
 
       # Publish repositories to S3 Destination
       - name: Publish repositories
@@ -147,7 +150,7 @@ jobs:
             for erlang in $ERLANG_VERSIONS
             do
               createrepo_c --update "$distro/esl-erlang-$erlang"
-              aws s3 sync "$distro/esl-erlang-$erlang" "s3://$AWS_DESTINATION_BUCKET/$distro/esl-erlang-$erlang" --acl public-read
+              aws s3 sync "$distro/esl-erlang-$erlang" "s3://$AWS_DESTINATION_BUCKET/centos/$distro/esl-erlang-$erlang" --acl public-read
             done
           done
 
@@ -156,7 +159,7 @@ jobs:
             for elixir in $ELIXIR_VERSIONS
             do
               createrepo_c --update "$distro/elixir-$elixir"
-              aws s3 sync "$distro/elixir-$elixir" "s3://$AWS_DESTINATION_BUCKET/$distro/elixir-$elixir" --acl public-read
+              aws s3 sync "$distro/elixir-$elixir" "s3://$AWS_DESTINATION_BUCKET/centos/$distro/elixir-$elixir" --acl public-read
             done
           done
 
@@ -165,6 +168,6 @@ jobs:
             for mongooseim in $MONGOOSEIM_VERSIONS
             do
               createrepo_c --update "$distro/mongooseim-$mongooseim"
-              aws s3 sync "$distro/mongooseim-$mongooseim" "s3://$AWS_DESTINATION_BUCKET/$distro/mongooseim-$mongooseim" --acl public-read
+              aws s3 sync "$distro/mongooseim-$mongooseim" "s3://$AWS_DESTINATION_BUCKET/centos/$distro/mongooseim-$mongooseim" --acl public-read
             done
           done
