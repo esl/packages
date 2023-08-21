@@ -82,7 +82,7 @@ jobs:
       - name: Download deb files
         run: |
           mkdir Packages
-          aws s3 sync s3://$AWS_SOURCE_BUCKET Packages
+          aws s3 sync s3://$AWS_SOURCE_BUCKET Packages --exclude "*" --include "*.deb"
           
       # Run the script to add the packages to the repositories and check sign
       - name: Add Packages to Repositories
