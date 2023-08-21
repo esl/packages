@@ -106,17 +106,7 @@ jobs:
               aptly repo add --force-replace "$repo_name" "$file"
             fi
           done
-          
-          
-      #Upload signed files to S3
-     # - name: Upload signed deb files to S3
-     #   run: |
-     #     aws s3 sync Packages s3://esl-packages/pool --acl public-read
-          
-      # Run the Python script to create the list file
-     # - name: Run Python Script
-     #   run: |
-      #    python3 file_list_creator.py 
+
           
       #Configure Aptly    
       - name: Configure aptly.conf
