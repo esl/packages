@@ -31,6 +31,11 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-2
+          
+      # Clean files from Destination S3 to avoid metadata issues
+      - name: Clean previous RPM files from destination Bucket
+        run: |
+          aws s3 rm s3://$AWS_DESTINATION_BUCKET --include "*.rpm" --recursive
 
       # Run the script to create the repositories for ESL-erlang
       - name: Create Repositories
@@ -73,6 +78,16 @@ jobs:
         run: |
           mkdir Packages
           aws s3 sync s3://$AWS_SOURCE_BUCKET Packages --exclude "*" --include "*.rpm"
+          
+      # Import GPG key
+      - name: Import keys
+        run: |
+          echo "${{ secrets.GPG_P_KEY }}" | tr ';' '\n' > RPM-GPG-KEY-pmanager
+          gpg --batch --import RPM-GPG-KEY-pmanager
+          gpg --batch --list-keys
+          gpg --batch --output RPM-GPG-KEY-pmanager.pub --armor --export ${{secrets.GPG_KEY_ID}}
+          rpm --import RPM-GPG-KEY-pmanager.pub
+          aws s3 sync . s3://esl-packages --acl public-read --exclude "*" --include "*.pub"
           
      # Run the script to add the packages to the repositories and check sign
       - name: Add RPM Packages to Repositories
@@ -132,20 +147,10 @@ jobs:
           EOF
 
 
-      # Import GPG key
-      - name: Import keys
-        run: |
-          echo "${{ secrets.GPG_P_KEY }}" | tr ';' '\n' > RPM-GPG-KEY-pmanager
-          gpg --batch --import RPM-GPG-KEY-pmanager
-          gpg --batch --list-keys
-          gpg --batch --output RPM-GPG-KEY-pmanager.pub --armor --export ${{secrets.GPG_KEY_ID}}
-          rpm --import RPM-GPG-KEY-pmanager.pub
-          aws s3 sync . s3://esl-packages --acl public-read --exclude "*" --include "*.pub"
-
       # Publish repositories to S3 Destination
       - name: Publish repositories
         run: |
-          for distro in $CENTOS_RELEASES $ROCKY_RELEASES
+          for distro in $CENTOS_RELEASES
           do
             for erlang in $ERLANG_VERSIONS
             do
@@ -154,7 +159,7 @@ jobs:
             done
           done
 
-          for distro in $CENTOS_RELEASES $ROCKY_RELEASES
+          for distro in $CENTOS_RELEASES
           do
             for elixir in $ELIXIR_VERSIONS
             do
@@ -163,11 +168,38 @@ jobs:
             done
           done
 
-          for distro in $CENTOS_RELEASES $ROCKY_RELEASES
+          for distro in $CENTOS_RELEASES
           do
             for mongooseim in $MONGOOSEIM_VERSIONS
             do
               createrepo_c --update "$distro/mongooseim-$mongooseim"
               aws s3 sync "$distro/mongooseim-$mongooseim" "s3://$AWS_DESTINATION_BUCKET/centos/$distro/mongooseim-$mongooseim" --acl public-read
+            done
+          done
+          
+          for distro in $ROCKY_RELEASES
+          do
+            for erlang in $ERLANG_VERSIONS
+            do
+              createrepo_c --update "$distro/esl-erlang-$erlang"
+              aws s3 sync "$distro/esl-erlang-$erlang" "s3://$AWS_DESTINATION_BUCKET/rocky/$distro/esl-erlang-$erlang" --acl public-read
+            done
+          done
+
+          for distro in $ROCKY_RELEASES
+          do
+            for elixir in $ELIXIR_VERSIONS
+            do
+              createrepo_c --update "$distro/elixir-$elixir"
+              aws s3 sync "$distro/elixir-$elixir" "s3://$AWS_DESTINATION_BUCKET/rocky/$distro/elixir-$elixir" --acl public-read
+            done
+          done
+
+          for distro in $ROCKY_RELEASES
+          do
+            for mongooseim in $MONGOOSEIM_VERSIONS
+            do
+              createrepo_c --update "$distro/mongooseim-$mongooseim"
+              aws s3 sync "$distro/mongooseim-$mongooseim" "s3://$AWS_DESTINATION_BUCKET/rocky/$distro/mongooseim-$mongooseim" --acl public-read
             done
           done
