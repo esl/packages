@@ -46,6 +46,11 @@ jobs:
           verbose: false # default
           arch: amd64
           
+      # Clean files from Destination S3 to avoid errors of metadata
+      - name: Clean previous deb files from destination Bucket
+        run: |
+          aws s3 rm s3://$AWS_DESTINATION_BUCKET --include "*.deb" --recursive
+          
       # Run the script to create the repositories for ESL-erlang
       - name: Create Repositories
         run: |
