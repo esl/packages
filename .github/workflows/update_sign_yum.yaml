@@ -74,8 +74,8 @@ jobs:
             done
           done
 
-      # Download .rpm files from S3
-      - name: Download rpm files
+      # Download .RPM files from S3
+      - name: Download RPM files
         run: |
           mkdir Packages
           aws s3 sync s3://$AWS_SOURCE_BUCKET Packages --exclude "*" --include "*.rpm"
@@ -117,12 +117,12 @@ jobs:
       # Upload RPM files to S3
       - name: Upload rpm files to S3
         run: |
-          aws s3 sync /Packages/  s3://$AWS_DESTINATION_BUCKET --acl public-read 
+          aws s3 sync ./Packages/  s3://$AWS_DESTINATION_BUCKET --acl public-read 
 
       # Configure Yum Repository
       - name: Configure yum repository
         run: |
-          cat > esl.repo << EOF
+          cat > esl-centos.repo << EOF
           [esl]
           name=ESL Erlang Repository
           baseurl=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/centos
@@ -130,7 +130,8 @@ jobs:
           gpgkey=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/centos/RPM-GPG-KEY-pmanager.pub
           enabled=1
           EOF
-          cat > elixir.repo << EOF
+
+          cat > elixir-centos.repo << EOF
           [elixir]
           name=Elixir Repository
           baseurl=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/centos
@@ -138,7 +139,8 @@ jobs:
           gpgkey=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/centos/RPM-GPG-KEY-pmanager.pub
           enabled=1
           EOF
-          cat > mongooseim.repo << EOF
+
+          cat > mongooseim-centos.repo << EOF
           [mongooseim]
           name=MongooseIM Repository
           baseurl=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/centos
@@ -147,7 +149,33 @@ jobs:
           enabled=1
           EOF
 
+          cat > esl-rocky.repo << EOF
+          [esl]
+          name=ESL Erlang Repository for Rocky
+          baseurl=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/rocky
+          gpgcheck=1
+          gpgkey=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/rocky/RPM-GPG-KEY-pmanager.pub
+          enabled=1
+          EOF
 
+          cat > elixir-rocky.repo << EOF
+          [elixir]
+          name=Elixir Repository for Rocky
+          baseurl=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/rocky
+          gpgcheck=1
+          gpgkey=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/rocky/RPM-GPG-KEY-pmanager.pub
+          enabled=1
+          EOF
+
+          cat > mongooseim-rocky.repo << EOF
+          [mongooseim]
+          name=MongooseIM Repository for Rocky
+          baseurl=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/rocky
+          gpgcheck=1
+          gpgkey=https://s3-$AWS_REGION.amazonaws.com/$AWS_DESTINATION_BUCKET/rocky/RPM-GPG-KEY-pmanager.pub
+          enabled=1
+          EOF
+          
       # Publish repositories to S3 Destination
       - name: Publish repositories
         run: |
