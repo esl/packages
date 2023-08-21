@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  CENTOS_RELEASES: "7 8 9"
+  CENTOS_RELEASES: "7 8"
   ROCKY_RELEASES: "8"
   ERLANG_VERSIONS: "24 25 26"
   ELIXIR_VERSIONS: "1.14 1.13 1.12"
@@ -35,7 +35,8 @@ jobs:
       # Clean files from Destination S3 to avoid metadata issues
       - name: Clean previous RPM files from destination Bucket
         run: |
-          aws s3 rm s3://$AWS_DESTINATION_BUCKET --include "*.rpm" --recursive
+          aws s3 rm s3://$AWS_DESTINATION_BUCKET/centos/ --recursive
+          aws s3 rm s3://$AWS_DESTINATION_BUCKET/rocky/ --recursive
 
       # Run the script to create the repositories for ESL-erlang
       - name: Create Repositories
@@ -116,7 +117,7 @@ jobs:
       # Upload RPM files to S3
       - name: Upload rpm files to S3
         run: |
-          aws s3 sync . s3://$AWS_DESTINATION_BUCKET --acl public-read 
+          aws s3 sync /Packages/  s3://$AWS_DESTINATION_BUCKET --acl public-read 
 
       # Configure Yum Repository
       - name: Configure yum repository
