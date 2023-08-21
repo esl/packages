@@ -36,7 +36,7 @@ jobs:
       - name: Clean previous RPM files from destination Bucket
         run: |
           aws s3 rm s3://$AWS_DESTINATION_BUCKET/centos/ --recursive
-          aws s3 rm s3://$AWS_DESTINATION_BUCKET/rocky/ --recursive
+          aws s3 rm s3://$AWS_DESTINATION_BUCKET/rockylinux/ --recursive
 
       # Run the script to create the repositories for ESL-erlang
       - name: Create Repositories
@@ -211,7 +211,7 @@ jobs:
             for erlang in $ERLANG_VERSIONS
             do
               createrepo_c --update "$distro/esl-erlang-$erlang"
-              aws s3 sync "$distro/esl-erlang-$erlang" "s3://$AWS_DESTINATION_BUCKET/rocky/$distro/esl-erlang-$erlang" --acl public-read
+              aws s3 sync "$distro/esl-erlang-$erlang" "s3://$AWS_DESTINATION_BUCKET/rockylinux/$distro/esl-erlang-$erlang" --acl public-read
             done
           done
 
@@ -220,7 +220,7 @@ jobs:
             for elixir in $ELIXIR_VERSIONS
             do
               createrepo_c --update "$distro/elixir-$elixir"
-              aws s3 sync "$distro/elixir-$elixir" "s3://$AWS_DESTINATION_BUCKET/rocky/$distro/elixir-$elixir" --acl public-read
+              aws s3 sync "$distro/elixir-$elixir" "s3://$AWS_DESTINATION_BUCKET/rockylinux/$distro/elixir-$elixir" --acl public-read
             done
           done
 
@@ -229,6 +229,6 @@ jobs:
             for mongooseim in $MONGOOSEIM_VERSIONS
             do
               createrepo_c --update "$distro/mongooseim-$mongooseim"
-              aws s3 sync "$distro/mongooseim-$mongooseim" "s3://$AWS_DESTINATION_BUCKET/rocky/$distro/mongooseim-$mongooseim" --acl public-read
+              aws s3 sync "$distro/mongooseim-$mongooseim" "s3://$AWS_DESTINATION_BUCKET/rockylinux/$distro/mongooseim-$mongooseim" --acl public-read
             done
           done
