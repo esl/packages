@@ -88,7 +88,7 @@ jobs:
           gpg --batch --list-keys
           gpg --batch --output RPM-GPG-KEY-pmanager.pub --armor --export ${{secrets.GPG_KEY_ID}}
           rpm --import RPM-GPG-KEY-pmanager.pub
-          aws s3 sync . s3://esl-packages --acl public-read --exclude "*" --include "*.pub"
+          aws s3 sync . s3://$AWS_DESTINATION_BUCKET --acl public-read --exclude "*" --include "*.pub"
           
      # Run the script to add the packages to the repositories and check sign
       - name: Add RPM Packages to Repositories
