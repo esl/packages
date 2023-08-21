@@ -38,5 +38,15 @@ jobs:
           python3 file_list_creator.py
           aws s3 sync . s3://binaries2.erlang-solutions.com --acl public-read --exclude "*" --include "*.json"
           
-          
+      # Run python script for create the JSON Files for each Product 
+      - name: Generate new JSON files for ESL Homepage
+        run: | 
+          python3 file_list_creator_elixir.py
+          aws s3 sync . s3://binaries2.erlang-solutions.com --acl public-read --exclude "*" --include "*.json"
+
+      # Run python script for create the JSON Files for each Product 
+      - name: Generate new JSON files for ESL Homepage
+        run: | 
+          python3 file_list_creator_mongooseim.py
+          aws s3 sync . s3://binaries2.erlang-solutions.com --acl public-read --exclude "*" --include "*.json"
         
