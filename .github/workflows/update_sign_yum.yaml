@@ -115,9 +115,25 @@ jobs:
           done
 
       # Upload RPM files to S3
-      - name: Upload rpm files to S3
+      #- name: Upload rpm files to S3
+       # run: |
+       #   aws s3 sync ./Packages/  s3://$AWS_DESTINATION_BUCKET --acl public-read 
+       
+      # Sync RPM files to S3 with correct repository paths
+      - name: Sync RPM files to S3
         run: |
-          aws s3 sync ./Packages/  s3://$AWS_DESTINATION_BUCKET --acl public-read 
+          for file in $(find Packages -name '*.rpm')
+          do
+            if [[ "$file" =~ (esl-erlang|elixir|mongooseim)-([0-9]+(\.[0-9]+)*(-[0-9]+)?)(_[0-9]+)?(_otp_[0-9.]+)?~(centos|rocky)~([0-9]+)_(x86_64|noarch)\.rpm$ ]]; then
+              package_name="${BASH_REMATCH[1]}"
+              version="${BASH_REMATCH[2]}"
+              distribution="${BASH_REMATCH[6]}"
+              release="${BASH_REMATCH[7]}"
+              architecture="${BASH_REMATCH[8]}"
+              repo_path="$distribution/$package_name-$version/$architecture"
+              aws s3 cp "$file" "s3://$AWS_DESTINATION_BUCKET/$repo_path/" --acl public-read
+            fi
+          done
 
       # Configure Yum Repository
       - name: Configure yum repository
