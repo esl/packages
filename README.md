@@ -134,12 +134,28 @@ Finally the new site is here. As of <Date>, we will be transitioning away from t
 
 - https://binaries2.erlang-solutions.com
 
-Inside there you will find our asc file, please put it over your Ubuntu and Debian as needed. 
+### Installation Instructions
 
-### TO DO LIST:
-- Add support for YUM Repos | Working on it
-- Update Download Section in ESL Homepage | Working on it
+Add the Erlang Solutions public key for \"apt-secure\" using following commands::
+
+<code>wget https://binaries2.erlang-solutions.com/GPG-KEY-pmanager.asc\nsudo apt-key add GPG-KEY-pmanager.asc\n</code>
+
+To add Erlang Solutions repository (including our public key for apt-secure) to your system, call the following commands:
+
+adding the repository entry manually
+Add one of the following lines to your /etc/apt/sources.list (according to your distribution):
+
+<code>deb http://binaries2.erlang-solutions.com/ubuntu/ jammy-esl-erlang-25 contrib</code>
+
+<code>deb http://binaries2.erlang-solutions.com/debian/ bullseye-elixir-1.15 contrib</code>
+
+<code>deb http://binaries2.erlang-solutions.com/ubuntu/ bionic-mongooseim-6 contrib</code>
 
 ## Contributing
 
 Review [Contribution Guidelines](CONTRIBUTING.md)
+
+## TO-DO
+- Create deb and rpm autoinstallable ESL sources
+- Bugfixing: Solve ARM64 issue
+- Stabilization of the new platform
