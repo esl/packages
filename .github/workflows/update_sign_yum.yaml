@@ -185,7 +185,7 @@ jobs:
             for erlang in $ERLANG_VERSIONS
             do
               createrepo_c --update "$distro/esl-erlang-$erlang"
-              aws s3 sync "$distro/esl-erlang-$erlang" "s3://$AWS_DESTINATION_BUCKET/centos/" --acl public-read
+              aws s3 sync "$distro/esl-erlang-$erlang" "s3://$AWS_DESTINATION_BUCKET/centos/esl-erlang-$erlang" --acl public-read
             done
           done
 
@@ -194,7 +194,7 @@ jobs:
             for elixir in $ELIXIR_VERSIONS
             do
               createrepo_c --update "$distro/elixir-$elixir"
-              aws s3 sync "$distro/elixir-$elixir" "s3://$AWS_DESTINATION_BUCKET/centos/" --acl public-read
+              aws s3 sync "$distro/elixir-$elixir" "s3://$AWS_DESTINATION_BUCKET/centos/elixir-$elixir" --acl public-read
             done
           done
 
@@ -203,7 +203,7 @@ jobs:
             for mongooseim in $MONGOOSEIM_VERSIONS
             do
               createrepo_c --update "$distro/mongooseim-$mongooseim"
-              aws s3 sync "$distro/mongooseim-$mongooseim" "s3://$AWS_DESTINATION_BUCKET/centos/" --acl public-read
+              aws s3 sync "$distro/mongooseim-$mongooseim" "s3://$AWS_DESTINATION_BUCKET/centos/mongooseim-$mongooseim" --acl public-read
             done
           done
           
@@ -212,7 +212,7 @@ jobs:
             for erlang in $ERLANG_VERSIONS
             do
               createrepo_c --update "$distro/esl-erlang-$erlang"
-              aws s3 sync "$distro/esl-erlang-$erlang" "s3://$AWS_DESTINATION_BUCKET/rockylinux/" --acl public-read
+              aws s3 sync "$distro/esl-erlang-$erlang" "s3://$AWS_DESTINATION_BUCKET/rockylinux/esl-erlang-$erlang" --acl public-read
             done
           done
 
@@ -221,7 +221,7 @@ jobs:
             for elixir in $ELIXIR_VERSIONS
             do
               createrepo_c --update "$distro/elixir-$elixir"
-              aws s3 sync "$distro/elixir-$elixir" "s3://$AWS_DESTINATION_BUCKET/rockylinux/" --acl public-read
+              aws s3 sync "$distro/elixir-$elixir" "s3://$AWS_DESTINATION_BUCKET/rockylinux/elixir-$elixir" --acl public-read
             done
           done
 
@@ -230,6 +230,6 @@ jobs:
             for mongooseim in $MONGOOSEIM_VERSIONS
             do
               createrepo_c --update "$distro/mongooseim-$mongooseim"
-              aws s3 sync "$distro/mongooseim-$mongooseim" "s3://$AWS_DESTINATION_BUCKET/rockylinux/" --acl public-read
+              aws s3 sync "$distro/mongooseim-$mongooseim" "s3://$AWS_DESTINATION_BUCKET/rockylinux/mongooseim-$mongooseim" --acl public-read
             done
           done
