@@ -135,10 +135,10 @@ jobs:
       # Retrieve GPG key and passphrase from GitHub Actions secrets          
       - name: Import keys
         run: |
-          echo "${{secrets.GPG_P_KEY}}" | tr ';' '\n' > GPG-KEY-pmanager
+          echo "${{ secrets.GPG_P_KEY }}" | tr ';' '\n' > GPG-KEY-pmanager
           gpg --batch --import GPG-KEY-pmanager
           gpg --batch --list-keys
-          gpg --batch --output GPG-KEY-pmanager.asc --armor --export ${{secrets.GPG_KEY_ID}}
+          gpg --batch --output GPG-KEY-pmanager.asc --armor --export ${{ secrets.GPG_KEY_ID }}
           aws s3 sync . s3://esl-packages --acl public-read --exclude "*" --include "*.asc" --include "*.json"
           
      # Publish the repositories for ESL-Erlang to S3 Destination
@@ -148,7 +148,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-esl-erlang-$erlang" -passphrase="${{secrets.GPG_PASS}}" "$distro/esl-erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:debian/
+              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-esl-erlang-$erlang" -passphrase="${{ secrets.GPG_PASS }}" "$distro/esl-erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:debian/
             done
           done
 
@@ -156,7 +156,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-esl-erlang-$erlang" -passphrase="${{secrets.GPG_PASS}}" "$distro/esl-erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:ubuntu/
+              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-esl-erlang-$erlang" -passphrase="${{ secrets.GPG_PASS }}" "$distro/esl-erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:ubuntu/
             done
           done
 
@@ -167,7 +167,7 @@ jobs:
           do
             for elixir in $ELIXIR_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-elixir-$elixir" -passphrase="${{secrets.GPG_PASS}}" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:debian/
+              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-elixir-$elixir" -passphrase="${{ secrets.GPG_PASS }}" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:debian/
             done
           done
 
@@ -175,7 +175,7 @@ jobs:
           do
             for elixir in $ELIXIR_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-elixir-$elixir"  -passphrase="${{secrets.GPG_PASS}}" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:ubuntu/
+              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-elixir-$elixir"  -passphrase="${{ secrets.GPG_PASS }}" "$distro/elixir-$elixir" s3:$AWS_DESTINATION_BUCKET:ubuntu/
             done
           done
           
@@ -186,7 +186,7 @@ jobs:
           do
             for mongooseim in $MONGOOSEIM_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-mongooseim-$mongooseim" -passphrase="${{secrets.GPG_PASS}}" "$distro/mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:debian/
+              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-mongooseim-$mongooseim" -passphrase="${{ secrets.GPG_PASS }}" "$distro/mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:debian/
             done
           done
 
@@ -194,6 +194,6 @@ jobs:
           do
             for mongooseim in $MONGOOSEIM_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-mongooseim-$mongooseim" -passphrase="${{secrets.GPG_PASS}}" "$distro/mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:ubuntu/
+              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-mongooseim-$mongooseim" -passphrase="${{ secrets.GPG_PASS }}" "$distro/mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:ubuntu/
             done
           done
