@@ -148,7 +148,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-esl-erlang-$erlang" -passphrase="${{ secrets.GPG_PASS }}" "$distro/esl-erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:debian/
+              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-esl-erlang-$erlang" -passphrase="$GPG_PASS" "$distro/esl-erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:debian/
             done
           done
 
@@ -156,7 +156,7 @@ jobs:
           do
             for erlang in $ERLANG_VERSIONS
             do
-              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-esl-erlang-$erlang" -passphrase="${{ secrets.GPG_PASS }}" "$distro/esl-erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:ubuntu/
+              aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-esl-erlang-$erlang" -passphrase="$GPG_PASS" "$distro/esl-erlang-$erlang" s3:$AWS_DESTINATION_BUCKET:ubuntu/
             done
           done
 
