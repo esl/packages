@@ -138,6 +138,7 @@ jobs:
           echo "${{ secrets.GPG_P_KEY }}" | tr ';' '\n' > GPG-KEY-pmanager
           gpg --batch --import GPG-KEY-pmanager
           gpg --batch --list-keys
+          gpg --default-key name ${{ secrets.GPG_KEY_ID }}
           gpg --batch --output GPG-KEY-pmanager.asc --armor --export ${{ secrets.GPG_KEY_ID }}
           aws s3 sync . s3://esl-packages --acl public-read --exclude "*" --include "*.asc" --include "*.json"
           
