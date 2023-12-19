@@ -21,6 +21,8 @@ jobs:
           # - { DISTRO_LATEST: "ubuntu_focal", PLATFORM: "linux-arm64" }
           - { DISTRO_LATEST: "ubuntu_jammy", PLATFORM: "linux-amd64" }
           # - { DISTRO_LATEST: "ubuntu_jammy", PLATFORM: "linux-arm64" }
+          - { DISTRO_LATEST: "debian_bookworm", PLATFORM: "linux-amd64" }
+          # - { DISTRO_LATEST: "debian_bookworm", PLATFORM: "linux-arm64" }
           - { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-amd64" }
           # - { DISTRO_LATEST: "debian_bullseye", PLATFORM: "linux-arm64" }
           - { DISTRO_LATEST: "debian_buster", PLATFORM: "linux-amd64" }
