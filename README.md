@@ -72,16 +72,18 @@ that are listed in the ESL website. The builders folder contains two main
 Dockerfiles per package to build that behave as the entry point for both main
 distros, centos and debian. Like so:
 
- .
-├──  elixir_debian.Dockerfile
-├──  elixir_fedora.Dockerfile ⇒ elixir_centos.Dockerfile
+```
+.
+├── elixir_debian.Dockerfile
+├── elixir_fedora.Dockerfile ⇒ elixir_centos.Dockerfile
 ...
-├──  erlang_centos.Dockerfile
-├──  erlang_rockylinux.Dockerfile ⇒ erlang_centos.Dockerfile
+├── erlang_centos.Dockerfile
+├── erlang_rockylinux.Dockerfile ⇒ erlang_centos.Dockerfile
 ...
-├──  mongooseim_debian.Dockerfile
-└──  mongooseim_ubuntu.Dockerfile ⇒ mongooseim_debian.Dockerfile
+├── mongooseim_debian.Dockerfile
+└── mongooseim_ubuntu.Dockerfile ⇒ mongooseim_debian.Dockerfile
 ...
+```
 
 The others are just symbolic links. Meaning that if we want to implement a new
 builder a first good step would be to copy the main centos or debian Dockerfiles
