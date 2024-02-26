@@ -95,7 +95,7 @@ jobs:
         run: |
           for file in $(find Packages -name '*.rpm')
           do
-            if [[ "$file" =~ (esl-erlang|elixir|mongooseim)-([0-9]+(\.[0-9]+)*(-[0-9]+)?)(_[0-9]+)?(_otp_[0-9.]+)?~(centos|rocky)~([0-9]+)_(x86_64|noarch)\.rpm$ ]]; then
+            if [[ "$file" =~ (esl-erlang|elixir|mongooseim)_([0-9]+(\.[0-9]+)*(-[0-9]+)?)(_[0-9]+)?(_otp_[0-9.]+)?~(centos|rocky)~([0-9]+)_(x86_64|noarch)\.rpm$ ]]; then
               if ! rpm -K "$file"; then
                 echo "File $file is not signed. Signing with key $GPG_KEY_ID."
                 rpm --addsign "$file"
