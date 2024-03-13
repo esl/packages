@@ -79,6 +79,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
 
 # Ruby version and fpm
 ENV PATH /root/.rbenv/bin:$PATH
+
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
   --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
   git clone https://github.com/sstephenson/rbenv.git /root/.rbenv; \
@@ -102,8 +103,8 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
   gem install bundler; \
   gem install fpm --no-document --version 1.13.0; \
   else \
-  rbenv install 2.6.6; \
-  rbenv global 2.6.6; \
+  rbenv install 3.0.1; \
+  rbenv global 3.0.1; \
   gem install bundler; \
   gem install fpm --no-document --version 1.13.0; \
   fi \
