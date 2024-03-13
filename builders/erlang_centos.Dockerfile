@@ -82,9 +82,9 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
   gem install git --no-document --version 1.7.0; \
   gem install fpm --no-document --version 1.12.0; \
   else \
-  # fpm 1.13 requires ruby 2.6.
-  rbenv install 2.6.6; \
-  rbenv global 2.6.6; \
+  # fpm 1.13 requires ruby 3.0.1.
+  rbenv install 3.0.1; \
+  rbenv global 3.0.1; \
   gem install bundler; \
   gem install fpm --no-document --version 1.13.0; \
   fi
