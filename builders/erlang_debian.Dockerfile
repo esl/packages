@@ -46,11 +46,11 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
     libncurses-dev:$(darch $TARGETPLATFORM) libsctp-dev:$(darch $TARGETPLATFORM) libssl-dev:$(darch $TARGETPLATFORM) openssl:$(darch $TARGETPLATFORM) procps unixodbc-dev:$(darch $TARGETPLATFORM) \
     && case "${os}:${os_version}" in \
         "debian:bullseye"|"ubuntu:jammy") \
-            apt-get --quiet --yes --no-install-recommends install libwxgtk3.0-gtk3-dev libwxgtk-webview3.0-gtk3-dev ;; \
+            apt-get --quiet --yes --no-install-recommends install libwxgtk3.0-gtk3-dev libwxgtk-webview3.0-gtk3-dev libwxgtk3.0-gtk3-0v5 libwxbase3.0-0v5 ;; \
         "debian:bookworm") \
             apt-get --quiet --yes --no-install-recommends install libwxgtk-webview3.2-1 libwxgtk-webview3.2-dev ;; \
         *) \
-            apt-get --quiet --yes --no-install-recommends install libwxgtk3.0-dev ;; \
+            apt-get --quiet --yes --no-install-recommends install libwxgtk3.0-dev libwxgtk3.0-gtk3-0v5 libwxbase3.0-0v5 ;; \
     esac
 
 #RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
