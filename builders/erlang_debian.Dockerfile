@@ -38,43 +38,57 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
   libwxgtk3.0-gtk3-dev:$(darch $TARGETPLATFORM)/stretch-backports \
   wx3.0-headers/stretch-backports; \
   fi
-
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
-  --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
-  apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
-  autoconf \
-  build-essential \
-  $(apt-cache show "crossbuild-essential-$(darch $TARGETPLATFORM)" > /dev/null 2>&1; \
-  if [ $? -eq 0 ]; then \
-  echo "crossbuild-essential-$(darch $TARGETPLATFORM)"; \
-  fi) \
-  $(apt-cache show libwxgtk3.0-gtk3-dev >/dev/null 2>&1; \
-  if [ $? -eq 0 ]; then \
-  echo "libwxgtk3.0-gtk3-dev:$(darch $TARGETPLATFORM) libwxgtk-webview3.0-gtk3-dev:$(darch $TARGETPLATFORM)"; \
-  else \
-  echo "libwxgtk3.0-dev:$(darch $TARGETPLATFORM)"; \
-  fi) \
-  ca-certificates \
-  $(apt-cache show default-jdk-headless >/dev/null 2>&1; \
-  if [ $? -eq 0 ]; then \
-  echo "default-jdk-headless"; \
-  else \
-  echo "default-jdk"; \
-  fi) \
-  devscripts \
-  flex \
-  libncurses-dev:$(darch $TARGETPLATFORM) \
-  libsctp-dev:$(darch $TARGETPLATFORM) \
-  libssl-dev:$(darch $TARGETPLATFORM) \
-  openssl:$(darch $TARGETPLATFORM) \
-  procps \
-  unixodbc-dev:$(darch $TARGETPLATFORM) \
-  wget \
-  xsltproc \
-  curl \
-  git \
-  libreadline-dev \
-  zlib1g-dev
+    --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
+    apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
+    autoconf build-essential ca-certificates devscripts flex wget xsltproc curl git libreadline-dev zlib1g-dev \
+    $(apt-cache show default-jdk-headless > /dev/null 2>&1 && echo "default-jdk-headless" || echo "default-jdk") \
+    libncurses-dev:$(darch $TARGETPLATFORM) libsctp-dev:$(darch $TARGETPLATFORM) libssl-dev:$(darch $TARGETPLATFORM) openssl:$(darch $TARGETPLATFORM) procps unixodbc-dev:$(darch $TARGETPLATFORM) \
+    && case "${os}:${os_version}" in \
+        "debian:bullseye"|"ubuntu:jammy") \
+            apt-get --quiet --yes --no-install-recommends install libwxgtk3.0-gtk3-dev libwxgtk-webview3.0-gtk3-dev ;; \
+        "debian:bookworm") \
+            apt-get --quiet --yes --no-install-recommends install libwxgtk-webview3.2-1 libwxgtk-webview3.2-dev ;; \
+        *) \
+            apt-get --quiet --yes --no-install-recommends install libwxgtk3.0-dev ;; \
+    esac
+
+#RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
+#  --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
+#  apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
+#  autoconf \
+#  build-essential \
+#  $(apt-cache show "crossbuild-essential-$(darch $TARGETPLATFORM)" > /dev/null 2>&1; \
+#  if [ $? -eq 0 ]; then \
+#  echo "crossbuild-essential-$(darch $TARGETPLATFORM)"; \
+#  fi) \
+#  $(apt-cache show libwxgtk3.0-gtk3-dev >/dev/null 2>&1; \
+#  if [ $? -eq 0 ]; then \
+#  echo "libwxgtk3.0-gtk3-dev:$(darch $TARGETPLATFORM) libwxgtk-webview3.0-gtk3-dev:$(darch $TARGETPLATFORM)"; \
+#  else \
+#  echo "libwxgtk3.0-dev:$(darch $TARGETPLATFORM)"; \
+#  fi) \
+#  ca-certificates \
+#  $(apt-cache show default-jdk-headless >/dev/null 2>&1; \
+#  if [ $? -eq 0 ]; then \
+#  echo "default-jdk-headless"; \
+#  else \
+#  echo "default-jdk"; \
+#  fi) \
+#  devscripts \
+#  flex \
+#  libncurses-dev:$(darch $TARGETPLATFORM) \
+#  libsctp-dev:$(darch $TARGETPLATFORM) \
+#  libssl-dev:$(darch $TARGETPLATFORM) \
+#  openssl:$(darch $TARGETPLATFORM) \
+#  procps \
+#  unixodbc-dev:$(darch $TARGETPLATFORM) \
+#  wget \
+#  xsltproc \
+#  curl \
+#  git \
+#  libreadline-dev \
+#  zlib1g-dev
 
 
 # Ruby version and fpm
