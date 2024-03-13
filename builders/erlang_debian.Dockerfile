@@ -159,10 +159,9 @@ RUN make --jobs=${jobs}
 RUN if [ -f /usr/bin/hardening-check ]; then \
   hardening-check \
   --nobindnow \
-  $(if [ "${os}:${os_version}" = "debian:bullseye" ]; then echo "--nocfprotection"; fi) \
+  $(if [ "${os}:${os_version}" = "debian:bullseye" ] || [ "${os}:${os_version}" = "debian:bookworm" ]; then echo "--nocfprotection"; fi) \
   $(find $ERL_TOP -name erlexec); \
   fi
-
 RUN make --jobs=${jobs} release_tests
 WORKDIR $ERL_TOP/release/tests/test_server
 RUN $ERL_TOP/bin/erl -noshell -s ts install -s ts smoke_test batch -s init stop
