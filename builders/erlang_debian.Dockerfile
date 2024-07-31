@@ -177,6 +177,8 @@ RUN if grep -q '=failed *[1-9]' ct_run.test_server@*/*/run.*/suite.log; then \
   fi
 
 WORKDIR $ERL_TOP
+RUN echo "man:\n\t@echo 'Generating man pages...'\n\tmake -C doc man" >> $ERL_TOP/lib/stdlib/doc/Makefile
+
 RUN make --jobs=${jobs} docs DOC_TARGETS="chunks man"
 RUN mkdir -p /tmp/install
 RUN make --jobs=${jobs} DESTDIR=/tmp/install install
