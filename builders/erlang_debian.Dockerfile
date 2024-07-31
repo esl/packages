@@ -38,6 +38,11 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
   libwxgtk3.0-gtk3-dev:$(darch $TARGETPLATFORM)/stretch-backports \
   wx3.0-headers/stretch-backports; \
   fi
+# Install documentation tools
+RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
+    --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
+    apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
+    xsltproc docbook-xsl docbook-xml man-db
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
     --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
     apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
