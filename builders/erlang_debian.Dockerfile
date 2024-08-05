@@ -172,10 +172,10 @@ RUN if grep -q '=failed *[1-9]' ct_run.test_server@*/*/run.*/suite.log; then \
   fi
 
 WORKDIR $ERL_TOP
-RUN make --jobs=${jobs} docs DOC_TARGETS="chunks man"
+RUN make --jobs=${jobs} docs DOC_TARGETS="chunks"
 RUN mkdir -p /tmp/install
 RUN make --jobs=${jobs} DESTDIR=/tmp/install install
-RUN make --jobs=${jobs} DESTDIR=/tmp/install install-docs DOC_TARGETS="chunks man"
+RUN make --jobs=${jobs} DESTDIR=/tmp/install install-docs DOC_TARGETS="chunks"
 
 # Package it
 WORKDIR /tmp/output
