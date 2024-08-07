@@ -24,109 +24,119 @@ RUN if [ "${os}" = "ubuntu" -a "${BUILDPLATFORM}" != "${TARGETPLATFORM}" ]; then
   echo "deb [arch=$(darch $TARGETPLATFORM)] http://ports.ubuntu.com/ubuntu-ports/ ${os_version}-security main universe" >> /etc/apt/sources.list.d/cross.list; \
   fi
 
-# install WX dependencies from stretch-backports, if needed.
-RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
-  --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
-  if [ "${os}:${os_version}" = "debian:stretch" ]; then \
-  echo "deb http://archive.debian.org/debian stretch-backports main" > /etc/apt/sources.list.d/stretch-backports.list; \
-  apt-get --quiet update; \
-  apt-get --quiet --yes --no-install-recommends install \
-  libwxbase3.0-0v5:$(darch $TARGETPLATFORM)/stretch-backports \
-  libwxbase3.0-dev:$(darch $TARGETPLATFORM)/stretch-backports \
-  libwxgtk-webview3.0-gtk3-dev:$(darch $TARGETPLATFORM)/stretch-backports \
-  libwxgtk3.0-gtk3-0v5:$(darch $TARGETPLATFORM)/stretch-backports \
-  libwxgtk3.0-gtk3-dev:$(darch $TARGETPLATFORM)/stretch-backports \
-  wx3.0-headers/stretch-backports; \
-  fi
+# Define a list of package dependencies based on OTP version
+ARG erlang_version
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
     --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
-    apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
-    autoconf build-essential ca-certificates devscripts flex wget xsltproc curl git libreadline-dev zlib1g-dev \
-    $(apt-cache show default-jdk-headless > /dev/null 2>&1 && echo "default-jdk-headless" || echo "default-jdk") \
-    libncurses-dev:$(darch $TARGETPLATFORM) libsctp-dev:$(darch $TARGETPLATFORM) libssl-dev:$(darch $TARGETPLATFORM) openssl:$(darch $TARGETPLATFORM) procps unixodbc-dev:$(darch $TARGETPLATFORM) \
-    && case "${os}:${os_version}" in \
-        "debian:bullseye"|"ubuntu:jammy") \
-            apt-get --quiet --yes --no-install-recommends install libwxgtk3.0-gtk3-dev libwxgtk-webview3.0-gtk3-dev libwxgtk3.0-gtk3-0v5 libwxbase3.0-0v5 ;; \
-        "debian:bookworm") \
-            apt-get --quiet --yes --no-install-recommends install libwxgtk-webview3.2-1 libwxgtk-webview3.2-dev ;; \
+    apt-get --quiet update && \
+    case "${erlang_version}" in \
+        23.*) \
+            apt-get --quiet --yes --no-install-recommends install \
+            autoconf build-essential ca-certificates devscripts flex wget xsltproc curl git \
+            libreadline-dev zlib1g-dev libncurses-dev:$(darch $TARGETPLATFORM) \
+            libsctp-dev:$(darch $TARGETPLATFORM) libssl-dev:$(darch $TARGETPLATFORM) \
+            openssl:$(darch $TARGETPLATFORM) procps unixodbc-dev:$(darch $TARGETPLATFORM) \
+            libwxgtk3.0-gtk3-dev libwxgtk-webview3.0-gtk3-dev libwxgtk3.0-gtk3-0v5 \
+            libwxbase3.0-0v5 libwxgtk-media3.0-gtk3-0v5 libwxgtk-stc3.0-gtk3-0v5 ;; \
+        24.*) \
+            apt-get --quiet --yes --no-install-recommends install \
+            autoconf build-essential ca-certificates devscripts flex wget xsltproc curl git \
+            libreadline-dev zlib1g-dev libncurses-dev:$(darch $TARGETPLATFORM) \
+            libsctp-dev:$(darch $TARGETPLATFORM) libssl-dev:$(darch $TARGETPLATFORM) \
+            openssl:$(darch $TARGETPLATFORM) procps unixodbc-dev:$(darch $TARGETPLATFORM) \
+            libwxgtk3.0-gtk3-dev libwxgtk-webview3.0-gtk3-dev libwxgtk3.0-gtk3-0v5 \
+            libwxbase3.0-0v5 libwxgtk-media3.0-gtk3-0v5 libwxgtk-stc3.0-gtk3-0v5 ;; \
+        25.*) \
+            apt-get --quiet --yes --no-install-recommends install \
+            autoconf build-essential ca-certificates devscripts flex wget xsltproc curl git \
+            libreadline-dev zlib1g-dev libncurses-dev:$(darch $TARGETPLATFORM) \
+            libsctp-dev:$(darch $TARGETPLATFORM) libssl-dev:$(darch $TARGETPLATFORM) \
+            openssl:$(darch $TARGETPLATFORM) procps unixodbc-dev:$(darch $TARGETPLATFORM) \
+            libwxgtk3.0-gtk3-dev libwxgtk-webview3.0-gtk3-dev libwxgtk3.0-gtk3-0v5 \
+            libwxbase3.0-0v5 libwxgtk-media3.0-gtk3-0v5 libwxgtk-stc3.0-gtk3-0v5 ;; \
+        26.*) \
+            apt-get --quiet --yes --no-install-recommends install \
+            autoconf build-essential ca-certificates devscripts flex wget xsltproc curl git \
+            libreadline-dev zlib1g-dev libncurses-dev:$(darch $TARGETPLATFORM) \
+            libsctp-dev:$(darch $TARGETPLATFORM) libssl-dev:$(darch $TARGETPLATFORM) \
+            openssl:$(darch $TARGETPLATFORM) procps unixodbc-dev:$(darch $TARGETPLATFORM) \
+            libwxgtk3.2-dev libwxgtk-webview3.2-1 libwxgtk3.2-1 \
+            libwxbase3.2-1 libwxgtk-media3.2-1 libwxgtk-stc3.2-1 ;; \
+        27.*) \
+            apt-get --quiet --yes --no-install-recommends install \
+            autoconf build-essential ca-certificates devscripts flex wget xsltproc curl git \
+            libreadline-dev zlib1g-dev libncurses-dev:$(darch $TARGETPLATFORM) \
+            libsctp-dev:$(darch $TARGETPLATFORM) libssl-dev:$(darch $TARGETPLATFORM) \
+            openssl:$(darch $TARGETPLATFORM) procps unixodbc-dev:$(darch $TARGETPLATFORM) \
+            libwxgtk3.2-dev libwxgtk-webview3.2-1 libwxgtk3.2-1 \
+            libwxbase3.2-1 libwxgtk-media3.2-1 libwxgtk-stc3.2-1 ;; \
         *) \
-            apt-get --quiet --yes --no-install-recommends install libwxgtk3.0-dev libwxgtk3.0-gtk3-0v5 libwxbase3.0-0v5 ;; \
+            echo "Unsupported Erlang/OTP version: ${erlang_version}"; \
+            exit 1 ;; \
     esac
 
-#RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
-#  --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
-#  apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
-#  autoconf \
-#  build-essential \
-#  $(apt-cache show "crossbuild-essential-$(darch $TARGETPLATFORM)" > /dev/null 2>&1; \
-#  if [ $? -eq 0 ]; then \
-#  echo "crossbuild-essential-$(darch $TARGETPLATFORM)"; \
-#  fi) \
-#  $(apt-cache show libwxgtk3.0-gtk3-dev >/dev/null 2>&1; \
-#  if [ $? -eq 0 ]; then \
-#  echo "libwxgtk3.0-gtk3-dev:$(darch $TARGETPLATFORM) libwxgtk-webview3.0-gtk3-dev:$(darch $TARGETPLATFORM)"; \
-#  else \
-#  echo "libwxgtk3.0-dev:$(darch $TARGETPLATFORM)"; \
-#  fi) \
-#  ca-certificates \
-#  $(apt-cache show default-jdk-headless >/dev/null 2>&1; \
-#  if [ $? -eq 0 ]; then \
-#  echo "default-jdk-headless"; \
-#  else \
-#  echo "default-jdk"; \
-#  fi) \
-#  devscripts \
-#  flex \
-#  libncurses-dev:$(darch $TARGETPLATFORM) \
-#  libsctp-dev:$(darch $TARGETPLATFORM) \
-#  libssl-dev:$(darch $TARGETPLATFORM) \
-#  openssl:$(darch $TARGETPLATFORM) \
-#  procps \
-#  unixodbc-dev:$(darch $TARGETPLATFORM) \
-#  wget \
-#  xsltproc \
-#  curl \
-#  git \
-#  libreadline-dev \
-#  zlib1g-dev
-
-
 # Ruby version and fpm
-ENV PATH /root/.rbenv/bin:$PATH
-
+ARG ruby_version
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
-  --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
-  git clone https://github.com/sstephenson/rbenv.git /root/.rbenv; \
-  git clone https://github.com/sstephenson/ruby-build.git /root/.rbenv/plugins/ruby-build; \
-  /root/.rbenv/plugins/ruby-build/install.sh; \
-  echo 'eval "$(rbenv init -)"' >> ~/.bashrc; \
-  echo 'gem: --no-rdoc --no-ri' >> ~/.gemrc; \
-  . ~/.bashrc; \
-  if [ "${os}:${os_version}" = "ubuntu:trusty" ]; then \
-  rbenv install 2.3.8; \
-  rbenv global 2.3.8; \
-  gem install bundler; \
-  gem install git --no-document --version 1.7.0; \
-  gem install json --no-rdoc --no-ri --version 2.2.0; \
-  gem install ffi --no-rdoc --no-ri --version 1.9.25; \
-  gem install fpm --no-rdoc --no-ri --version 1.11.0; \
-  else \
-  if [ "${os}:${os_version}" = "ubuntu:jammy" ]; then \
-  rbenv install 3.0.1; \
-  rbenv global 3.0.1; \
-  gem install bundler; \
-  gem install fpm --no-document --version 1.13.0; \
-  else \
-  rbenv install 3.0.1; \
-  rbenv global 3.0.1; \
-  gem install bundler; \
-  gem install fpm --no-document --version 1.13.0; \
-  fi \
-  fi
+    --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
+    apt-get --quiet update && \
+    apt-get --quiet --yes --no-install-recommends install curl git build-essential libssl-dev libreadline-dev zlib1g-dev && \
+    git clone https://github.com/sstephenson/rbenv.git /root/.rbenv && \
+    git clone https://github.com/sstephenson/ruby-build.git /root/.rbenv/plugins/ruby-build && \
+    /root/.rbenv/plugins/ruby-build/install.sh && \
+    echo 'eval "$(rbenv init -)"' >> ~/.bashrc && \
+    echo 'gem: --no-rdoc --no-ri' >> ~/.gemrc && \
+    . ~/.bashrc && \
+    case "${ruby_version}" in \
+        2.3.*) \
+            rbenv install 2.3.8 && \
+            rbenv global 2.3.8 && \
+            gem install bundler -v '<2.0' && \
+            gem install fpm --version 1.11.0 --no-document ;; \
+        2.4.*) \
+            rbenv install 2.4.10 && \
+            rbenv global 2.4.10 && \
+            gem install bundler -v '<2.0' && \
+            gem install fpm --version 1.11.0 --no-document ;; \
+        2.5.*) \
+            rbenv install 2.5.9 && \
+            rbenv global 2.5.9 && \
+            gem install bundler -v '<2.0' && \
+            gem install fpm --version 1.11.0 --no-document ;; \
+        2.6.*) \
+            rbenv install 2.6.10 && \
+            rbenv global 2.6.10 && \
+            gem install bundler && \
+            gem install fpm --version 1.13.0 --no-document ;; \
+        2.7.*) \
+            rbenv install 2.7.8 && \
+            rbenv global 2.7.8 && \
+            gem install bundler && \
+            gem install fpm --version 1.13.0 --no-document ;; \
+        3.0.*) \
+            rbenv install 3.0.6 && \
+            rbenv global 3.0.6 && \
+            gem install bundler && \
+            gem install fpm --version 1.14.0 --no-document ;; \
+        3.1.*) \
+            rbenv install 3.1.4 && \
+            rbenv global 3.1.4 && \
+            gem install bundler && \
+            gem install fpm --version 1.14.0 --no-document ;; \
+        3.2.*) \
+            rbenv install 3.2.2 && \
+            rbenv global 3.2.2 && \
+            gem install bundler && \
+            gem install fpm --version 1.14.0 --no-document ;; \
+        *) \
+            echo "Unsupported Ruby version: ${ruby_version}"; \
+            exit 1 ;; \
+    esac
+
+ENV PATH /root/.rbenv/bin:$PATH
 
 # Build it
 WORKDIR /tmp/build
-ARG erlang_version
 ENV ERL_TOP=/tmp/build/otp_src_${erlang_version}
 RUN mkdir -p $ERL_TOP
 RUN wget --quiet https://github.com/erlang/otp/releases/download/OTP-${erlang_version}/otp_src_${erlang_version}.tar.gz || \
@@ -136,6 +146,7 @@ WORKDIR $ERL_TOP
 RUN if [ ! -f configure ]; then \
   ./otp_build autoconf; \
   fi
+
 # Bootstrap
 RUN eval "$(dpkg-buildflags --export=sh)" && \
   ./configure --enable-bootstrap-only
