@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
 
 env:
-  DEBIAN_RELEASES: "stretch buster bullseye"
-  UBUNTU_RELEASES: "jammy xenial bionic focal"
-  ERLANG_VERSIONS: "24 25 26"
+  DEBIAN_RELEASES: "stretch buster bullseye bookworm"
+  UBUNTU_RELEASES: "noble jammy xenial bionic focal"
+  ERLANG_VERSIONS: "24 25 26 27"
   ELIXIR_VERSIONS: "1.16 1.15 1.14 1.13 1.12"
   MONGOOSEIM_VERSIONS: "5 6"
   AWS_REGION: "eu-west-2"
