@@ -1,5 +1,6 @@
 # -*- mode: dockerfile -*-
 # syntax = docker/dockerfile:1.2
+
 ARG image
 FROM --platform=${BUILDPLATFORM} ${image} as builder
 ARG TARGETPLATFORM
@@ -60,16 +61,16 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
             libreadline-dev zlib1g-dev libncurses-dev:$(darch $TARGETPLATFORM) \
             libsctp-dev:$(darch $TARGETPLATFORM) libssl-dev:$(darch $TARGETPLATFORM) \
             openssl:$(darch $TARGETPLATFORM) procps unixodbc-dev:$(darch $TARGETPLATFORM) \
-            libwxgtk3.2-dev libwxgtk-webview3.2-1 libwxgtk3.2-1 \
-            libwxbase3.2-1 libwxgtk-media3.2-1 libwxgtk-stc3.2-1 ;; \
+            libwxgtk3.0-gtk3-dev libwxgtk-webview3.0-gtk3-0v5 libwxgtk3.0-gtk3-0v5 \
+            libwxbase3.0-0v5 libwxgtk-media3.0-gtk3-0v5 libwxgtk-stc3.0-gtk3-0v5 ;; \
         27.*) \
             apt-get --quiet --yes --no-install-recommends install \
             autoconf build-essential ca-certificates devscripts flex wget xsltproc curl git \
             libreadline-dev zlib1g-dev libncurses-dev:$(darch $TARGETPLATFORM) \
             libsctp-dev:$(darch $TARGETPLATFORM) libssl-dev:$(darch $TARGETPLATFORM) \
             openssl:$(darch $TARGETPLATFORM) procps unixodbc-dev:$(darch $TARGETPLATFORM) \
-            libwxgtk3.2-dev libwxgtk-webview3.2-1 libwxgtk3.2-1 \
-            libwxbase3.2-1 libwxgtk-media3.2-1 libwxgtk-stc3.2-1 ;; \
+            libwxgtk3.0-gtk3-dev libwxgtk-webview3.0-gtk3-0v5 libwxgtk3.0-gtk3-0v5 \
+            libwxbase3.0-0v5 libwxgtk-media3.0-gtk3-0v5 libwxgtk-stc3.0-gtk3-0v5 ;; \
         *) \
             echo "Unsupported Erlang/OTP version: ${erlang_version}"; \
             exit 1 ;; \
