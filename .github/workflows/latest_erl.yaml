@@ -15,11 +15,13 @@ jobs:
           # - { DISTRO_LATEST: "rockylinux_8", PLATFORM: "linux-arm64" }
           #- { DISTRO_LATEST: "ubuntu_xenial", PLATFORM: "linux-amd64" }
           # - { DISTRO_LATEST: "ubuntu_xenial", PLATFORM: "linux-arm64" }
-          - { DISTRO_LATEST: "ubuntu_bionic", PLATFORM: "linux-amd64" }
+          # - { DISTRO_LATEST: "ubuntu_bionic", PLATFORM: "linux-amd64" }
           # - { DISTRO_LATEST: "ubuntu_bionic", PLATFORM: "linux-arm64" }
           - { DISTRO_LATEST: "ubuntu_focal", PLATFORM: "linux-amd64" }
           # - { DISTRO_LATEST: "ubuntu_focal", PLATFORM: "linux-arm64" }
           - { DISTRO_LATEST: "ubuntu_jammy", PLATFORM: "linux-amd64" }
+          # - { DISTRO_LATEST: "ubuntu_jammy", PLATFORM: "linux-arm64" }
+          - { DISTRO_LATEST: "ubuntu_noble", PLATFORM: "linux-amd64" }
           # - { DISTRO_LATEST: "ubuntu_jammy", PLATFORM: "linux-arm64" }
           - { DISTRO_LATEST: "debian_bookworm", PLATFORM: "linux-amd64" }
           # - { DISTRO_LATEST: "debian_bookworm", PLATFORM: "linux-arm64" }
