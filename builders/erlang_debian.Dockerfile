@@ -29,17 +29,17 @@ ARG erlang_version
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
     --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
     apt-get --quiet update && \
+    apt-get --quiet --yes --no-install-recommends install \
+    build-essential autoconf m4 libncurses5-dev libgl1-mesa-dev libglu1-mesa-dev \
+    libpng-dev libssh-dev unixodbc-dev xsltproc fop libxml2-utils libncurses-dev default-jdk \
+    libwxgtk-webview3.2-1 libwxgtk-webview3.2-dev && \
     case "${erlang_version}" in \
         23.*|24.*|25.*|26.*|27.*) \
             apt-get --quiet --yes --no-install-recommends install \
             autoconf build-essential ca-certificates devscripts flex wget xsltproc curl git \
             libreadline-dev zlib1g-dev libncurses-dev:$(darch $TARGETPLATFORM) \
             libsctp-dev:$(darch $TARGETPLATFORM) libssl-dev:$(darch $TARGETPLATFORM) \
-            openssl:$(darch $TARGETPLATFORM) procps unixodbc-dev:$(darch $TARGETPLATFORM) \
-            libwxgtk3.0-gtk3-dev libwxgtk-webview3.0-gtk3-dev libwxgtk3.0-gtk3-0v5 \
-            libwxbase3.0-0v5 libwxgtk-media3.0-gtk3-0v5 || true; \
-            apt-get --quiet --yes --no-install-recommends install libwxgtk3.0-dev libwxgtk-webview3.0-gtk3-dev libwxbase3.0-0v5 libwxgtk-media3.0-gtk3-0v5 libwxgtk-stc3.0-gtk3-0v5 || true; \
-            ;; \
+            openssl:$(darch $TARGETPLATFORM) procps unixodbc-dev:$(darch $TARGETPLATFORM) ;; \
         *) \
             echo "Unsupported Erlang/OTP version: ${erlang_version}"; \
             exit 1 ;; \
@@ -54,24 +54,24 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
     git clone https://github.com/sstephenson/rbenv.git /root/.rbenv && \
     git clone https://github.com/sstephenson/ruby-build.git /root/.rbenv/plugins/ruby-build && \
     /root/.rbenv/plugins/ruby-build/install.sh && \
-    echo 'eval "$(rbenv init -)"' >> ~/.bashrc && \
-    echo 'gem: --no-rdoc --no-ri' >> ~/.gemrc && \
-    . ~/.bashrc && \
+    echo 'eval "$(rbenv init -)"' >> /root/.bashrc && \
+    echo 'gem: --no-rdoc --no-ri' >> /root/.gemrc && \
+    bash -c 'source /root/.bashrc && \
     case "${ruby_version}" in \
         2.3.*) \
             rbenv install 2.3.8 && \
             rbenv global 2.3.8 && \
-            gem install bundler -v '<2.0' && \
+            gem install bundler -v "<2.0" && \
             gem install fpm --version 1.11.0 --no-document ;; \
         2.4.*) \
             rbenv install 2.4.10 && \
             rbenv global 2.4.10 && \
-            gem install bundler -v '<2.0' && \
+            gem install bundler -v "<2.0" && \
             gem install fpm --version 1.11.0 --no-document ;; \
         2.5.*) \
             rbenv install 2.5.9 && \
             rbenv global 2.5.9 && \
-            gem install bundler -v '<2.0' && \
+            gem install bundler -v "<2.0" && \
             gem install fpm --version 1.11.0 --no-document ;; \
         2.6.*) \
             rbenv install 2.6.10 && \
@@ -101,7 +101,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
         *) \
             echo "Unsupported Ruby version: ${ruby_version}"; \
             exit 1 ;; \
-    esac
+    esac'
 
 ENV PATH /root/.rbenv/bin:$PATH
 
@@ -180,7 +180,7 @@ RUN . ~/.bashrc; \
   --depends 'procps, libc6, libncurses5, libsctp1' \
   --depends $(apt-cache depends libssl-dev | grep Depends | grep -Eo 'libssl[0-9.]+') \
   $(if [ "${os}:${os_version}" != "ubuntu:trusty" ]; then echo '--deb-compression xz'; fi) \
-  --deb-recommends 'libwxbase2.8-0 | libwxbase3.0-0 | libwxbase3.0-0v5, libwxgtk2.8-0 | libwxgtk3.0-0 | libwxgtk3.0-0v5 | libwxgtk3.0-gtk3-0v5' \
+  --deb-recommends 'libwxbase2.8-0 | libwxbase3.0-0 | libwxbase3.2-1, libwxgtk2.8-0 | libwxgtk3.0-0 | libwxgtk3.0-0v5 | libwxgtk-webview3.2-1' \
   --deb-suggests 'default-jre-headless | java2-runtime-headless | java1-runtime-headless | java2-runtime | java1-runtime' \
   $(for pkg in erlang-base-hipe erlang-base erlang-dev erlang-appmon erlang-asn1 erlang-common-test erlang-corba erlang-crypto erlang-debugger erlang-dialyzer erlang-docbuilder erlang-edoc erlang-erl-docgen erlang-et erlang-eunit erlang-gs erlang-ic erlang-inets erlang-inviso erlang-megaco erlang-mnesia erlang-observer erlang-odbc erlang-os-mon erlang-parsetools erlang-percept erlang-pman erlang-public-key erlang-reltool erlang-runtime-tools erlang-snmp erlang-ssh erlang-ssl erlang-syntax-tools erlang-test-server erlang-toolbar erlang-tools erlang-tv erlang-typer erlang-webtool erlang-wx erlang-xmerl; do \
   echo "--conflicts $pkg"; \
