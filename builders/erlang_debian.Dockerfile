@@ -45,6 +45,65 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
             exit 1 ;; \
     esac
 
+It appears that libwxgtk-webview3.2-1 and libwxgtk-webview3.2-dev are specific to Debian Bookworm and not available in Ubuntu Jammy or Debian Bullseye. To handle this, we need to use the appropriate packages for each distribution.
+
+Here’s a modified version of the Dockerfile that includes conditional installation of packages based on the OS and version:
+
+dockerfile
+Copy code
+# -*- mode: dockerfile -*-
+# syntax = docker/dockerfile:1.2
+ARG image
+FROM --platform=${BUILDPLATFORM} ${image} as builder
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
+ARG os
+ARG os_version
+ARG erlang_version
+ARG ruby_version
+
+ENV DEBIAN_FRONTEND=noninteractive
+ADD darch /usr/local/bin/
+
+# Don't clean up
+RUN rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
+
+# Install Erlang/OTP dependencies
+RUN dpkg --add-architecture $(darch $TARGETPLATFORM)
+
+# Cross-compilation setup for Ubuntu
+RUN if [ "${os}" = "ubuntu" -a "${BUILDPLATFORM}" != "${TARGETPLATFORM}" ]; then \
+  sed -i "s/deb http/deb [arch=$(darch $BUILDPLATFORM)] http/g" /etc/apt/sources.list; \
+  echo "deb [arch=$(darch $TARGETPLATFORM)] http://ports.ubuntu.com/ubuntu-ports/ ${os_version} main universe" > /etc/apt/sources.list.d/cross.list; \
+  echo "deb [arch=$(darch $TARGETPLATFORM)] http://ports.ubuntu.com/ubuntu-ports/ ${os_version}-updates main universe" >> /etc/apt/sources.list.d/cross.list; \
+  echo "deb [arch=$(darch $TARGETPLATFORM)] http://ports.ubuntu.com/ubuntu-ports/ ${os_version}-security main universe" >> /etc/apt/sources.list.d/cross.list; \
+  fi
+
+# Define a list of package dependencies based on OTP version
+RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
+    --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
+    apt-get --quiet update && \
+    case "${os}:${os_version}" in \
+        ubuntu:noble | debian:bookworm) \
+            apt-get --quiet --yes --no-install-recommends install \
+            autoconf build-essential ca-certificates devscripts flex wget xsltproc curl git \
+            libreadline-dev zlib1g-dev libncurses-dev:$(darch $TARGETPLATFORM) \
+            libsctp-dev:$(darch $TARGETPLATFORM) libssl-dev:$(darch $TARGETPLATFORM) \
+            openssl:$(darch $TARGETPLATFORM) procps unixodbc-dev:$(darch $TARGETPLATFORM) \
+            libwxgtk3.2-dev libwxgtk-webview3.2-1 libwxgtk3.2-1 \
+            libwxbase3.2-1 libwxgtk-media3.2-1 libwxgtk-stc3.2-1 ;; \
+        ubuntu:jammy | debian:bullseye) \
+            apt-get --quiet --yes --no-install-recommends install \
+            autoconf build-essential ca-certificates devscripts flex wget xsltproc curl git \
+            libreadline-dev zlib1g-dev libncurses-dev:$(darch $TARGETPLATFORM) \
+            libsctp-dev:$(darch $TARGETPLATFORM) libssl-dev:$(darch $TARGETPLATFORM) \
+            openssl:$(darch $TARGETPLATFORM) procps unixodbc-dev:$(darch $TARGETPLATFORM) \
+            libwxgtk3.0-gtk3-dev libwxgtk-webview3.0-gtk3-dev libwxgtk3.0-gtk3-0v5 \
+            libwxbase3.0-0v5 libwxgtk-media3.0-gtk3-0v5 libwxgtk-stc3.0-gtk3-0v5 ;; \
+        *) \
+            echo "Unsupported OS/version combination: ${os}:${os_version}"; \
+            exit 1 ;; \
+    esac
 # Ruby version and fpm
 ARG ruby_version
 # Install Ruby dependencies and rbenv
