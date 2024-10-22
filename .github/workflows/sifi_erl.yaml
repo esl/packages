@@ -1,4 +1,4 @@
-name: Build and Sync latest erlang
+name: Simplifi Specific Erlang Builds
 
 on:
   schedule:
