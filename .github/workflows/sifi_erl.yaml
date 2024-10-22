@@ -1,0 +1,40 @@
+name: Build and Sync latest erlang
+
+on:
+  schedule:
+    - cron: "0 0 * * 0"
+  workflow_dispatch:
+
+jobs:
+  build-sync:
+    strategy:
+      fail-fast: false
+      matrix:
+        cfg:
+          - { DISTRO: "rockylinux", OS_VERSION: "8", PLATFORM: "linux-arm64", RUNNER: "ubuntu-22.04-arm64", ERLANG_VERSION: "26.1.2"}
+          - { DISTRO: "rockylinux", OS_VERSION: "8", PLATFORM: "linux-arm64", RUNNER: "ubuntu-22.04-arm64", ERLANG_VERSION: "25.3.2"}
+          - { DISTRO: "rockylinux", OS_VERSION: "8", PLATFORM: "linux-arm64", RUNNER: "ubuntu-22.04-arm64", ERLANG_VERSION: "24.3.4"}
+    runs-on: ${{ matrix.cfg.RUNNER }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Docker buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build the package
+        env:
+          ERLANG_VERSION: ${{ matrix.cfg.ERLANG_VERSION }}
+          GPG_PASS: ${{ secrets.GPG_PASS }}
+        run: |
+          echo "Building ..."
+          echo "Distro latest ${{ matrix.cfg.DISTRO }} ${{ matrix.cfg.OS_VERSION }}"
+          echo "Platform ${{ matrix.cfg.PLATFORM }}"
+          echo "${{secrets.GPG_P_KEY}}" | tr ';' '\n' > GPG-KEY-pmanager
+          make "erlang_${{ env.ERLANG_VERSION }}_${{matrix.cfg.DISTRO}}_${{matrix.cfg.OS_VERSION}}_${{matrix.cfg.PLATFORM}}"
+          find ./ -type f -name "GPG-KEY*" -delete
+
+      - id: upload-to-artifactory
+        run: |
+          curl -L -u${{ secrets.JFROG_USER }}:${{ secrets.JFROG_API_KEY }} -XPUT https://sifi.jfrog.io/artifactory/rpm-local/${{ matrix.cfg.DISTRO }}/${{ matrix.cfg.OS_VERSION }}/ -T build/${{ matrix.cfg.DISTRO }}/${{ matrix.cfg.OS_VERSION }}/*
