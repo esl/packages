@@ -14,6 +14,7 @@ env:
   AWS_REGION: "eu-west-2"
   AWS_SOURCE_BUCKET: "esl-erlang"
   AWS_DESTINATION_BUCKET: "esl-packages"
+  AWS_BINARIES_BUCKET: "binaries2.erlang-solutions.com"
   ARCHITECTURE: "amd64,arm64"
   GPG_PASS: "${{ secrets.GPG_PASS }}"
 
@@ -252,3 +253,8 @@ jobs:
               aptly publish repo -architectures="$ARCHITECTURE" -batch -acquire-by-hash -component="contrib" -distribution="$distro-mongooseim-$mongooseim" -passphrase=""${{ secrets.GPG_PASS }}"" "$distro/mongooseim-$mongooseim" s3:$AWS_DESTINATION_BUCKET:ubuntu/
             done
           done
+          
+      # Sync Normalized and Signed Packages to Binaries2
+      - name: Sync Packages to Binaries2
+        run: |
+          aws s3 sync s3://$AWS_DESTINATION_BUCKET s3://AWS_BINARIES_BUCKET 
