@@ -14,6 +14,7 @@ env:
   AWS_REGION: "eu-west-2"
   AWS_SOURCE_BUCKET: "esl-erlang"
   AWS_DESTINATION_BUCKET: "esl-packages"
+  AWS_BINARIES_BUCKET: "binaries2.erlang-solutions.com"
   ARCHITECTURE: "x86_64,noarch"
 
 jobs:
@@ -235,3 +236,8 @@ jobs:
               aws s3 sync "$distro/mongooseim-$mongooseim" "s3://$AWS_DESTINATION_BUCKET/rockylinux/mongooseim-$mongooseim" --acl public-read
             done
           done
+          
+      # Sync Normalized and Signed Packages to Binaries2
+      - name: Sync Packages to Binaries2
+        run: |
+          aws s3 sync s3://$AWS_DESTINATION_BUCKET s3://AWS_BINARIES_BUCKET 
