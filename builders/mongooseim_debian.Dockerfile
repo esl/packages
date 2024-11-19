@@ -71,7 +71,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
   gem install ffi --no-rdoc --no-ri --version 1.9.25; \
   gem install fpm --no-rdoc --no-ri --version 1.11.0; \
   else \
-  if [ "${os}:${os_version}" = "ubuntu:jammy" ]; then \
+  if [ "${os}:${os_version}" = "ubuntu:jammy" ] || [ "${os}:${os_version}" = "ubuntu:noble" ]; then \
   rbenv install 3.0.1; \
   rbenv global 3.0.1; \
   gem install bundler; \
