@@ -1,3 +1,24 @@
+# Announcement
+Effective 20th January 2025, Erlang Solutions will discontinue distributing prebuilt binary packages for Erlang/OTP and Elixir. We are adapting to modern development practices to better serve the developer community with:
+- Optimized Docker Support
+- Custom Build Support
+- Enhanced Integration with Package Managers
+## What This Means for Developers
+Alternatives Available:
+- Erlang Docker Images for containerized environments.
+- HEX Package Manager for managing Erlang/Elixir dependencies.
+- Erlang/OTP Source Code to build from source
+
+## What changed?
+- Custom Build Services: Tailored binaries for specific operating systems or platforms, with performance and security enhancements.
+- Technical Support: Paid support packages and consulting services to help organizations transition seamlessly.
+
+## Need Help?
+For questions or assistance:
+- Read our blogpost FAQ
+- 📧 Email us at packages@erlang-solutions.com
+
+
 # Binaries2
 
 This repository contains a new approach to Erlang/Elixir package
