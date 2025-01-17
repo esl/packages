@@ -30,7 +30,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y aptly awscli dpkg-sig gnupg python3-pip zstd
+          sudo apt-get install -y aptly dpkg-sig gnupg python3-pip zstd
           pip3 install boto3
       # Configure Credentials for AWS    
       - name: Set AWS credentials
