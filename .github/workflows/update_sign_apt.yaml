@@ -257,4 +257,4 @@ jobs:
       # Sync Normalized and Signed Packages to Binaries2
       - name: Sync Packages to Binaries2
         run: |
-          aws s3 sync s3://$AWS_DESTINATION_BUCKET s3://AWS_BINARIES_BUCKET 
+          aws s3 sync s3://$AWS_DESTINATION_BUCKET s3://$AWS_BINARIES_BUCKET 
