@@ -46,7 +46,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
             libsctp-dev:$(darch $TARGETPLATFORM) libssl-dev:$(darch $TARGETPLATFORM) \
             openssl:$(darch $TARGETPLATFORM) procps unixodbc-dev:$(darch $TARGETPLATFORM) \
             libwxgtk3.0-gtk3-dev libwxgtk-webview3.0-gtk3-dev libwxgtk3.0-gtk3-0v5 \
-            libwxbase3.0-0v5 libwxgtk-media3.0-gtk3-0v5 libwxgtk-stc3.0-gtk3-0v5 ;; \
+            libwxbase3.0-0v5 libwxgtk-media3.0-gtk3-0v5 libwxgtk3.0-0v5 ;; \
         25.*) \
             apt-get --quiet --yes --no-install-recommends install \
             autoconf build-essential ca-certificates devscripts flex wget xsltproc curl git \
