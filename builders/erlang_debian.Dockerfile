@@ -76,7 +76,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
                 *) \
                     echo "Unsupported Erlang/OTP version: ${erlang_version}"; \
                     exit 1 ;; \
-            esac
+            esac \
         focal) \
             case "${erlang_version}" in \
                 23.*) \
@@ -122,7 +122,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
                 *) \
                     echo "Unsupported Erlang/OTP version: ${erlang_version}"; \
                     exit 1 ;; \
-            esac
+            esac \
         jammy) \
             case "${erlang_version}" in \
                 23.*) \
@@ -168,7 +168,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
                 *) \
                     echo "Unsupported Erlang/OTP version: ${erlang_version}"; \
                     exit 1 ;; \
-            esac
+            esac \
         noble) \
             case "${erlang_version}" in \
                 23.*) \
@@ -214,7 +214,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
                 *) \
                     echo "Unsupported Erlang/OTP version: ${erlang_version}"; \
                     exit 1 ;; \
-            esac
+            esac \
         bookworm) \
             case "${erlang_version}" in \
                 23.*) \
@@ -260,7 +260,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
                 *) \
                     echo "Unsupported Erlang/OTP version: ${erlang_version}"; \
                     exit 1 ;; \
-            esac
+            esac \
         bullseye) \
             case "${erlang_version}" in \
                 23.*) \
@@ -306,7 +306,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
                 *) \
                     echo "Unsupported Erlang/OTP version: ${erlang_version}"; \
                     exit 1 ;; \
-            esac
+            esac \
         buster) \
             case "${erlang_version}" in \
                 23.*) \
@@ -352,7 +352,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
                 *) \
                     echo "Unsupported Erlang/OTP version: ${erlang_version}"; \
                     exit 1 ;; \
-            esac
+            esac \
         *) \
             echo "Unsupported OS version: ${os_version}"; \
             exit 1 ;; \
