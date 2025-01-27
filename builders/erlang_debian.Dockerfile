@@ -201,7 +201,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
                     libreadline-dev zlib1g-dev libncurses-dev:$(darch $TARGETPLATFORM) \
                     libsctp-dev:$(darch $TARGETPLATFORM) libssl-dev:$(darch $TARGETPLATFORM) \
                     openssl:$(darch $TARGETPLATFORM) procps unixodbc-dev:$(darch $TARGETPLATFORM) \
-                    libwxgtk3.2-dev llibwxgtk-webview3.2-1t64 libwxgtk3.2-1t64 \
+                    libwxgtk3.2-dev libwxgtk-webview3.2-1t64 libwxgtk3.2-1t64 \
                     libwxbase3.2-1t64 libwxgtk-media3.2-1t64 ;; \
                 27.*) \
                     apt-get --quiet --yes --no-install-recommends install \
@@ -209,7 +209,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
                     libreadline-dev zlib1g-dev libncurses-dev:$(darch $TARGETPLATFORM) \
                     libsctp-dev:$(darch $TARGETPLATFORM) libssl-dev:$(darch $TARGETPLATFORM) \
                     openssl:$(darch $TARGETPLATFORM) procps unixodbc-dev:$(darch $TARGETPLATFORM) \
-                    libwxgtk3.2-dev llibwxgtk-webview3.2-1t64 libwxgtk3.2-1t64 \
+                    libwxgtk3.2-dev libwxgtk-webview3.2-1t64 libwxgtk3.2-1t64 \
                     libwxbase3.2-1t64 libwxgtk-media3.2-1t64 ;; \
                 *) \
                     echo "Unsupported Erlang/OTP version: ${erlang_version}"; \
@@ -223,40 +223,40 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
                     libreadline-dev zlib1g-dev libncurses-dev:$(darch $TARGETPLATFORM) \
                     libsctp-dev:$(darch $TARGETPLATFORM) libssl-dev:$(darch $TARGETPLATFORM) \
                     openssl:$(darch $TARGETPLATFORM) procps unixodbc-dev:$(darch $TARGETPLATFORM) \
-                    libwxgtk3.2-dev libwxgtk-webview3.2-dev libwxgtk3.2-1t64 \
-                    libwxbase3.2-1t64 libwxgtk-media3.2-1t64 ;; \
+                    libwxgtk3.2-dev libwxgtk-webview3.2-dev libwxgtk3.2-1 \
+                    libwxbase3.2-1 libwxgtk-media3.2-1 ;; \
                 24.*) \
                     apt-get --quiet --yes --no-install-recommends install \
                     autoconf build-essential ca-certificates devscripts flex wget xsltproc curl git \
                     libreadline-dev zlib1g-dev libncurses-dev:$(darch $TARGETPLATFORM) \
                     libsctp-dev:$(darch $TARGETPLATFORM) libssl-dev:$(darch $TARGETPLATFORM) \
                     openssl:$(darch $TARGETPLATFORM) procps unixodbc-dev:$(darch $TARGETPLATFORM) \
-                    libwxgtk3.2-dev libwxgtk-webview3.2-dev libwxgtk3.2-1t64 \
-                    libwxbase3.2-1t64 libwxgtk-media3.2-1t64 ;; \
+                    libwxgtk3.2-dev libwxgtk-webview3.2-dev libwxgtk3.2-1 \
+                    libwxbase3.2-1 libwxgtk-media3.2-1 ;; \
                 25.*) \
                     apt-get --quiet --yes --no-install-recommends install \
                     autoconf build-essential ca-certificates devscripts flex wget xsltproc curl git \
                     libreadline-dev zlib1g-dev libncurses-dev:$(darch $TARGETPLATFORM) \
                     libsctp-dev:$(darch $TARGETPLATFORM) libssl-dev:$(darch $TARGETPLATFORM) \
                     openssl:$(darch $TARGETPLATFORM) procps unixodbc-dev:$(darch $TARGETPLATFORM) \
-                    libwxgtk3.2-dev libwxgtk-webview3.2-dev libwxgtk3.2-1t64 \
-                    libwxbase3.2-1t64 libwxgtk-media3.2-1t64 ;; \
+                    libwxgtk3.2-dev libwxgtk-webview3.2-dev libwxgtk3.2-1 \
+                    libwxbase3.2-1 libwxgtk-media3.2-1 ;; \
                 26.*) \
                     apt-get --quiet --yes --no-install-recommends install \
                     autoconf build-essential ca-certificates devscripts flex wget xsltproc curl git \
                     libreadline-dev zlib1g-dev libncurses-dev:$(darch $TARGETPLATFORM) \
                     libsctp-dev:$(darch $TARGETPLATFORM) libssl-dev:$(darch $TARGETPLATFORM) \
                     openssl:$(darch $TARGETPLATFORM) procps unixodbc-dev:$(darch $TARGETPLATFORM) \
-                    libwxgtk3.2-dev libwxgtk-webview3.2-1t64 libwxgtk3.2-1t64 \
-                    libwxbase3.2-1t64 libwxgtk-media3.2-1t64 ;; \
+                    libwxgtk3.2-dev libwxgtk-webview3.2-1 libwxgtk3.2-1 \
+                    libwxbase3.2-1 libwxgtk-media3.2-1 ;; \
                 27.*) \
                     apt-get --quiet --yes --no-install-recommends install \
                     autoconf build-essential ca-certificates devscripts flex wget xsltproc curl git \
                     libreadline-dev zlib1g-dev libncurses-dev:$(darch $TARGETPLATFORM) \
                     libsctp-dev:$(darch $TARGETPLATFORM) libssl-dev:$(darch $TARGETPLATFORM) \
                     openssl:$(darch $TARGETPLATFORM) procps unixodbc-dev:$(darch $TARGETPLATFORM) \
-                    libwxgtk3.2-dev libwxgtk-webview3.2-1t64 libwxgtk3.2-1t64 \
-                    libwxbase3.2-1t64 libwxgtk-media3.2-1t64 ;; \
+                    libwxgtk3.2-dev libwxgtk-webview3.2-1 libwxgtk3.2-1 \
+                    libwxbase3.2-1 libwxgtk-media3.2-1 ;; \
                 *) \
                     echo "Unsupported Erlang/OTP version: ${erlang_version}"; \
                     exit 1 ;; \
