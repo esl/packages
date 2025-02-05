@@ -359,65 +359,43 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
     esac
 
 # Ruby version and fpm
-ARG ruby_version
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
     --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
     apt-get --quiet update && \
-    apt-get --quiet --yes --no-install-recommends install curl git build-essential libssl-dev libreadline-dev zlib1g-dev && \
-    git clone https://github.com/sstephenson/rbenv.git /root/.rbenv && \
-    git clone https://github.com/sstephenson/ruby-build.git /root/.rbenv/plugins/ruby-build && \
-    /root/.rbenv/plugins/ruby-build/install.sh && \
-    echo 'eval "$(rbenv init -)"' >> ~/.bashrc && \
-    echo 'gem: --no-rdoc --no-ri' >> ~/.gemrc && \
-    . ~/.bashrc && \
-    case "${ruby_version}" in \
-        2.3.*) \
-            rbenv install 2.3.8 && \
-            rbenv global 2.3.8 && \
-            gem install bundler -v '<2.0' && \
-            gem install fpm --version 1.11.0 --no-document ;; \
-        2.4.*) \
-            rbenv install 2.4.10 && \
-            rbenv global 2.4.10 && \
-            gem install bundler -v '<2.0' && \
-            gem install fpm --version 1.11.0 --no-document ;; \
-        2.5.*) \
-            rbenv install 2.5.9 && \
-            rbenv global 2.5.9 && \
-            gem install bundler -v '<2.0' && \
-            gem install fpm --version 1.11.0 --no-document ;; \
-        2.6.*) \
-            rbenv install 2.6.10 && \
-            rbenv global 2.6.10 && \
-            gem install bundler && \
-            gem install fpm --version 1.13.0 --no-document ;; \
-        2.7.*) \
-            rbenv install 2.7.8 && \
-            rbenv global 2.7.8 && \
-            gem install bundler && \
-            gem install fpm --version 1.13.0 --no-document ;; \
-        3.0.*) \
-            rbenv install 3.0.6 && \
-            rbenv global 3.0.6 && \
-            gem install bundler && \
-            gem install fpm --version 1.14.0 --no-document ;; \
-        3.1.*) \
-            rbenv install 3.1.4 && \
-            rbenv global 3.1.4 && \
-            gem install bundler && \
-            gem install fpm --version 1.14.0 --no-document ;; \
-        3.2.*) \
-            rbenv install 3.2.2 && \
-            rbenv global 3.2.2 && \
-            gem install bundler && \
-            gem install fpm --version 1.14.0 --no-document ;; \
-        *) \
-            echo "Unsupported Ruby version: ${ruby_version}"; \
-            exit 1 ;; \
-    esac
+    apt-get --quiet --yes --no-install-recommends install \
+        curl git build-essential libssl-dev libreadline-dev zlib1g-dev && \
+    
+    # Clone the correct rbenv repo
+    git clone https://github.com/rbenv/rbenv.git /root/.rbenv && \
+    git clone https://github.com/rbenv/ruby-build.git /root/.rbenv/plugins/ruby-build && \
+    
+    # Set up rbenv environment correctly
+    export PATH="/root/.rbenv/bin:/root/.rbenv/shims:$PATH" && \
+    eval "$(rbenv init -)" && \
 
-ENV PATH /root/.rbenv/bin:$PATH
+    # Select the Ruby version based on OS
+    if [ "${os}:${os_version}" = "ubuntu:trusty" ]; then \
+        ruby_version="2.3.8"; \
+    elif [ "${os}:${os_version}" = "ubuntu:jammy" ]; then \
+        ruby_version="3.0.1"; \
+    else \
+        ruby_version="3.0.1"; \
+    fi && \
 
+    # Install the selected Ruby version
+    rbenv install "$ruby_version" && \
+    rbenv global "$ruby_version" && \
+
+    # Ensure Ruby is installed and usable
+    rbenv rehash && \
+    ruby -v && \
+
+    # Install Bundler and FPM
+    gem install bundler && \
+    gem install fpm --no-document
+
+# Persist rbenv path for subsequent steps
+ENV PATH="/root/.rbenv/bin:/root/.rbenv/shims:$PATH"
 # Build it
 WORKDIR /tmp/build
 ENV ERL_TOP=/tmp/build/otp_src_${erlang_version}
