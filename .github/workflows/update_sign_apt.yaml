@@ -6,10 +6,10 @@ on:
   workflow_dispatch:
 
 env:
-  DEBIAN_RELEASES: "stretch buster bullseye"
+  DEBIAN_RELEASES: "stretch buster bullseye bookworm"
   UBUNTU_RELEASES: "noble jammy xenial bionic focal"
   ERLANG_VERSIONS: "24 25 26 27"
-  ELIXIR_VERSIONS: "1.16 1.15 1.14 1.13 1.12"
+  ELIXIR_VERSIONS: "1.18 1.17 1.16 1.15 1.14 1.13 1.12"
   MONGOOSEIM_VERSIONS: "5 6"
   AWS_REGION: "eu-west-2"
   AWS_SOURCE_BUCKET: "esl-erlang"
@@ -20,7 +20,7 @@ env:
 
 jobs:
   update-repo:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout
@@ -30,7 +30,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y aptly awscli dpkg-sig gnupg python3-pip zstd
+          sudo apt-get install -y aptly dpkg-sig gnupg python3-pip zstd
           pip3 install boto3
       # Configure Credentials for AWS    
       - name: Set AWS credentials
@@ -257,4 +257,4 @@ jobs:
       # Sync Normalized and Signed Packages to Binaries2
       - name: Sync Packages to Binaries2
         run: |
-          aws s3 sync s3://$AWS_DESTINATION_BUCKET s3://AWS_BINARIES_BUCKET 
+          aws s3 sync s3://$AWS_DESTINATION_BUCKET s3://$AWS_BINARIES_BUCKET 

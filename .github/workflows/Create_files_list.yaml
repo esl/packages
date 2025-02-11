@@ -18,7 +18,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y aptly awscli python3-pip
+          sudo apt-get install -y aptly python3-pip
           pip3 install boto3
       # Configure Credentials for AWS    
       - name: Set AWS credentials
