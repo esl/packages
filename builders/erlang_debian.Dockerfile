@@ -27,9 +27,10 @@ RUN if [ "${os}" = "ubuntu" -a "${BUILDPLATFORM}" != "${TARGETPLATFORM}" ]; then
 
 # Define a list of package dependencies based on OTP version ans OS version
 ARG erlang_version
+RUN apt-get --quiet update
+RUN apt list -a libc6
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
     --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
-    apt-get --quiet update && apt list -a libc6 && \
     case "${os_version}" in \
         bionic) \
             case "${erlang_version}" in \
