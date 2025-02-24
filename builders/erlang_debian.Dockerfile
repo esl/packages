@@ -25,11 +25,11 @@ RUN if [ "${os}" = "ubuntu" -a "${BUILDPLATFORM}" != "${TARGETPLATFORM}" ]; then
   echo "deb [arch=$(darch $TARGETPLATFORM)] http://ports.ubuntu.com/ubuntu-ports/ ${os_version}-security main universe" >> /etc/apt/sources.list.d/cross.list; \
   fi
 
-# Define a list of package dependencies based on OTP version
+# Define a list of package dependencies based on OTP version ans OS version
 ARG erlang_version
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
     --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
-    apt-get --quiet update && \
+    apt-get --quiet update && apt-get list -a libc6 && \
     case "${os_version}" in \
         bionic) \
             case "${erlang_version}" in \
