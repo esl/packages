@@ -483,7 +483,7 @@ RUN . ~/.bashrc; \
   done)
 
 # Sign it
-RUN if ! [ "${os}:${os_version}" = "ubuntu:noble" ] || \
+RUN if ! [ "${os}:${os_version}" = "ubuntu:noble" ] && \
   ! [ "${os}:${os_version}" = "debian:bookworm" ]; then \
   --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=private \
   --mount=type=cache,id=${os}_${os_version},target=/var/cache/yum,sharing=private \
