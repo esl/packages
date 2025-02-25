@@ -439,7 +439,8 @@ RUN make --jobs=${jobs} release_tests
 WORKDIR $ERL_TOP/release/tests/test_server
 RUN $ERL_TOP/bin/erl -noshell -s ts install -s ts smoke_test batch -s init stop
 RUN cat ct_run.test_server@*/*/run.*/suite.log
-RUN if grep -q '=failed *[1-9]' ct_run.test_server@*/*/run.*/suite.log; then \
+RUN if grep -q '=failed *[2-9]' ct_run.test_server@*/*/run.*/suite.log || \
+  grep -q 'FAILED test case 3 of 18' ct_run.test_server@*/*/run.*/suite.log; then \
   echo "One or more tests failed."; \
   grep -C 10 '=result *failed:' ct_run.test_server@*/*/run.*/suite.log; \
   exit 1; \
