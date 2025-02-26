@@ -471,8 +471,7 @@ RUN . ~/.bashrc; \
   --description "Concurrent, real-time, distributed functional language" \
   --url "https://erlang-solutions.com" \
   --license "$(determine-license ${erlang_version})" \
-  --depends 'procps, libc6' \
-  --depends $(if [ "${os}:${os_version}" != "ubuntu:noble" ]; then echo "libncurses5, libsctp1"; fi) \
+  --depends $(if [ "${os}:${os_version}" = "ubuntu:noble" ]; then echo 'procps, libc6'; else echo 'procps, libc6, libncurses5, libsctp1'; fi) \
   --depends $(apt-cache depends libssl-dev | grep Depends | grep -Eo 'libssl[0-9.]+') \
   $(if [ "${os}:${os_version}" != "ubuntu:trusty" ]; then echo '--deb-compression xz'; fi) \
   --deb-recommends 'libwxbase2.8-0 | libwxbase3.0-0 | libwxbase3.0-0v5, libwxgtk2.8-0 | libwxgtk3.0-0 | libwxgtk3.0-0v5 | libwxgtk3.0-gtk3-0v5' \
@@ -485,10 +484,10 @@ RUN . ~/.bashrc; \
 
 # Sign it
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=private \
-    --mount=type=cache,id=${os}_${os_version},target=/var/cache/yum,sharing=private \
-    if [ "${os}:${os_version}" != "ubuntu:noble" ] && [ "${os}:${os_version}" != "debian:bookworm" ]; then \
-    apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install dpkg-sig; \
-    fi
+  --mount=type=cache,id=${os}_${os_version},target=/var/cache/yum,sharing=private \
+  if [ "${os}:${os_version}" != "ubuntu:noble" ] && [ "${os}:${os_version}" != "debian:bookworm" ]; then \
+  apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install dpkg-sig; \
+  fi
 
 ARG gpg_pass
 ARG gpg_key_id
