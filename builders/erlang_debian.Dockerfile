@@ -452,6 +452,8 @@ RUN mkdir -p /tmp/install
 RUN make --jobs=${jobs} DESTDIR=/tmp/install install
 RUN make --jobs=${jobs} DESTDIR=/tmp/install install-docs DOC_TARGETS="chunks"
 
+RUN apt-get update && apt list libncurses5 && echo "libncurses5 versions"
+RUN apt-get update && apt list libsctp1 && echo "libsctp1 versions"
 # Package it
 WORKDIR /tmp/output
 ARG erlang_iteration
