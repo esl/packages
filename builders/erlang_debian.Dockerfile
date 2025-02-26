@@ -27,7 +27,6 @@ RUN if [ "${os}" = "ubuntu" -a "${BUILDPLATFORM}" != "${TARGETPLATFORM}" ]; then
 
 # Define a list of package dependencies based on OTP version ans OS version
 ARG erlang_version
-RUN apt-get update && apt list libc6 && echo "libc6 versions"
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
     --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
     apt-get --quiet update && \
@@ -471,7 +470,7 @@ RUN . ~/.bashrc; \
   --description "Concurrent, real-time, distributed functional language" \
   --url "https://erlang-solutions.com" \
   --license "$(determine-license ${erlang_version})" \
-  --depends $(if [ "${os}:${os_version}" = "ubuntu:noble" ]; then echo 'procps, libc6'; else echo 'procps, libc6, libncurses5, libsctp1'; fi) \
+  --depends 'procps, libc6, libncurses5, libsctp1' \
   --depends $(apt-cache depends libssl-dev | grep Depends | grep -Eo 'libssl[0-9.]+') \
   $(if [ "${os}:${os_version}" != "ubuntu:trusty" ]; then echo '--deb-compression xz'; fi) \
   --deb-recommends 'libwxbase2.8-0 | libwxbase3.0-0 | libwxbase3.0-0v5, libwxgtk2.8-0 | libwxgtk3.0-0 | libwxgtk3.0-0v5 | libwxgtk3.0-gtk3-0v5' \
