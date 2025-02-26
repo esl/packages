@@ -452,8 +452,6 @@ RUN mkdir -p /tmp/install
 RUN make --jobs=${jobs} DESTDIR=/tmp/install install
 RUN make --jobs=${jobs} DESTDIR=/tmp/install install-docs DOC_TARGETS="chunks"
 
-RUN apt-get update && apt list libncurses5 && echo "libncurses5 versions"
-RUN apt-get update && apt list libsctp1 && echo "libsctp1 versions"
 # Package it
 WORKDIR /tmp/output
 ARG erlang_iteration
@@ -473,7 +471,8 @@ RUN . ~/.bashrc; \
   --description "Concurrent, real-time, distributed functional language" \
   --url "https://erlang-solutions.com" \
   --license "$(determine-license ${erlang_version})" \
-  --depends 'procps, libc6, libncurses5, libsctp1' \
+  --depends 'procps, libc6' \
+  --depends $(if [ "${os}:${os_version}" = "ubuntu:noble" ]; then echo "libssl1.0.19+dfsg-2build1"; else echo "libncurses5, libsctp1"; fi)
   --depends $(apt-cache depends libssl-dev | grep Depends | grep -Eo 'libssl[0-9.]+') \
   $(if [ "${os}:${os_version}" != "ubuntu:trusty" ]; then echo '--deb-compression xz'; fi) \
   --deb-recommends 'libwxbase2.8-0 | libwxbase3.0-0 | libwxbase3.0-0v5, libwxgtk2.8-0 | libwxgtk3.0-0 | libwxgtk3.0-0v5 | libwxgtk3.0-gtk3-0v5' \
