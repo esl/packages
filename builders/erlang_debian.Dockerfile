@@ -470,7 +470,7 @@ RUN . ~/.bashrc; \
   --description "Concurrent, real-time, distributed functional language" \
   --url "https://erlang-solutions.com" \
   --license "$(determine-license ${erlang_version})" \
-  --depends 'procps, libc6, libncurses5, libsctp1' \
+  --depends 'procps, libc6' \
   --depends $(apt-cache depends libssl-dev | grep Depends | grep -Eo 'libssl[0-9.]+') \
   $(if [ "${os}:${os_version}" != "ubuntu:trusty" ]; then echo '--deb-compression xz'; fi) \
   --deb-recommends 'libwxbase2.8-0 | libwxbase3.0-0 | libwxbase3.0-0v5, libwxgtk2.8-0 | libwxgtk3.0-0 | libwxgtk3.0-0v5 | libwxgtk3.0-gtk3-0v5' \
