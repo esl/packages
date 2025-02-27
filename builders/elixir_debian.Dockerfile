@@ -35,11 +35,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
   gcc \
   make \
   $(apt-cache show libffi7 >/dev/null 2>&1; \
-  if [ $? -eq 0 ]; then \
-  echo "libffi7"; \
-  else \
-  echo "libffi6"; \
-  fi) \
+  libffi7 \
   curl \
   libssl-dev\
   openssl\
