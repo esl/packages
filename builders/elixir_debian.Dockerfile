@@ -48,38 +48,44 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
   zlib1g-dev
 
 # Ruby version and fpm
-ENV PATH /root/.rbenv/bin:$PATH
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
-  --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
-  git clone https://github.com/sstephenson/rbenv.git /root/.rbenv; \
-  git clone https://github.com/sstephenson/ruby-build.git /root/.rbenv/plugins/ruby-build; \
-  /root/.rbenv/plugins/ruby-build/install.sh; \
-  echo 'eval "$(rbenv init -)"' >> ~/.bashrc; \
-  echo 'gem: --no-rdoc --no-ri' >> ~/.gemrc; \
-  . ~/.bashrc; \
-  if [ "${os}:${os_version}" = "ubuntu:trusty" ]; then \
-  rbenv install 2.3.8; \
-  rbenv global 2.3.8; \
-  gem install bundler; \
-  gem install git --no-document --version 1.7.0; \
-  gem install json --no-rdoc --no-ri --version 2.2.0; \
-  gem install ffi --no-rdoc --no-ri --version 1.9.25; \
-  gem install fpm --no-rdoc --no-ri --version 1.11.0; \
-  else \
-  if [ "${os}:${os_version}" = "ubuntu:jammy" ] || [ "${os}:${os_version}" = "ubuntu:noble" ]; then \
-  rbenv install 3.0.1; \
-  rbenv global 3.0.1; \
-  gem install bundler; \
-  gem install fpm --no-document --version 1.13.0; \
-  else \
-  rbenv install 2.6.6; \
-  rbenv global 2.6.6; \
-  gem install bundler; \
-  gem install fpm --no-document --version 1.13.0; \
-  fi \
-  fi
+    --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
+    apt-get --quiet update && \
+    apt-get --quiet --yes --no-install-recommends install \
+        curl git build-essential libssl-dev libreadline-dev zlib1g-dev && \
+    
+    # Clone the correct rbenv repo
+    git clone https://github.com/rbenv/rbenv.git /root/.rbenv && \
+    git clone https://github.com/rbenv/ruby-build.git /root/.rbenv/plugins/ruby-build && \
+    
+    # Set up rbenv environment correctly
+    export PATH="/root/.rbenv/bin:/root/.rbenv/shims:$PATH" && \
+    eval "$(rbenv init -)" && \
+
+    # Select the Ruby version based on OS
+    if [ "${os}:${os_version}" = "ubuntu:trusty" ]; then \
+        ruby_version="2.3.8"; \
+    elif [ "${os}:${os_version}" = "ubuntu:jammy" ]; then \
+        ruby_version="3.0.1"; \
+    else \
+        ruby_version="3.0.1"; \
+    fi && \
+
+    # Install the selected Ruby version
+    rbenv install "$ruby_version" && \
+    rbenv global "$ruby_version" && \
+
+    # Ensure Ruby is installed and usable
+    rbenv rehash && \
+    ruby -v && \
+
+    # Install Bundler and FPM
+    gem install bundler && \
+    gem install fpm --no-document
 
 ENV LANG=C.UTF-8
+# Persist rbenv path for subsequent steps
+ENV PATH="/root/.rbenv/bin:/root/.rbenv/shims:$PATH"
 
 # Build and test it
 WORKDIR /tmp/build
