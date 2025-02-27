@@ -3,10 +3,7 @@ name: Build and Sync latest erlang
 on:
   schedule:
     - cron: "0 0 * * 0"
-  pull_request:
-    branches:
-      - "*"
-
+  workflow_dispatch:
 
 jobs:
   build-sync:
