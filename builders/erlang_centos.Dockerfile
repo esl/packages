@@ -88,8 +88,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
   gem install bundler; \
   gem install git --no-document --version 1.7.0; \
   gem install dotenv --version 2.8.1; \
-  gem install fpm --no-document --version 1.13.0; \
-
+  gem install fpm --no-document --version 1.13.0 \
 
 # Build it
 WORKDIR /tmp/build
