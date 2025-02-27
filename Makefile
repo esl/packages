@@ -141,6 +141,7 @@ elixir_%: JOBS = $(shell nproc)
 
 .PHONY: elixir_%
 elixir_%:
+	@echo "ERLANG_VERSIONS: $(ERLANG_VERSIONS)"
 	@echo "Building elixir $(ELIXIR_VERSION) against erlang $(ERLANG_VERSION) for $(OS) $(OS_VERSION) $(PLATFORM) with dockerfile builder/elixir_$(OS).Dockerfile"
 	@docker buildx create --name "$(BUILDER)" >/dev/null 2>&1 || true
 	@echo "Builder created"
