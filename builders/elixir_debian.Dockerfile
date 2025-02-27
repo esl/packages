@@ -15,7 +15,6 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
   apt-get --quiet --yes --no-install-recommends install \
   build-essential \
   ca-certificates \
-  libncurses5 \
   libsctp1 \
   procps \
   git \
