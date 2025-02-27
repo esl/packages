@@ -83,21 +83,12 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
   echo 'eval "$(rbenv init -)"' >> ~/.bashrc; \
   echo 'gem: --no-rdoc --no-ri' >> ~/.gemrc; \
   . ~/.bashrc; \
-  if [ "${os}:${os_version}" = "centos:7" -o "${os}:${os_version}" = "amazonlinux:2" ]; then \
-  # fpm 1.12 requires ruby 2.3.8
-  rbenv install 2.3.8; \
-  rbenv global 2.3.8; \
-  gem install bundler -v '< 2.3'; \
-  gem install git --no-document --version 1.7.0; \
-  gem install dotenv --version 2.8.1; \
-  gem install fpm --no-document --version 1.12.0; \
-  else \
-  # fpm 1.13 requires ruby 3.0.1.
   rbenv install 3.0.1; \
   rbenv global 3.0.1; \
   gem install bundler; \
+  gem install git --no-document --version 1.7.0; \
+  gem install dotenv --version 2.8.1; \
   gem install fpm --no-document --version 1.13.0; \
-  fi
 
 
 # Build it
