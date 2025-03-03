@@ -146,6 +146,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
   --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
   apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
   libsctp1 \
+  libncurses5 \
   procps \
   libssl-dev
 
