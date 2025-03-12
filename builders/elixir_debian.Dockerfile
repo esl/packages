@@ -26,8 +26,9 @@ ARG erlang_version
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
   --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
   wget https://esl-erlang.s3.eu-west-2.amazonaws.com/${os}/${os_version}/esl-erlang_${erlang_version}-1~${os}~${os_version}_amd64.deb || \
-  (echo "Fallback to version 27.2.2" && wget https://esl-erlang.s3.eu-west-2.amazonaws.com/${os}/${os_version}/esl-erlang_27.2.2-1~${os}~${os_version}_amd64.deb) && \
-  dpkg -i esl-erlang_${erlang_version}-1~${os}~${os_version}_amd64.deb || dpkg -i esl-erlang_27.2.2-1~${os}~${os_version}_amd64.deb
+  (echo "Fallback to version 27.2.2" && wget https://esl-erlang.s3.eu-west-2.amazonaws.com/${os}/${os_version}/esl-erlang_27.2.2-1~${os}~${os_version}_amd64.deb) || \
+  (echo "Fallback to version 26.2.5" && wget https://esl-erlang.s3.eu-west-2.amazonaws.com/${os}/${os_version}/esl-erlang_26.2.5-1~${os}~${os_version}_amd64.deb) && \
+  dpkg -i esl-erlang_${erlang_version}-1~${os}~${os_version}_amd64.deb || dpkg -i esl-erlang_27.2.2-1~${os}~${os_version}_amd64.deb || dpkg -i esl-erlang_26.2.5-1~${os}~${os_version}_amd64.deb
 
 # Install FPM dependencies
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
