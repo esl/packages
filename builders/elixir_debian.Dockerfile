@@ -87,8 +87,11 @@ ENV PATH="/root/.rbenv/bin:/root/.rbenv/shims:$PATH"
 # Build and test it
 WORKDIR /tmp/build
 ARG elixir_version
-RUN wget --quiet https://github.com/elixir-lang/elixir/archive/v${elixir_version}.tar.gz
-RUN tar xf v${elixir_version}.tar.gz
+RUN if [ "${elixir_version}" != "main-latest" ]; then \
+  elixir_version="v${elixir_version}"; \
+  fi
+RUN wget --quiet https://github.com/elixir-lang/elixir/archive/${elixir_version}.tar.gz
+RUN tar xf ${elixir_version}.tar.gz
 WORKDIR /tmp/build/elixir-${elixir_version}
 RUN make
 RUN make test
