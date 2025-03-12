@@ -94,7 +94,7 @@ RUN wget --quiet https://github.com/elixir-lang/elixir/archive/${elixir_version}
 RUN tar xf ${elixir_version}.tar.gz
 WORKDIR /tmp/build/elixir-${elixir_version}
 RUN make
-RUN make test
+RUN make test || (echo "Tests failed" && cat $(find . -name '*.log') && exit 1)
 RUN make install PREFIX=/usr DESTDIR=/tmp/install
 
 # # Package it
