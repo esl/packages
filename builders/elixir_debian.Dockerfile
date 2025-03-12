@@ -37,8 +37,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
   apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
   gcc \
   make \
-  $(apt-cache show libffi7 >/dev/null 2>&1) \
-  libffi7 \
+  $(apt-cache show libffi7 >/dev/null 2>&1 && echo libffi7) \
   curl \
   libssl-dev\
   openssl\
