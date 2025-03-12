@@ -26,7 +26,7 @@ ARG erlang_version
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
   --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
   if [ "${os}:${os_version}" = "ubuntu:noble" ]; then \
-    erlang_version="27.3-1"; \
+    erlang_version="27.3"; \
   fi && \
   wget https://esl-erlang.s3.eu-west-2.amazonaws.com/${os}/${os_version}/esl-erlang_${erlang_version}-1~${os}~${os_version}_amd64.deb && \
   dpkg -i esl-erlang_${erlang_version}-1~${os}~${os_version}_amd64.deb
