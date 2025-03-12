@@ -32,7 +32,7 @@ override ERLANG_MAINTS = \
 	$(shell git ls-remote --tags --sort=-version:refname https://github.com/erlang/otp 'OTP-[2-9][0-9]*' | \
 	grep -Eo '[0-9]+\.[0-9.]+' | sort -r -V | awk -F. '{ if (!a[$$1]++ ) print ;}' | \
 	grep "$$(git ls-remote --heads https://github.com/erlang/otp 'maint-[2-9][0-9]*' | \
-	sed 's|.*refs/heads/maint-\([0-9]*\)|\1.|')" | sed 's/27.2.4/27.2.2/')
+	sed 's|.*refs/heads/maint-\([0-9]*\)|\1.|')")
 override ELIXIR_LATEST = \
 	$(shell curl --fail https://api.github.com/repos/elixir-lang/elixir/releases?per_page=1 | jq -r '.[] | .tag_name')
 override MONGOOSEIM_LATEST = \
