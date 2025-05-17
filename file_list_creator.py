@@ -89,7 +89,7 @@ for page in page_iterator:
                             "name": "Mac OS",
                             "caption": "Mac OS",
                             "header": "",
-                            "footer": "<h1>Installation instructions for Mac OS X</h1>\n\n<h2>Installation using brew </h2>\n\n<code> sudo brew install erlang </code>\n<h2>Installation using Macports </h2>\n\n<code> sudo port install erlang </code>",
+                            "footer": "<h1>Installation instructions for Mac OS X</h1>\n\n<h2>Installation using Homebrew</h2>\n\n<code>brew install erlang</code>\n<h2>Installation using MacPorts</h2>\n\n<code>sudo port install erlang</code>",
                             "flavours": [
                                 {
                                     "name": "main",
