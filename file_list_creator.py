@@ -2,10 +2,11 @@ import boto3
 import re
 import json
 from urllib.parse import quote
+from packaging.version import parse as parse_version
 
 def extract_info_from_filename(filename):
     pattern_debian_ubuntu = r'(.+)_([\d\.-]+)~(.+?)~(.+?)_([\w-]+)\.(\w+)'
-    pattern_centos = r'(.+)_([\d\.-]+_[\d-]+)~(.+?)~(.+?)_([\w-]+)\.(\w+)'
+    pattern_centos = r'(.+)_([\d\.-]+)~(rockylinux|centos)~(\d+)_([\w-]+)\.(rpm)'
 
     match = re.match(pattern_debian_ubuntu, filename)
     if not match:
@@ -155,6 +156,13 @@ for page in page_iterator:
 
 # Write separate JSON file for esl-erlang
 
+# Sort all packages in descending version order
+
+for tab in erlang_json_data["tabs"]:
+    for flavour in tab["flavours"]:
+        flavour["packages"].sort(key=lambda pkg: parse_version(pkg["version"]), reverse=True)
+
+# Write final JSON
 with open('erlang_packages.json', 'w') as json_file:
     json_file.write("jsonCallback(" + json.dumps(erlang_json_data, indent=4) + ")")
 
