@@ -6,7 +6,7 @@ from packaging.version import parse as parse_version
 
 def extract_info_from_filename(filename):
     pattern_debian_ubuntu = r'(.+)_([\d\.-]+)~(.+?)~(.+?)_([\w-]+)\.(\w+)'
-    pattern_centos = r'(.+)_([\d\.-]+)~(rockylinux|centos)~(\d+)_([\w-]+)\.(rpm)'
+    pattern_centos = r'(.+)_([\d\.\-]+)~(centos|rockylinux)~(\d+)_([\w-]+)\.(rpm)'
 
     match = re.match(pattern_debian_ubuntu, filename)
     if not match:
