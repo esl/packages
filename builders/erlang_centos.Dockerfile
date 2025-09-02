@@ -57,7 +57,25 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
   openssl-devel \
   unixODBC \
   wget \
-  wxGTK3-devel
+  wxGTK3-devel && \
+  \
+  # ---- Install modern GCC (C++17) toolchain ---- \
+  if [ "${os}:${os_version}" = "centos:7" ]; then \
+    yum install -y centos-release-scl && \
+    yum install -y devtoolset-11 && \
+    echo "source /opt/rh/devtoolset-11/enable" >> /etc/profile.d/devtoolset.sh && \
+    source /opt/rh/devtoolset-11/enable && \
+    gcc --version && g++ --version; \
+  elif [ "${os}:${os_version}" = "centos:8" ] || \
+       [ "${os}" = "rockylinux" ] || [ "${os}" = "almalinux" ]; then \
+    yumdnf install -y gcc-toolset-11 && \
+    echo "source /opt/rh/gcc-toolset-11/enable" >> /etc/profile.d/gcc-toolset.sh && \
+    source /opt/rh/gcc-toolset-11/enable && \
+    gcc --version && g++ --version; \
+  fi
+
+# Ensure new GCC/G++ is available in all later RUN steps
+SHELL ["/bin/bash", "-lc"]
 
 # Install FPM dependences
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=private \
