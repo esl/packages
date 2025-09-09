@@ -62,6 +62,9 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/dnf,sharing=priv
   # ---- Install modern GCC (C++17) toolchain ---- \
   if [ "${os}:${os_version}" = "centos:7" ]; then \
     yum install -y centos-release-scl && \
+    # Fix dead SCLo repos (point to vault)
+    sed -i 's|^mirrorlist=|#mirrorlist=|g' /etc/yum.repos.d/CentOS-SCLo-scl*.repo && \
+    sed -i 's|^#baseurl=http://mirror.centos.org/centos/\$releasever|baseurl=http://vault.centos.org/centos/\$releasever|g' /etc/yum.repos.d/CentOS-SCLo-scl*.repo && \
     yum install -y devtoolset-11 && \
     echo "source /opt/rh/devtoolset-11/enable" >> /etc/profile.d/devtoolset.sh && \
     source /opt/rh/devtoolset-11/enable && \
