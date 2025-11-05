@@ -15,7 +15,6 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
   apt-get --quiet --yes --no-install-recommends install \
   build-essential \
   ca-certificates \
-  libncurses5 \
   libsctp1 \
   procps \
   git \
@@ -26,8 +25,10 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
 ARG erlang_version
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
   --mount=type=cache,id=${os}_${os_version},target=/var/lib/apt,sharing=private \
-  wget https://esl-erlang.s3.eu-west-2.amazonaws.com/${os}/${os_version}/esl-erlang_${erlang_version}-1~${os}~${os_version}_amd64.deb && \
-  dpkg -i esl-erlang_${erlang_version}-1~${os}~${os_version}_amd64.deb
+  wget https://esl-erlang.s3.eu-west-2.amazonaws.com/${os}/${os_version}/esl-erlang_${erlang_version}-1~${os}~${os_version}_amd64.deb || \
+  (echo "Fallback to version 27.2.2" && wget https://esl-erlang.s3.eu-west-2.amazonaws.com/${os}/${os_version}/esl-erlang_27.2.2-1~${os}~${os_version}_amd64.deb) || \
+  (echo "Fallback to version 26.2.5" && wget https://esl-erlang.s3.eu-west-2.amazonaws.com/${os}/${os_version}/esl-erlang_26.2.5-1~${os}~${os_version}_amd64.deb) && \
+  dpkg -i esl-erlang_${erlang_version}-1~${os}~${os_version}_amd64.deb || dpkg -i esl-erlang_27.2.2-1~${os}~${os_version}_amd64.deb || dpkg -i esl-erlang_26.2.5-1~${os}~${os_version}_amd64.deb
 
 # Install FPM dependencies
 RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=private \
@@ -35,12 +36,7 @@ RUN --mount=type=cache,id=${os}_${os_version},target=/var/cache/apt,sharing=priv
   apt-get --quiet update && apt-get --quiet --yes --no-install-recommends install \
   gcc \
   make \
-  $(apt-cache show libffi7 >/dev/null 2>&1; \
-  if [ $? -eq 0 ]; then \
-  echo "libffi7"; \
-  else \
-  echo "libffi6"; \
-  fi) \
+  $(apt-cache show libffi7 >/dev/null 2>&1 && echo libffi7) \
   curl \
   libssl-dev\
   openssl\
@@ -90,11 +86,14 @@ ENV PATH="/root/.rbenv/bin:/root/.rbenv/shims:$PATH"
 # Build and test it
 WORKDIR /tmp/build
 ARG elixir_version
-RUN wget --quiet https://github.com/elixir-lang/elixir/archive/v${elixir_version}.tar.gz
-RUN tar xf v${elixir_version}.tar.gz
+RUN if [ "${elixir_version}" != "main-latest" ]; then \
+  elixir_version="v${elixir_version}"; \
+  fi
+RUN wget --quiet https://github.com/elixir-lang/elixir/archive/${elixir_version}.tar.gz
+RUN tar xf ${elixir_version}.tar.gz
 WORKDIR /tmp/build/elixir-${elixir_version}
 RUN make
-RUN make test
+RUN make test || (echo "Tests failed" && cat $(find . -name '*.log') && exit 1)
 RUN make install PREFIX=/usr DESTDIR=/tmp/install
 
 # # Package it

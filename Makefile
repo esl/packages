@@ -30,8 +30,9 @@ OUTPUT = type=local,dest=build/$(OS)/$(OS_VERSION)
 # Consult github remote to get latest maintenance tags
 override ERLANG_MAINTS = \
 	$(shell git ls-remote --tags --sort=-version:refname https://github.com/erlang/otp 'OTP-[2-9][0-9]*' | \
-	grep "$$(git ls-remote --heads https://github.com/erlang/otp 'maint-[2-9][0-9]*' | awk '{print $$1}')" | \
-	grep -Eo '[0-9]+\.[0-9.]+')
+	grep -Eo '[0-9]+\.[0-9.]+' | sort -r -V | awk -F. '{ if (!a[$$1]++ ) print ;}' | \
+	grep "$$(git ls-remote --heads https://github.com/erlang/otp 'maint-[2-9][0-9]*' | \
+	sed 's|.*refs/heads/maint-\([0-9]*\)|\1.|')")
 override ELIXIR_LATEST = \
 	$(shell curl --fail https://api.github.com/repos/elixir-lang/elixir/releases?per_page=1 | jq -r '.[] | .tag_name')
 override MONGOOSEIM_LATEST = \
@@ -141,6 +142,7 @@ elixir_%: JOBS = $(shell nproc)
 
 .PHONY: elixir_%
 elixir_%:
+	@echo "ERLANG_VERSIONS: $(ERLANG_MAINTS)"
 	@echo "Building elixir $(ELIXIR_VERSION) against erlang $(ERLANG_VERSION) for $(OS) $(OS_VERSION) $(PLATFORM) with dockerfile builder/elixir_$(OS).Dockerfile"
 	@docker buildx create --name "$(BUILDER)" >/dev/null 2>&1 || true
 	@echo "Builder created"
